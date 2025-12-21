@@ -1,0 +1,77 @@
+<div class="container-fluid p-0">
+  <div class="meta mt-2 mb-3">
+    <form action="">
+      <div class="row p-0">
+        <div class="metaData p-0">
+          <div class="page-title">
+            <h3>
+              Restaurant meta data
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
+                <div class="title d-flex justify-content-start">
+                  <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+                    افتراضي
+                  </h6>
+                  <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+                    English
+                    (EN)
+                  </h6>
+                  <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+                    -
+                    العربية (AR)</h6>
+                </div>
+                <div class="form-section mt-4">
+                  <label for="validationCustom01" class="form-label"> Meta title ({{ selectedLanguageLabel }})</label>
+                  <input type="text" id="validationCustom01" class="form-control"
+                    placeholder="{{ selectedLanguageePlaceholder }}" name="nameFood" required />
+                  <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+                <div class="form-section">
+                  <label for="validationCustom02" class="form-label"> Meta description ({{ selectedLanguageLabel
+                    }})</label>
+                  <textarea type="text" id="validationCustom02" class="form-control" placeholder="{{ selectedLanguageePlaceholder }}
+
+                  Philippe Chow Upper East Side is moving to Fifth Avenue Opening This Fall · 10 E 52nd Street"
+                    name="desc" required rows="4"></textarea>
+                  <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-xl-6 col-lg-6 col-md-12 mt-2">
+                <div class="logo">
+                  <div class="row justify-content-center">
+                    <div class="col-md-6">
+                      <div class="row">
+                        <div class="col-md-12">
+                          <h5 class="text-center" style="font-weight: bold;">Restaurant meta image</h5>
+                          <h5 class="text-center" style="font-weight: bold;"> (1:1) Meta image </h5>
+                        </div>
+                        <div class="col-12">
+                          <div class="form-section">
+                            <label class="upload-label">
+                              <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                              <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                                accept=".jpg,.png,.jpeg,.gif" />
+                            </label>
+                            <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="btns mt-2 mb-2 d-flex justify-content-end">
+                <button class="btn btn-save"> حفظ التغييرات </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

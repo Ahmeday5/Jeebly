@@ -1,0 +1,113 @@
+<div class="newJoin mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row">
+      <div class="page-title">
+        <h3>
+          <span class="icon">
+            <i class="fas fa-store-alt fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+          </span>
+          New Restaurant Join Request
+        </h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        @for(filter of filters; track filter) {
+        <button class="btn-filter mt-1 active" [class.active]="filter === activeFilter" (click)="setFilter(filter)">{{
+          filter }}</button>
+        }
+      </div>
+
+      <div class="col-md-6">
+        <form action="">
+          <div class="row">
+            <div class="col-xl-4 col-lg-4 col-md-6 col-12">
+              <div class="form-section">
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="location" required>
+                  <option value="" disabled selected>اختر نباتي / غير نباتي</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="cairo">القاهرة</option>
+                  <option value="alex">الاسكندرية</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار منطقة صالحة</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-6 col-12">
+              <div class="form-section">
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="location" required>
+                  <option value="" disabled selected>اختر النوع</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="cairo">القاهرة</option>
+                  <option value="alex">الاسكندرية</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار منطقة صالحة</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-6 col-12">
+              <div class="form-section">
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="location" required>
+                  <option value="" disabled selected>اختر المنطقة</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="cairo">القاهرة</option>
+                  <option value="alex">الاسكندرية</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار منطقة صالحة</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row p-0">
+      <!-----table-------->
+      <div class="col-md-12 p-0">
+        <div class="cardParent mt-3">
+          <div class="row border-bottoms">
+            <div class="col-md-6">
+              <h3 class="pt-2">
+                إجمالي المدفوعات
+              </h3>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+              <div class="row justify-content-end">
+                <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث حسب معلومات المطعم...."
+                  name="productName" />
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>معلومات المطعم</th>
+                    <th>معلومات المالك</th>
+                    <th>المنطفة</th>
+                    <th>نموذج العمل</th>
+                    <th>الحالة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+              <div
+                class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+                role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

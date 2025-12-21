@@ -1,0 +1,185 @@
+<div class="add-cashback mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <form action="" class="mt-4 form-add-cashback">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fa-solid fa-wallet"></i>
+            </span>
+            Wallet Bonus Setup
+          </h3>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12 mt-2 name">
+          <div class="title d-flex justify-content-start">
+            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+              افتراضي
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+              English
+              (EN)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+              -
+              العربية (AR)</h6>
+          </div>
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label"> Bonus Title ({{ selectedLanguageLabel }})</label>
+                <input type="text" id="validationCustom01" class="form-control"
+                  placeholder="{{ selectedLanguageePlaceholder }}" name="BonusTitle" required />
+                <div class="invalid-feedback">يرجى إدخال Bonus Title صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label"> وصف مختصر ({{ selectedLanguageLabel }})</label>
+                <input type="text" id="validationCustom01" class="form-control"
+                  placeholder="{{ selectedLanguageePlaceholder }}" name="desc" required />
+                <div class="invalid-feedback">يرجى إدخال وصف مختصر صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="cashbackPrice" class="form-label">Bonus Type</label>
+                <input type="text" id="cashbackPrice" class="form-control" name="BonusType" required />
+                <div class="invalid-feedback">يرجى إدخال Bonus Type </div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="cashbackPrice" class="form-label">Bonus Amount(%)</label>
+                <input type="text" id="cashbackPrice" class="form-control" name="cashbackPrice" required />
+                <div class="invalid-feedback">يرجى إدخال Bonus Amount </div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="cashbackPrice" class="form-label">Minimum Add Money Amount ($)</label>
+                <input type="text" id="cashbackPrice" class="form-control" name="cashbackPrice" required />
+                <div class="invalid-feedback">يرجى إدخال Minimum Add Money Amount </div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="cashbackPrice" class="form-label">Maximum Bonus ($)</label>
+                <input type="text" id="cashbackPrice" class="form-control" name="cashbackPrice" required />
+                <div class="invalid-feedback">يرجى إدخال Maximum Bonus ($) </div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">تاريخ البدء</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="startdate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال تاريخ بدء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">تاريخ الانتهاء</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="enddate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال تاريخ انتهاء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-rest">إعادة تعيين</button>
+            <button class="btn btn-save">ارسال</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!----------------------list-cashback----------------------->
+<div class="list-cashback mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <!-----table-------->
+      <div class="col-md-12 p-0">
+        <div class="cardParent mt-3">
+          <div class="row border-bottoms">
+            <div class="col-md-6">
+              <h3 class="pt-2">
+                Bonus List
+              </h3>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+              <div class="col-md-6">
+                <input type="text" id="productName" class="form-control mt-2" placeholder="العنوان...."
+                  name="productName" />
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>Bonus Title</th>
+                    <th>Bonus Info</th>
+                    <th>Bonus Amount</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>الحالة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>ahmed</td>
+                    <td>ahmed</td>
+                    <td>طبيعي
+                      متوسط
+                      عالي</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td>
+                      <i class="fas fa-trash-alt"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+                role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

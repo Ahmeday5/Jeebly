@@ -1,0 +1,414 @@
+<div class="add-restaurant mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <form action="" class="mt-4">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fa-solid fa-receipt"></i>
+            </span>
+            إضافة طعام جديد
+          </h3>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
+          <div class="title d-flex justify-content-start">
+            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+              افتراضي
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+              English
+              (EN)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+              -
+              العربية (AR)</h6>
+          </div>
+          <div class="form-section mt-4">
+            <label for="validationCustom01" class="form-label"> الاسم ({{ selectedLanguageLabel }})</label>
+            <input type="text" id="validationCustom01" class="form-control"
+              placeholder="{{ selectedLanguageePlaceholder }}" name="nameFood" required />
+            <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+            <div class="valid-feedback">يبدو جيدًا!</div>
+          </div>
+          <div class="form-section">
+            <label for="validationCustom02" class="form-label"> وصف قصير ({{ selectedLanguageLabel
+              }})</label>
+            <textarea type="text" id="validationCustom02" class="form-control"
+              placeholder="{{ selectedLanguageePlaceholder }}" name="desc" required rows="2"></textarea>
+            <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
+            <div class="valid-feedback">يبدو جيدًا!</div>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 mt-2">
+          <div class="logo">
+            <div class="row justify-content-center">
+              <div class="col-md-6">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h5 class="text-center" style="font-weight: bold;">صورة الطعام</h5>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-section">
+                      <label class="upload-label">
+                        <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                        <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                          accept=".jpg,.png,.jpeg,.gif" />
+                      </label>
+                      <div class="upload-details">
+                        <p>صيغة الصورة</p>
+                        <p>jpg, png, jpeg, gif</p>
+                        <p>حجم الصورة</p>
+                        <p>الحد الأقصى: 2 ميجابايت</p>
+                        <p>نسبة الصورة - 1:1</p>
+                      </div>
+                      <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------information----------------------->
+
+      <div class="row p-0 mt-3">
+        <div class="information">
+          <div class="page-title">
+            <h3>
+              <span class="icon">
+                <i class="fas fa-info-circle"></i>
+              </span>
+              معلومات المطاعم والفئات
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom03" class="form-label">المطعم</label>
+                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                  <div class="invalid-feedback">يرجى إدخال مطعم صالحة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom03" class="form-label">فئة</label>
+                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                  <div class="invalid-feedback">يرجى إدخال فئة صالحة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom03" class="form-label">فئة فرعية</label>
+                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                  <div class="invalid-feedback">يرجى إدخال فئة فرعية صالحة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom03" class="form-label">نوع الطعام</label>
+                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                  <div class="invalid-feedback">يرجى إدخال نوع طعام صالحة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-section">
+                  <label for="validationCustom03" class="form-label">Nutrition</label>
+                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                  <div class="invalid-feedback">يرجى إدخال Nutrition صالحة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-section">
+                  <label for="validationCustom03" class="form-label">Allegren Ingredients</label>
+                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                  <div class="invalid-feedback">يرجى إدخال Allegren Ingredients صالحة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <input type="checkbox" class="form-check-input" id="validationFormCheck1" required>
+                  <label class="form-check-label" for="validationFormCheck1">Is It Halal</label>
+                  <div class="invalid-feedback">Is It Halal require</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------addAndOffer----------------------->
+
+      <div class="row p-0 mt-3">
+        <div class="col-md-6">
+          <div class="addAndOffer">
+            <div class="page-title">
+              <h3>
+                <span class="icon">
+                  <i class="fa-solid fa-receipt"></i>
+                </span>
+                إضافة
+              </h3>
+            </div>
+            <div class="inputs">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="form-section">
+                    <label for="validationCustom04" class="form-label">اختر الإضافات</label>
+                    <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType"
+                      required>
+                      <option value="" disabled selected>اختر</option>
+                      <!-- أضف خيارات تانية لو عايز -->
+                      <option value="italian">إيطالي</option>
+                      <option value="arabic">عربي</option>
+                      <option value="fast-food">وجبات سريعة</option>
+                    </select>
+                    <div class="invalid-feedback">يرجى اختيار نوع أكل صالح</div>
+                    <div class="valid-feedback">يبدو جيدًا!</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="addAndOffer">
+            <div class="page-title">
+              <h3>
+                <span class="icon">
+                  <i class="fa-solid fa-receipt"></i>
+                </span>
+                توفير
+              </h3>
+            </div>
+            <div class="inputs">
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-section">
+                    <label for="validationCustom03" class="form-label">وقت التوفر يبدأ من</label>
+                    <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                    <div class="invalid-feedback">يرجى إدخال وقت التوفر صالحة</div>
+                    <div class="valid-feedback">يبدو جيدًا!</div>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-section">
+                    <label for="validationCustom03" class="form-label">وقت التوفر يبدأ من</label>
+                    <input type="text" id="validationCustom03" class="form-control" name="tax" required />
+                    <div class="invalid-feedback">يرجى إدخال وقت التوفر صالحة</div>
+                    <div class="valid-feedback">يبدو جيدًا!</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------priceInformation----------------------->
+      <div class="row p-0 mt-3">
+        <div class="priceInformation">
+          <div class="page-title">
+            <h3>
+              <span class="icon">
+                <i class="fas fa-info-circle"></i>
+              </span>
+              معلومات السعر
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">سعر الوحدة</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="let" required />
+                  <div class="invalid-feedback">يرجى إدخال سعر الوحدة</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">نوع الخصم</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
+                  <div class="invalid-feedback">يرجى إدخال نوع الخصم</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">الخصم</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
+                  <div class="invalid-feedback">يرجى إدخال الخصم</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">الحد الأقصى لكمية الشراء</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
+                  <div class="invalid-feedback">يرجى إدخال الحد الأقصى لكمية الشراء</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">نوع المخزون</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
+                  <div class="invalid-feedback">يرجى إدخال نوع المخزون</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------owner----------------------->
+      <div class="row p-0 mt-3">
+        <div class="owner">
+          <div class="page-title">
+            <div class="row">
+              <div class="col-6">
+                <h3>
+                  <span class="icon">
+                    <i class="fas fa-th-list"></i>
+                  </span>
+                  أنواع الطعام
+                </h3>
+              </div>
+              <div class="col-6 d-flex justify-content-end">
+                <h3>
+                  أضف نوع طعام جديد +
+                </h3>
+              </div>
+            </div>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-12">
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-section">
+                      <input type="checkbox" class="form-check-input" id="validationFormCheck1">
+                      <label class="form-check-label" for="validationFormCheck1">مطلوب</label>
+                    </div>
+                  </div>
+                  <div class="col-6 d-flex justify-content-end">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">الاسم</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="firstName" required />
+                  <div class="invalid-feedback">يرجى إدخال اسم اول صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">نوع اختيار الاختلاف</label>
+                  <div class="form-section">
+                    <input type="checkbox" class="form-check-input" id="validationFormCheck1">
+                    <label class="form-check-label" for="validationFormCheck1">Multiple Selection</label>
+                  </div>
+                  <div class="form-section">
+                    <input type="checkbox" class="form-check-input" id="validationFormCheck1">
+                    <label class="form-check-label" for="validationFormCheck1">Single Selection</label>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">الحد الأدنى</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
+                  <div class="invalid-feedback">يرجى إدخال حد ادني صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">الحد الاقصي</label>
+                  <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
+                  <div class="invalid-feedback">يرجى إدخال حد اقصي صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="addOption">
+                <div class="row">
+                  <div class="col-md-3 col-sm-4 col-6">
+                    <div class="form-section">
+                      <label for="validationCustom04" class="form-label">الحد الاقصي</label>
+                      <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
+                      <div class="invalid-feedback">يرجى إدخال حد اقصي صالح</div>
+                      <div class="valid-feedback">يبدو جيدًا!</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-sm-4 col-6">
+                    <div class="form-section">
+                      <label for="validationCustom04" class="form-label">الحد الاقصي</label>
+                      <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
+                      <div class="invalid-feedback">يرجى إدخال حد اقصي صالح</div>
+                      <div class="valid-feedback">يبدو جيدًا!</div>
+                    </div>
+                  </div>
+                  <div class="col-md-3 col-sm-4 col-6 d-flex align-items-center deleteaddOption ">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </div>
+                  <div class="col-12 d-flex justify-content-end">
+                    <button class="btn btn-addnewOption">أضف خيار جديد</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------tage----------------------->
+      <div class="row p-0 mt-3">
+        <div class="tage">
+          <div class="page-title">
+            <h3>
+              <span class="icon">
+                <i class="fas fa-tags"></i>
+              </span>
+              العلامات
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-section">
+                  <input type="text" id="validationCustom04" class="form-control" name="firstName" required />
+                  <div class="invalid-feedback">يرجى إدخال اسم اول صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-rest">إعادة تعيين</button>
+            <button class="btn btn-save">ارسال</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+<div class="add-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <form action="" class="mt-4 form-add-coupons">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fas fa-plus-circle"></i>
+            </span>
+            إضافة بانر ترويجي
+          </h3>
+        </div>
+        <div class="col-12 mt-2 name">
+          <div class="title d-flex justify-content-start">
+            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+              افتراضي
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+              English
+              (EN)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+              -
+              العربية (AR)</h6>
+          </div>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-section mt-4">
+                <label for="validationCustom01" class="form-label"> العنوان ({{ selectedLanguageLabel }})</label>
+                <input type="text" id="validationCustom01" class="form-control"
+                  placeholder="{{ selectedLanguageePlaceholder }}" name="nameFood" required />
+                <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-----------------logo----------------->
+        <div class="col-12 mt-4">
+          <div class="logo">
+            <div class="row justify-content-center">
+              <div class="col-10">
+                <div class="col-md-12">
+                  <h6 class="text-center title-upload">Upload Banner</h6>
+                </div>
+                <div class="col-12">
+                  <div class="form-section">
+                    <label class="upload-label">
+                      <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                      <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                        accept=".jpg,.png,.jpeg,.gif" />
+                    </label>
+                    <div class="upload-details">
+                      <p>رفع الصورة</p>
+                      <p>Min Size for Better Resolution 5:1
+                        Image format : jpg png jpeg | maximum size: 2 MB
+                      </p>
+                      <p>Ratio 5:1 (1500x300 px)</p>
+                    </div>
+                    <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-save">حفظ</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

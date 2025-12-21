@@ -1,0 +1,158 @@
+.page-title h3 {
+  color: var(--main-color);
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.page-title h3 .icon {
+  font-size: 15px;
+  margin-left: 5px;
+}
+
+.page-title h3 .number {
+  font-size: 20px;
+  margin-right: 2px;
+}
+
+.btn-filter {
+  width: auto;
+  border: 1px solid var(--main-color);
+  background: transparent;
+  border-radius: 25px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  text-align: center;
+  padding: 5px 15px;
+  color: var(--main-color);
+  margin-left: 10px;
+}
+
+.btn-filter:hover,
+.btn-filter:focus,
+.btn-filter:active {
+  background: var(--main-color);
+  color: var(--second-color);
+  outline: none;
+}
+
+.btn-filter.active {
+  background: var(--main-color);
+  color: var(--second-color);
+}
+
+/******************topcardParent******************/
+
+.cardParent .form-control {
+  border: 2px solid #8c0f14;
+  width: 250px;
+  margin-left: 7px;
+}
+
+.cardParent .form-control:focus {
+  border: 2px solid #8c0f14;
+  box-shadow: none;
+}
+
+.cardParent .coulm {
+  border: 2px solid #8c0f14;
+  padding: 2px 6px;
+  border-radius: 12px;
+  width: auto;
+  margin-left: 5px;
+  color: var(--main-color);
+  font-weight: 600;
+}
+
+.cardParent .coulm .btn {
+  padding: 2px 6px;
+  color: var(--main-color);
+  font-weight: 600;
+}
+
+.cardParent .coulm .btn:focus {
+  border: none;
+}
+
+.border-bottoms {
+  border-bottom: 2px solid var(--third-color) !important;
+  padding-bottom: 10px;
+}
+
+/************  table *****************/
+
+.cardParent {
+  border: 3px solid var(--third-color);
+  border-radius: 12px;
+}
+
+.cardParent .card-body {
+  padding: 10px;
+}
+
+.custom-table {
+  overflow-x: auto;
+}
+
+.custom-table-design {
+  border-collapse: separate;
+  /* لفصل الصفوف */
+  border-spacing: 0 1px;
+  /* مسافة بين الصفوف */
+  margin: 0;
+}
+
+.custom-table-design thead {
+  border: none;
+}
+
+.custom-table-design thead th {
+  background: var(--third-color) !important;
+  color: var(--main-color);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+  padding: 10px !important;
+  border: 0;
+}
+
+.custom-table-design tbody tr {
+  background: var(--second-color);
+  color: var(--main-color);
+}
+
+.custom-table-design td {
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 22px;
+  color: var(--main-color);
+  padding: 7px !important;
+  border: 0;
+}
+
+.btn-edit {
+  border: none;
+}
+
+.btn-edit:focus,
+.btn-edit:active,
+.btn-edit:focus-visible {
+  border: none;
+}
+
+.btn-edit img {
+  max-width: 100%;
+  height: auto;
+}
+
+.img-check {
+  width: 15px;
+  height: 15px;
+}
+
+@media (max-width: 992px) {
+  .filter {
+    top: 8%;
+    right: 25%;
+  }
+}

@@ -1,0 +1,201 @@
+<div class="add-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="page-title">
+      <h3>
+        <span class="icon">
+          <i class="fa-solid fa-chart-line"></i>
+        </span>
+        تقرير نقاط ولاء العميل
+      </h3>
+    </div>
+    <form action="" class="mt-4 form-add-coupons">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fa-solid fa-filter"></i>
+            </span>
+            خيارات الفلترة
+          </h3>
+        </div>
+        <div class="col-12 mt-2 name">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">تاريخ البدء</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="startdate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال تاريخ بدء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">تاريخ الانتهاء</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="enddate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال تاريخ انتهاء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom04" class="form-label">Customer status</label>
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType" required>
+                  <option value="" disabled selected>اختر</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="italian">إيطالي</option>
+                  <option value="arabic">عربي</option>
+                  <option value="fast-food">وجبات سريعة</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار Customer status</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom04" class="form-label">Sort By</label>
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType" required>
+                  <option value="" disabled selected>اختر</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="italian">إيطالي</option>
+                  <option value="arabic">عربي</option>
+                  <option value="fast-food">وجبات سريعة</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار Sort By</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-rest">إعادة تعيين</button>
+            <button class="btn btn-save">فلـــتــر</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!----------------------divs-report----------------------->
+<div class="divs-report mt-2">
+  <div class="container-fluid p-0">
+    <div class="row p-0 justify-content-around">
+      <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-10 p-0">
+        <div class="discount">
+          <div class="row justify-content-end align-content-center align-items-center">
+            <div class="title w-50">
+              <h6>خصم</h6>
+              <h6 style="margin-right: 8px;">0</h6>
+            </div>
+            <div class="icons w-50">
+              <i class="fa-solid fa-tags"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-10 p-0">
+        <div class="add">
+          <div class="row justify-content-end align-content-center align-items-center">
+            <div class="title w-50">
+              <h6>اضافة</h6>
+              <h6 style="margin-right: 8px;">0</h6>
+            </div>
+            <div class="icons w-50">
+              <i class="fa-solid fa-plus"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5 col-10 p-0">
+        <div class="balance">
+          <div class="row justify-content-end align-content-center align-items-center">
+            <div class="title w-50">
+              <h6>رصيد</h6>
+              <h6 style="margin-right: 8px;">0</h6>
+            </div>
+            <div class="icons w-50">
+              <i class="fa-solid fa-money-bill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!----------------------list-coupons----------------------->
+<div class="list-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <!-----table-------->
+      <div class="col-md-12 p-0">
+        <div class="cardParent mt-3">
+          <div class="row border-bottoms">
+            <div class="col-md-6">
+              <h3 class="pt-2">
+                المعاملات
+              </h3>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+              <div class="row justify-content-end">
+                <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث بالاسم...."
+                  name="productName" />
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>معرف المعالمة</th>
+                    <th>العميل</th>
+                    <th>اضافة</th>
+                    <th>خصم</th>
+                    <th>الرصيد</th>
+                    <th>نوع المعاملة</th>
+                    <th>المرجع</th>
+                    <th>تم الانشاء في</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>مصر</td>
+                    <td>اشعار قصير</td>
+                    <td>اشعار قصير</td>
+                    <td>الهرم</td>
+                    <td>هدف</td>
+                    <td>هدف</td>
+                    <td>هدف</td>
+                    <td>هدف</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+                role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

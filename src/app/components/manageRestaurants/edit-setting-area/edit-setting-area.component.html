@@ -1,0 +1,85 @@
+<div class="add-restaurant mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <div class="page-title">
+        <h3>
+          <span class="icon">
+            <i class="fas fa-edit"></i>
+          </span>
+          تحديث المنطقة التجارية
+        </h3>
+      </div>
+
+      <div class="col-md-12">
+        <div class="add-zone">
+          <div class="row">
+            <div class="col-md-6 information">
+              <h3>التعليمات</h3>
+              <p>إنشاء وربط النقاط في منطقة محددة على الخريطة لإضافة منطقة تجارية جديدة.</p>
+              <div class="icon-title d-flex">
+                <i class="fas fa-location-dot"></i>
+                <h6>استخدم أداة اليد للعثور على المنطقة المستهدفة.</h6>
+              </div>
+              <div class="icon-title d-flex">
+                <i class="fas fa-location-dot"></i>
+                <h6>استخدم أداة الشكل للإشارة إلى المناطق وربط النقاط.
+                  يتطلب الأمر 3 نقاط/نقاط على الأقل.</h6>
+              </div>
+              <div class="img">
+                <img src="/assets/img/New folder/خريطة2.png" class="img-fluid" alt="">
+              </div>
+            </div>
+
+            <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
+              <div class="title d-flex justify-content-start">
+                <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+                  افتراضي
+                </h6>
+                <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+                  English
+                  (EN)
+                </h6>
+                <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+                  -
+                  العربية (AR)</h6>
+              </div>
+              <form action="">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-section mt-4">
+                      <label for="validationCustom01" class="form-label"> اسم المنطقة التجارية ({{ selectedLanguageLabel
+                        }})</label>
+                      <input type="text" id="validationCustom01" class="form-control"
+                        placeholder="{{ selectedLanguageePlaceholder }}" name="restaurantName" required />
+                      <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+                      <div class="valid-feedback">يبدو جيدًا!</div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-section mt-4">
+                      <label for="validationCustom01" class="form-label"> Zone Display Name ({{ selectedLanguageLabel
+                        }})</label>
+                      <input type="text" id="validationCustom01" class="form-control"
+                        placeholder="{{ selectedLanguageePlaceholder }}" name="restaurantName" required />
+                      <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+                      <div class="valid-feedback">يبدو جيدًا!</div>
+                    </div>
+                  </div>
+                  <div class="col-12 mt-2">
+                    <img src="/assets/img/New folder/خريطة3.png" class="img-fluid" alt="">
+                  </div>
+                  <div class="btns mt-2">
+                    <div class="row justify-content-end">
+                      <button class="btn btn-rest">إعادة تعيين</button>
+                      <button class="btn btn-save">تحديث</button>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

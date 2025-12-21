@@ -1,0 +1,55 @@
+<div class="payments mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <!-----table-------->
+      <div class="col-md-12 p-0">
+        <div class="cardParent mt-3">
+          <div class="row border-bottoms">
+            <div class="col-6">
+              <h3 class="pt-2">
+                إجمالي المدفوعات
+              </h3>
+            </div>
+            <div class="col-6 d-flex justify-content-end">
+              <div class="row justify-content-end">
+                <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث حسب معلومات المطعم...."
+                  name="productName" />
+                <div class="coulm mt-2">
+                  <button class="btn"><i class="fa-solid fa-download"></i>تصدير<i
+                      class="fa-solid fa-caret-down"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>المعرف</th>
+                    <th>مبلغ الدفع</th>
+                    <th>Payment method</th>
+                    <th>الحالة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+              <div
+                class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+                role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

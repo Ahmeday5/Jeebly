@@ -1,0 +1,189 @@
+<div class="add-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <form action="" class="mt-4 form-add-coupons">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fa-regular fa-bell"></i>
+            </span>
+            إشعار
+          </h3>
+        </div>
+        <div class="col-12 mt-2 name">
+          <div class="title d-flex justify-content-start">
+            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+              افتراضي
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+              English
+              (EN)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+              -
+              العربية (AR)</h6>
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label"> العنوان ({{ selectedLanguageLabel }})</label>
+                <input type="text" id="validationCustom01" class="form-control"
+                  placeholder="{{ selectedLanguageePlaceholder }}" name="nameFood" required />
+                <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom04" class="form-label">المنطقة</label>
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType" required>
+                  <option value="" disabled selected>اختر</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="italian">إيطالي</option>
+                  <option value="arabic">عربي</option>
+                  <option value="fast-food">وجبات سريعة</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار منطقة صالحة</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-section">
+                  <label for="validationCustom04" class="form-label">ارسال الي</label>
+                  <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType" required>
+                    <option value="" disabled selected>اختر</option>
+                    <!-- أضف خيارات تانية لو عايز -->
+                    <option value="italian">إيطالي</option>
+                    <option value="arabic">عربي</option>
+                    <option value="fast-food">وجبات سريعة</option>
+                  </select>
+                  <div class="invalid-feedback">يرجى اختيار نوع أكل صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+            </div>
+            <div class="col-md-5">
+              <div class="logo">
+                <div class="row justify-content-center">
+                  <div class="col-10">
+                    <div class="col-md-12">
+                      <h6 class="text-center">صورة الطعام</h6>
+                    </div>
+                    <div class="col-12">
+                      <div class="form-section">
+                        <label class="upload-label">
+                          <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                          <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                            accept=".jpg,.png,.jpeg,.gif" />
+                        </label>
+                        <div class="upload-details">
+                          <p>رفع الصورة</p>
+                          <p>jpg, png, jpeg, gif</p>
+                          <p>حجم الصورة</p>
+                          <p>الحد الأقصى: 2 ميجابايت</p>
+                          <p>نسبة الصورة - 1:1</p>
+                        </div>
+                        <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <div class="form-section">
+                <label for="validationCustom02" class="form-label">الوصف</label>
+                <textarea type="text" id="validationCustom02" class="form-control" name="desc" required
+                  rows="7"></textarea>
+                <div class="invalid-feedback">يرجى إدخال وصف صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-rest">إعادة تعيين</button>
+            <button class="btn btn-save">ارسال الاشعار</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!----------------------list-coupons----------------------->
+<div class="list-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <!-----table-------->
+      <div class="col-md-12 p-0">
+        <div class="cardParent mt-3">
+          <div class="row border-bottoms">
+            <div class="col-md-6">
+              <h3 class="pt-2">
+                قائمة الإشعارات
+              </h3>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+              <div class="row justify-content-end">
+                <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث بالاسم...."
+                  name="productName" />
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>العنوان</th>
+                    <th>الوصف</th>
+                    <th>الصورة</th>
+                    <th>المنطقة</th>
+                    <th>الهدف</th>
+                    <th>الحالة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>مصر</td>
+                    <td>اشعار قصير</td>
+                    <td>اشعار قصير</td>
+                    <td>الهرم</td>
+                    <td>هدف</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td>
+                      <i class="fas fa-trash-alt"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+                role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

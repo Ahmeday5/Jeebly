@@ -1,0 +1,15 @@
+<div class="content-wrapper">
+  @if (isLoggedIn$ | async) {
+  <app-header class="main-header"></app-header>
+  }
+
+  <div class="main-area">
+    @if (isLoggedIn$ | async) {
+    <app-sidebar></app-sidebar>
+    }
+
+    <main class="content" [ngClass]="{'full-width': !(isLoggedIn$ | async)}">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

@@ -1,0 +1,158 @@
+<div class="add-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <form action="" class="mt-4 form-add-coupons">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fa-solid fa-users"></i>
+            </span>
+            العملاء
+          </h3>
+        </div>
+        <div class="col-12 mt-2 name">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">Order Date</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="startdate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال Order Date صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">Customer Joining Date</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="startdate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال Customer Joining Date صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom04" class="form-label">Customer status</label>
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType" required>
+                  <option value="" disabled selected>اختر</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="italian">إيطالي</option>
+                  <option value="arabic">عربي</option>
+                  <option value="fast-food">وجبات سريعة</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار Customer status</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom04" class="form-label">Sort By</label>
+                <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType" required>
+                  <option value="" disabled selected>اختر</option>
+                  <!-- أضف خيارات تانية لو عايز -->
+                  <option value="italian">إيطالي</option>
+                  <option value="arabic">عربي</option>
+                  <option value="fast-food">وجبات سريعة</option>
+                </select>
+                <div class="invalid-feedback">يرجى اختيار Sort By</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">Choose First</label>
+                <input type="text" id="validationCustom01" class="form-control" placeholder="" name="startdate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال Choose First صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-rest">إعادة تعيين</button>
+            <button class="btn btn-save">ارسال الاشعار</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+<!----------------------list-coupons----------------------->
+<div class="list-coupons mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <!-----table-------->
+      <div class="col-md-12 p-0">
+        <div class="cardParent mt-3">
+          <div class="row border-bottoms">
+            <div class="col-md-6">
+              <h3 class="pt-2">
+                Customer list 1
+              </h3>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+              <div class="row justify-content-end">
+                <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث بالاسم...."
+                  name="productName" />
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>الاسم</th>
+                    <th>contact information</th>
+                    <th>اجمالي الطلبات</th>
+                    <th>اجمالي قيمة الطلب</th>
+                    <th>joining Date</th>
+                    <th>الحالة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>مصر</td>
+                    <td>اشعار قصير</td>
+                    <td>اشعار قصير</td>
+                    <td>الهرم</td>
+                    <td>هدف</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td>
+                      <i class="fas fa-trash-alt"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <div
+                class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+                role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

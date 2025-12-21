@@ -1,0 +1,145 @@
+.container-fluid {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.img-bg {
+  background-image: url("../../../assets/img/login/bg.webp");
+  background-repeat: no-repeat;
+  background-size: 100% 100%; /* الصورة تظهر كاملة بدون تقطيع */
+  width: 100%;
+  min-height: 100vh; /* ارتفاع الشاشة بالكامل لضمان ظهور الصورة */
+  height: auto;
+}
+
+.login-header {
+  background: var(--main-color);
+  color: var(--second-color);
+}
+
+.header h1 {
+  font-family: var(-font-latin) !important;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 100%;
+  color: var(--second-color);
+  position: relative;
+}
+
+.form-group {
+  position: relative;
+}
+
+.form-control {
+  padding: 15px !important;
+  border: 2px solid #d9d9d9 !important;
+  border-radius: 12px;
+}
+
+.form-control::placeholder {
+  color: var(--main-color);
+  font-family: var(--font-latin) !important;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 100%;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 69%;
+  left: 1.5%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  padding: 5px;
+}
+
+.remember {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+  margin-right: 15px;
+}
+
+.remember input {
+  margin-left: 5px !important;
+}
+
+.remember label {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--second-color);
+}
+
+.forgetpass {
+  padding: 0px 15px;
+}
+
+.forgetpass .forgetpassdiv {
+  justify-content: flex-end;
+}
+
+.forgetpass a {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--second-color);
+}
+
+.submit .btn-login {
+  border-radius: 8px;
+  background: #4b0b0d;
+  font-family: var(--font-latin);
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 100%;
+  color: var(--second-color);
+  padding: 10px 40px;
+}
+
+@media (max-width: 992px) {
+  .header h1::before {
+    width: 30%;
+  }
+
+  .header h1::after {
+    width: 30%;
+  }
+
+  .forgetpass .forgetpassdiv {
+    justify-content: center;
+  }
+
+  .submit a {
+    width: 90%;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .header h1::before {
+    width: 25%;
+  }
+
+  .header h1::after {
+    width: 25%;
+  }
+
+  .submit a {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .header h1::before {
+    width: 20%;
+  }
+
+  .header h1::after {
+    width: 20%;
+  }
+
+  .submit a {
+    width: 100%;
+  }
+}

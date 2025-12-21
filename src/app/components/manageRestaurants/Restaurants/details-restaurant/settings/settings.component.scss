@@ -1,0 +1,145 @@
+form .form-section {
+  margin-top: 7px;
+}
+
+form .form-section .form-label {
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--main-color);
+}
+
+form .form-section .form-control {
+  border: 2px solid var(--third-color);
+  padding: 5px;
+  border-radius: 12px;
+}
+
+form .form-section .form-control:focus {
+  border: 2px solid var(--main-color);
+  box-shadow: none;
+  outline: none;
+}
+
+/************/
+.form-switch {
+  display: flex;
+  justify-content: center;
+}
+
+.form-switch .form-check-input {
+  border: 1px solid var(--main-color);
+}
+
+.form-switch .form-check-input:focus {
+  box-shadow: none;
+}
+.form-check-input:checked {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+/**************/
+
+/**********rows************/
+
+.page-title h3 {
+  color: var(--main-color);
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.page-title h3 .icon {
+  font-size: 15px;
+  margin-left: 1px;
+}
+
+.fa-location-dot,
+.fa-image {
+  color: transparent;
+  -webkit-text-stroke: 1px var(--main-color); /* لإضافة حدود سوداء */
+}
+
+.foodSetting,
+.Schedule {
+  border: 3px solid var(--third-color);
+  border-radius: 12px;
+  padding: 8px !important;
+  color: var(--main-color);
+  font-weight: 700;
+}
+
+.foodSetting .content {
+  border-top: 3px solid var(--third-color);
+}
+
+.foodSetting .content .toogle {
+  border: 2px solid var(--third-color);
+  padding: 5px 0;
+  border-radius: 12px;
+  color: var(--main-color);
+}
+
+.content .toogle h6 {
+  font-weight: bold;
+}
+
+/********************/
+
+.btns .btn {
+  width: 150px;
+  height: 40px;
+  border-radius: 12px;
+  margin-top: 10px;
+}
+
+.btns .btn-save {
+  background: var(--main-color);
+  color: var(--second-color);
+}
+
+/*******************************Schedule***********************************/
+
+.Schedule .workingHours .days {
+  border-top: 3px solid var(--third-color);
+  padding: 10px 5px 0 5px;
+}
+
+.workingHours .days h6 {
+  margin-left: 10px;
+  margin-top: 10px;
+}
+
+.workingHours .days p {
+  margin-left: 10px;
+  border: 2px solid var(--main-color);
+  border-radius: 12px;
+  padding: 5px 15px;
+}
+
+.workingHours .days i {
+  margin-top: 10px;
+  cursor: pointer;
+}
+
+/******************************model*******************************/
+
+.modal {
+  padding-top: 95px;
+  color: var(--main-color);
+}
+
+.modal .modal-header h6 {
+  color: var(--main-color);
+  font-weight: bold;
+}
+
+.btn-send {
+  padding: 2px 15px;
+  color: var(--second-color);
+  font-weight: 600;
+  background: var(--main-color);
+  border-radius: 12px;
+}
+
+.btn-send:focus {
+  border: none;
+}

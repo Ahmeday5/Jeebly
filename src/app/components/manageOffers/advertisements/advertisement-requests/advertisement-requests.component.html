@@ -1,0 +1,98 @@
+<div class="orders mt-3 mb-3">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="page-title">
+            <h3>
+              <span class="icon">
+                <i class="fa-solid fa-bullhorn fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+              </span>
+              طلبات الإعلانات
+              <span class="number">15</span>
+            </h3>
+          </div>
+        </div>
+        <!-- Filter Buttons -->
+        <div class="row-cols-1 row-cols-md-10 row-cols-lg-11">
+          @for(filter of filters; track filter) {
+          <button class="btn-filter mt-1 active" [class.active]="filter === activeFilter" (click)="setFilter(filter)">{{
+            filter }}</button>
+          }
+        </div>
+
+
+        <!-- Table -->
+        <div class="cardParent mt-3">
+          <div class="row justify-content-end border-bottoms">
+            <input type="text" id="productName" class="form-control mt-2" placeholder="البحث بالاسم....."
+              name="productName" />
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>معرف الإعلان</th>
+                    <th>عنوان  الإعلان</th>
+                    <th>معلومات المطعم</th>
+                    <th>نوع  الإعلان</th>
+                    <th>المدة</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>56458</td>
+                    <td>25/5/2025</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>كنتاكي</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>56458</td>
+                    <td>25/5/2025</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>كنتاكي</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>56458</td>
+                    <td>25/5/2025</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>كنتاكي</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>56458</td>
+                    <td>25/5/2025</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>كنتاكي</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

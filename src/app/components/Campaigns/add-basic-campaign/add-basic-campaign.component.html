@@ -1,0 +1,134 @@
+<div class="add-campaigns mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <form action="" class="mt-4 form-add-campaigns">
+      <!-----------------name and logo----------------->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon">
+              <i class="fas fa-plus-circle"></i>
+            </span>
+            إضافة حملة جديدة
+          </h3>
+        </div>
+        <div class="col-xl-12 col-lg-12 col-md-12 mt-2 name">
+          <div class="title d-flex justify-content-start">
+            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
+              افتراضي
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+              English
+              (EN)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
+              -
+              العربية (AR)</h6>
+          </div>
+          <div class="form-section mt-4">
+            <label for="validationCustom01" class="form-label"> العنوان ({{ selectedLanguageLabel }})</label>
+            <input type="text" id="validationCustom01" class="form-control"
+              placeholder="{{ selectedLanguageePlaceholder }}" name="restaurantName" required />
+            <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+            <div class="valid-feedback">يبدو جيدًا!</div>
+          </div>
+          <div class="form-section">
+            <label for="validationCustom02" class="form-label"> وصف قصير ({{ selectedLanguageLabel
+              }})</label>
+            <textarea type="text" id="validationCustom02" class="form-control"
+              placeholder="{{ selectedLanguageePlaceholder }}" name="restaurantAddress" required rows="2"></textarea>
+            <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
+            <div class="valid-feedback">يبدو جيدًا!</div>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 mt-3">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">تاريخ البدء</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="startdate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال تاريخ بدء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">تاريخ الانتهاء</label>
+                <input type="date" id="validationCustom01" class="form-control" placeholder="" name="enddate"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال تاريخ انتهاء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">وقت البداية</label>
+                <input type="time" id="validationCustom01" class="form-control" placeholder="" name="startTime"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال وقت بداية صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-section">
+                <label for="validationCustom01" class="form-label">وقت الانتهاء</label>
+                <input type="time" id="validationCustom01" class="form-control" placeholder="" name="endTime"
+                  required />
+                <div class="invalid-feedback">يرجى إدخال وقت انتهاء صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 mt-3">
+          <div class="logo">
+            <div class="page-title">
+              <h3>
+                <span class="icon">
+                  <i class="fas fa-image"></i>
+                </span>
+                صورة الحملة
+              </h3>
+            </div>
+            <div class="row justify-content-center">
+              <div class="col-md-10">
+                <div class="row">
+                  <div class="col-md-12">
+                    <h6 class="text-center">الشعار</h6>
+                  </div>
+                  <div class="col-12">
+                    <div class="form-section">
+                      <label class="upload-label">
+                        <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
+                        <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                          accept=".jpg,.png,.jpeg,.gif" />
+                      </label>
+                      <div class="upload-details">
+                        <p>صيغة الصورة</p>
+                        <p>jpg, png, jpeg, gif</p>
+                        <p>حجم الصورة</p>
+                        <p>الحد الأقصى: 2 ميجابايت</p>
+                        <p>نسبة الصورة - 1:1</p>
+                      </div>
+                      <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!----------------------btns----------------------->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row justify-content-end">
+            <button class="btn btn-rest">إعادة تعيين</button>
+            <button class="btn btn-save">حفظ المعلومات</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

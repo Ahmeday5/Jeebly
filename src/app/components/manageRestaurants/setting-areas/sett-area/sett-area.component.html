@@ -1,0 +1,133 @@
+<div class="setting-area mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <div class="page-title">
+        <h3>
+          <span class="icon">
+            <i class="fas fa-cog"></i>
+          </span>
+          إعدادات المنطقة التجارية : Kuwait
+        </h3>
+        <h6>حدد رسوم التوصيل والحوافز حسب المنطقة</h6>
+      </div>
+
+      <div class="cardParentsetting mt-1">
+        <div class="row border-bottoms-red">
+          <div class="page-title">
+            <h3 class="m-0">
+              إعدادات رسوم التوصيل
+            </h3>
+          </div>
+        </div>
+        <form action="" class="fees" #deliveryFeesForm="ngForm">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">أدنى رسوم توصيل ($)</label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="minDeliveryFee"
+                  [(ngModel)]="minDeliveryFee" required />
+                <div class="invalid-feedback">يرجى إدخال أدنى رسوم توصيل</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">أقصى مبلغ للطلب عند الاستلام ($) </label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="maxCashOrder"
+                  [(ngModel)]="maxCashOrder" required />
+                <div class="invalid-feedback">يرجى إدخال أقصى طلب</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">أقصى رسوم توصيل ($)</label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="maxCashOrder"
+                  [(ngModel)]="maxDeliveryFee" required />
+                <div class="invalid-feedback">يرجى إدخال أقصى رسوم توصيل</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">زيادة رسوم توصيل (%)</label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0"
+                  name="increaseFeePercent" [(ngModel)]="increaseFeePercent" required />
+                <div class="invalid-feedback">يرجى إدخال زيادة رسوم توصيل</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label"> رسوم توصيل لكل كيلومتر ($)</label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="feePerKm"
+                  [(ngModel)]="feePerKm" required />
+                <div class="invalid-feedback">يرجى إدخال أقصى رسوم توصيل</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label"> رسالة زيادة رسوم توصيل </label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0"
+                  name="increaseFeeMessage" [(ngModel)]="increaseFeeMessage" required />
+                <div class="invalid-feedback">يرجى إدخال رسالة زيادة رسوم توصيل</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="btns mt-2">
+              <div class="row justify-content-end">
+                <button class="btn btn-rest" (click)="resetDeliveryFeesForm()">إعادة تعيين</button>
+                <button class="btn btn-save">حفظ المعلومات</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="page-title mt-4">
+        <h3 class="text-center">
+          إعدادات الحوافز لرجال التوصيل
+        </h3>
+        <h3 class="text-center">حفز رجال التوصيل لتحقيق أهداف الدخل اليومية وقدم حوافز إضافية لتشجيعهم على زيادة
+          التسليمات.</h3>
+      </div>
+      <div class="cardParentsetting mt-1">
+        <div class="row border-bottoms-red">
+          <div class="page-title">
+            <h3 class="m-0">
+              إعدادات الحوافز
+            </h3>
+          </div>
+        </div>
+        @if (!showIncentiveForm) {
+        <form action="" class="fees">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">هدف الدخل اليومي $</label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0"
+                  name="dailyIncomeTarget" [(ngModel)]="dailyIncomeTarget" required />
+                <div class="invalid-feedback">يرجى إدخال هدف الدخل اليومي </div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">الحافز لإتمام الهدف $ </label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="incentiveAmount"
+                  [(ngModel)]="incentiveAmount" required />
+                <div class="invalid-feedback">يرجى إدخال الحافز لإتمام الهدف $</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="btns mt-2">
+              <div class="row justify-content-end">
+                <button class="btn btn-rest" (click)="resetIncentiveForm()">إعادة تعيين</button>
+                <button class="btn btn-save">حفظ المعلومات</button>
+              </div>
+            </div>
+          </div>
+        </form>
+        }@else {
+        <div class="add-incentive d-flex justify-content-end p-4">
+          <button (click)="toggleIncentiveForm()" class="btn btn-add">إضافة حافز جديد +</button>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

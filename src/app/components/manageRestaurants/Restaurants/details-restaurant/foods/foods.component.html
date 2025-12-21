@@ -1,0 +1,229 @@
+<div class="orders mt-3 mb-3">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="row">
+          <div class="page-title">
+            <h3>
+              <span class="icon">
+                <i class="fa-solid fa-receipt fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+              </span>{{ activeFilter }}
+              <span class="number">15</span>
+            </h3>
+          </div>
+        </div>
+        <!-- Filter Buttons -->
+        <div class="row-cols-1 row-cols-md-5 row-cols-lg-5 d-flex justify-content-center">
+          @for(filter of filters; track filter) {
+          <button class="btn-filter mt-1 active" [class.active]="filter === activeFilter" (click)="setFilter(filter)">{{
+            filter }}</button>|
+          }
+        </div>
+
+
+        <!-- Table -->
+        <div class="cardParent mt-3">
+          <div class="row justify-content-end border-bottoms">
+            <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث عن طلبك....."
+              name="productName" />
+            <div class="coulm mt-2">
+              <button class="btn"><i class="fa-solid fa-download"></i>تصدير<i
+                  class="fa-solid fa-caret-down"></i></button>
+            </div>
+            <div class="coulm btns-add mt-2">
+              <button (click)="addFood()" type="button" class="btn btn-add"> + Add
+                New Food
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive custom-table">
+              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+                <thead>
+                  <tr>
+                    <th>م</th>
+                    <th>الاسم</th>
+                    <th>الفئة</th>
+                    <th>السعر</th>
+                    <th>حالة الطلب</th>
+                    <th>الاجراءات</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>1</td>
+                    <td>كباب</td>
+                    <td>احمد علي - القاهرة</td>
+                    <td>1500 جنية</td>
+                    <td class="text-center">
+                      <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+                      </div>
+                    </td>
+                    <td class="text-center">
+                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
