@@ -44,59 +44,76 @@
           <div class="logo">
             <div class="page-title">
               <h3>
-                <span class="icon">
-                  <i class="fas fa-image"></i>
-                </span>
+                <span class="icon"><i class="fas fa-image"></i></span>
                 شعار المطعم وغطاءاته
               </h3>
             </div>
+
             <div class="row">
+              <!-- الشعار -->
               <div class="col-md-6">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h6>الشعار</h6>
+                <h6 class="mb-3">الشعار (نسبة 1:1)</h6>
+                <div class="upload-area text-center p-4 border rounded">
+                  <!-- معاينة الشعار -->
+                  <div *ngIf="LogoPreview" class="position-relative d-inline-block mb-3">
+                    <img [src]="LogoPreview" class="img-fluid rounded" style="max-height: 200px; max-width: 200px;" />
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                      (click)="removeImage('logo')">
+                      <i class="fas fa-times"></i>
+                    </button>
                   </div>
-                  <div class="col-12">
-                    <div class="form-section">
-                      <label class="upload-label">
-                        <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
-                        <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
-                          accept=".jpg,.png,.jpeg,.gif" />
-                      </label>
-                      <div class="upload-details">
-                        <p>صيغة الصورة</p>
-                        <p>jpg, png, jpeg, gif</p>
-                        <p>حجم الصورة</p>
-                        <p>الحد الأقصى: 2 ميجابايت</p>
-                        <p>نسبة الصورة - 1:1</p>
-                      </div>
-                      <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
+
+                  <!-- النصوص الإرشادية لو مفيش صورة -->
+                  <div *ngIf="!LogoPreview">
+                    <label class="d-block" style="cursor: pointer;">
+                      <span class="upload-icon"><i class="fa-solid fa-arrow-up-from-bracket fa-2x"></i></span>
+                      <p class="mt-2">انقر لرفع الشعار</p>
+                      <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                        accept=".jpg,.jpeg,.png,.gif,.jfif" style="display: none;" />
+                    </label>
+                    <div class="text-start mt-3 small">
+                      <p><strong>صيغة الصورة:</strong> jpg, png, jpeg, gif, jfif</p>
+                      <p><strong>حجم الصورة:</strong> الحد الأقصى 2 ميجابايت</p>
+                      <p><strong>نسبة الصورة:</strong> 1:1 (مربعة)</p>
                     </div>
                   </div>
                 </div>
+                <div class="text-danger text-center mt-3 fw-bold" *ngIf="logoError">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  {{ logoError }}
+                </div>
               </div>
+
+              <!-- الغلاف -->
               <div class="col-md-6">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h6>غلاف المطعم</h6>
+                <h6 class="mb-3">غلاف المطعم (نسبة 2:1)</h6>
+                <div class="upload-area text-center p-4 border rounded">
+                  <div *ngIf="RestaurantCoverPreview" class="position-relative d-inline-block mb-3">
+                    <img [src]="RestaurantCoverPreview" class="img-fluid rounded"
+                      style="max-height: 200px; max-width: 200px;" />
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+                      (click)="removeImage('cover')">
+                      <i class="fas fa-times"></i>
+                    </button>
                   </div>
-                  <div class="col-12">
-                    <div class="form-section">
-                      <label class="upload-label">
-                        <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
-                        <input type="file" id="coverUpload" (change)="onFileChange($event, 'cover')"
-                          accept=".jpg,.png,.jpeg,.gif" />
-                      </label>
-                      <div class="upload-details">
-                        <p>Image format</p>
-                        <p>jpg, png, jpeg, gif</p>
-                        <p>Image Size</p>
-                        <p>maximum size 2 MB</p>
-                        <p>Image Ratio - 2:1</p>
-                      </div>
-                      <div class="invalid-feedback" *ngIf="coverError">{{ coverError }}</div>
+
+                  <div *ngIf="!RestaurantCoverPreview">
+                    <label class="d-block" style="cursor: pointer;">
+                      <span class="upload-icon"><i class="fa-solid fa-arrow-up-from-bracket fa-2x"></i></span>
+                      <p class="mt-2">انقر لرفع الغلاف</p>
+                      <input type="file" id="coverUpload" (change)="onFileChange($event, 'cover')"
+                        accept=".jpg,.jpeg,.png,.gif,.jfif" style="display: none;" />
+                    </label>
+                    <div class="text-start mt-3 small">
+                      <p><strong>صيغة الصورة:</strong> jpg, png, jpeg, gif, jfif</p>
+                      <p><strong>حجم الصورة:</strong> الحد الأقصى 2 ميجابايت</p>
+                      <p><strong>نسبة الصورة:</strong> 2:1</p>
                     </div>
                   </div>
+                </div>
+                <div class="text-danger text-center mt-3 fw-bold" *ngIf="coverError">
+                  <i class="fas fa-exclamation-triangle me-2"></i>
+                  {{ coverError }}
                 </div>
               </div>
             </div>

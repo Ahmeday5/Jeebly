@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser'; // إضافة مهمة
 
 @Component({
   selector: 'app-type-food',
@@ -10,13 +11,18 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './type-food.component.scss',
 })
 export class TypeFoodComponent {
-  selectedLanguage: string = 'default'; //تتبع اللغة المختارة
-  selectedLanguageLabel: string = 'افتراضي';
+  selectedLanguage: string = 'default'; // ابدأ بعربي أحسن
+  selectedLanguageLabel: string = 'Arabic - العربية (AR)';
   selectedLanguageePlaceholder: string = 'يرجي ادخال لغة عربية';
-  logoError: string | null = null; // رسالة خطأ للشعار
-  coverError: string | null = null; // رسالة خطأ لغلاف المطعم
 
-  // دالة لتحديث اللغة المختارة
+  kitchenName: string = '';
+  imageEat: File | null = null;
+  imageEatPreview: SafeUrl | null = null; // لعرض معاينة الصورة بأمان
+
+  logoError: string | null = null;
+
+  constructor(private sanitizer: DomSanitizer) {} // إضافة DomSanitizer
+
   selectLanguage(language: string) {
     this.selectedLanguage = language;
     this.selectedLanguageLabel = this.getLanguageLabel(language);
@@ -39,59 +45,79 @@ export class TypeFoodComponent {
   private getLanguagePlaceholder(language: string): string {
     switch (language) {
       case 'default':
+      case 'arabic':
         return 'يرجي ادخال لغة عربية';
       case 'english':
         return 'يرجي ادخال لغة انجليزية';
-      case 'arabic':
-        return 'يرجي ادخال لغة عربية';
       default:
-        return 'افتراضي';
+        return 'يرجي ادخال لغة عربية';
     }
   }
 
-  // التحقق من الملفات المرفوعة (شعار أو غلاف)
-  onFileChange(event: Event, type: 'logo' | 'cover'): void {
+  onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const maxSizeMB = 2 * 1024 * 1024; // 2 ميجابايت بالبايت
-      const validFormats = ['image/jpeg', 'image/png', 'image/gif'];
-
-      // التحقق من صيغة الملف
-      if (!validFormats.includes(file.type)) {
-        this.setError(type, 'يرجى رفع صورة بصيغة jpg, png, أو gif فقط');
-        return;
-      }
-
-      // التحقق من الحجم
-      if (file.size > maxSizeMB) {
-        this.setError(type, 'حجم الملف يجب ألا يتجاوز 2 ميجابايت');
-        return;
-      }
-
-      // التحقق من نسبة العرض إلى الارتفاع (2:1)
-      const img = new Image();
-      img.onload = () => {
-        const aspectRatio = img.width / img.height;
-        if (aspectRatio !== 2) {
-          this.setError(type, 'نسبة العرض إلى الارتفاع يجب أن تكون 2:1');
-          return;
-        }
-        this.clearError(type); // مسح الخطأ إذا كان كل شيء صحيح
-      };
-      img.src = URL.createObjectURL(file);
+    if (!input.files || input.files.length === 0) {
+      this.clearImage();
+      return;
     }
+
+    const file = input.files[0];
+    const maxSizeMB = 2 * 1024 * 1024; // 2 ميجا
+    const validFormats = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+
+    // تحقق الصيغة
+    if (!validFormats.includes(file.type)) {
+      this.logoError = 'يرجى رفع صورة بصيغة jpg, png, أو gif فقط';
+      this.clearImage();
+      return;
+    }
+
+    // تحقق الحجم
+    if (file.size > maxSizeMB) {
+      this.logoError = 'حجم الملف يجب ألا يتجاوز 2 ميجابايت';
+      this.clearImage();
+      return;
+    }
+
+    // تحقق نسبة 1:1
+    const img = new Image();
+    img.onload = () => {
+      if (img.width !== img.height) {
+        this.logoError = 'نسبة الصورة يجب أن تكون 1:1 (مربعة)';
+        this.clearImage();
+        return;
+      }
+
+      // كل حاجة تمام → عرض الصورة
+      this.imageEat = file;
+      this.imageEatPreview = this.sanitizer.bypassSecurityTrustUrl(
+        URL.createObjectURL(file)
+      );
+      this.logoError = null;
+    };
+    img.onerror = () => {
+      this.logoError = 'فشل تحميل الصورة';
+      this.clearImage();
+    };
+    img.src = URL.createObjectURL(file);
   }
 
-  // تعيين رسالة الخطأ
-  private setError(type: 'logo' | 'cover', message: string): void {
-    if (type === 'logo') this.logoError = message;
-    else this.coverError = message;
+  clearImage() {
+    this.imageEat = null;
+    this.imageEatPreview = null;
   }
 
-  // مسح رسالة الخطأ
-  private clearError(type: 'logo' | 'cover'): void {
-    if (type === 'logo') this.logoError = null;
-    else this.coverError = null;
+  resetAddKitchenForm() {
+    this.kitchenName = '';
+    this.clearImage();
+    // لمسح الـ file input فعليًا
+    const fileInput = document.getElementById('logoUpload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+    this.logoError = null;
+  }
+
+  resetFileInput() {
+    const fileInput = document.getElementById('logoUpload') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   }
 }

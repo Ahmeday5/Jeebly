@@ -19,7 +19,9 @@ export class AddListSubComponent {
   mainCategories: MainCategory[] = [];
   subCategories: SubCategory[] = [];
   selectedCategoryId: number | null = null;
+  selectedMainCategoryForAdd: number | null = null;
   loading: boolean = false;
+  loadingSub: boolean = false;
   noSubCategoriesMessage: string | null = null;
 
   constructor(private apiService: ApiService, private router: Router) {}
@@ -34,6 +36,11 @@ export class AddListSubComponent {
       next: (data) => {
         this.mainCategories = data;
         this.loading = false;
+        if (this.mainCategories.length > 0) {
+          this.selectedCategoryId = this.mainCategories[0].id;
+          this.selectedMainCategoryForAdd = this.mainCategories[0].id; // للفورم كمان
+          this.onMainCategoryChange(); // جلب السب كاتيجوري مباشرة
+        }
       },
       error: () => {
         this.noSubCategoriesMessage = 'فشل تحميل الفئات الرئيسية';
@@ -49,7 +56,7 @@ export class AddListSubComponent {
       return;
     }
 
-    this.loading = true;
+    this.loadingSub = true;
     this.noSubCategoriesMessage = null;
 
     this.apiService
@@ -60,11 +67,11 @@ export class AddListSubComponent {
           if (this.subCategories.length === 0) {
             this.noSubCategoriesMessage = 'لا توجد فئات فرعية لهذه الفئة';
           }
-          this.loading = false;
+          this.loadingSub = false;
         },
         error: () => {
           this.noSubCategoriesMessage = 'فشل جلب الفئات الفرعية';
-          this.loading = false;
+          this.loadingSub = false;
         },
       });
   }

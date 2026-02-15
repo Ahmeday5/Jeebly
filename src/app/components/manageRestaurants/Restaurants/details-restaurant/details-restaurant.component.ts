@@ -9,6 +9,7 @@ import { Router, RouterModule, RouterOutlet } from '@angular/router';
   templateUrl: './details-restaurant.component.html',
   styleUrl: './details-restaurant.component.scss',
 })
+
 export class DetailsRestaurantComponent {
   constructor(private router: Router) {}
 }

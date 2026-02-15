@@ -172,7 +172,7 @@ export const routes: Routes = [
     title: 'إعداد منطقة تجارية',
   },
   {
-    path: 'edit-setting-area',
+    path: 'edit-setting-area/:id',
     component: EditSettingAreaComponent,
     title: 'تعديل المناطق',
   },
