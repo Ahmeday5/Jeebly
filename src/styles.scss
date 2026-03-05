@@ -7,6 +7,11 @@
   --main-transition: 0.3s;
 }
 
+* {
+  padding: 0;
+  margin: 0;
+}
+
 html {
   /* عشان لم ادوس علي حاجة يروح للمكان بتاعها*/
   scroll-behavior: smooth;
@@ -30,8 +35,7 @@ body {
 }
 
 .container-fluid {
-  padding-right: 15px !important;
-  padding-left: 15px !important;
+  padding: 20px !important;
 }
 
 .btn:focus {

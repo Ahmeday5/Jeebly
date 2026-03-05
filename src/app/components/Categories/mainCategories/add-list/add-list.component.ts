@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { ApiService } from '../../../../services/api.service';
+import { ApiService } from '../../../../core/services/api.service';
 
 @Component({
   selector: 'app-add-list',

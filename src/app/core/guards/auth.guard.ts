@@ -13,7 +13,7 @@ export const canActivate: CanActivateFn = (route, state) => {
         return router.createUrlTree(['/login']);
       }
       return true;
-    })
+    }),
   );
 };
 
@@ -28,6 +28,26 @@ export const canActivateRole: CanActivateFn = (route, state) => {
         return router.createUrlTree(['/dashboard']);
       }
       return true;
-    })
+    }),
+  );
+};
+
+export const authGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  return auth.isLoggedIn$.pipe(
+    map((isLogged) =>
+      isLogged ? true : router.createUrlTree(['/auth/login']),
+    ),
+  );
+};
+
+export const loginGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  return auth.isLoggedIn$.pipe(
+    map((isLogged) => (isLogged ? router.createUrlTree(['/dashboard']) : true)),
   );
 };

@@ -44,7 +44,7 @@ export class ApiService {
           status: error.status,
           message: errorMessage,
         }));
-      })
+      }),
     );
   }
 
@@ -52,7 +52,7 @@ export class ApiService {
 
   getOrdersFiltered(
     status: string = '',
-    code: string = ''
+    code: string = '',
   ): Observable<Order[]> {
     let params = new HttpParams();
 
@@ -90,7 +90,7 @@ export class ApiService {
       catchError((error: HttpErrorResponse) => {
         console.error('خطأ في جلب الطلبات:', error);
         return throwError(() => error);
-      })
+      }),
     );
   }
 
@@ -106,18 +106,18 @@ export class ApiService {
     return this.http
       .get<MainCategoriesResponse>(
         `${this.baseUrl}/api/Categories/GetAllCategories`,
-        { headers }
+        { headers },
       )
       .pipe(
         catchError((error) => {
           console.error('خطأ في جلب كل الفئات:', error);
           return throwError(() => new Error('فشل جلب كل الفئات'));
-        })
+        }),
       );
   }
 
   getSubCategoriesByCategoryId(
-    categoryId: number
+    categoryId: number,
   ): Observable<SubCategoriesResponse> {
     const token = localStorage.getItem('token');
     let headers = {};
@@ -128,16 +128,16 @@ export class ApiService {
     return this.http
       .get<SubCategoriesResponse>(
         `${this.baseUrl}/api/Categories/${categoryId}/subcategories`,
-        { headers }
+        { headers },
       )
       .pipe(
         catchError((error) => {
           console.error(
             `خطأ في جلب الفئات الفرعية للفئة ${categoryId}:`,
-            error
+            error,
           );
           return throwError(() => new Error('فشل جلب الفئات الفرعية'));
-        })
+        }),
       );
   }
 
@@ -185,7 +185,7 @@ export class ApiService {
             status: error.status,
             message: errorMessage,
           }));
-        })
+        }),
       );
   }
 
@@ -205,7 +205,7 @@ export class ApiService {
       catchError((err) => {
         console.error('Error fetching All Areas:', err);
         return of([]); // رجع array فاضي في حالة خطأ
-      })
+      }),
     );
   }
 
@@ -223,7 +223,7 @@ export class ApiService {
       catchError((err) => {
         console.error('Error fetching Area by id:', err);
         return of({ data: {} });
-      })
+      }),
     );
   }
 
@@ -236,7 +236,7 @@ export class ApiService {
       latitude: number;
       longitude: number;
       point3: number;
-    }
+    },
   ): Observable<{ success: boolean; message: string }> {
     const token = localStorage.getItem('token');
     const headers = new HttpHeaders({
@@ -262,7 +262,7 @@ export class ApiService {
             msg = error.error.trim();
           }
           return of({ success: false, message: msg });
-        })
+        }),
       );
   }
 }

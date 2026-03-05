@@ -8,12 +8,12 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { ApiService } from '../../../services/api.service';
+import { ApiService } from '../../../core/services/api.service';
 import { debounceTime, distinctUntilChanged, firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { HttpParams } from '@angular/common/http';
-import { allArea } from '../../../types/area.type';
+import { allArea } from '../../../core/types/area.type';
 @Component({
   selector: 'app-setting-areas',
   standalone: true,

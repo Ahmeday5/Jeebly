@@ -6,7 +6,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../core/services/auth.service';
 import { CommonModule } from '@angular/common'; // إضافة CommonModule
 import {
   debounceTime,
@@ -15,6 +15,8 @@ import {
   map,
   Subscription,
 } from 'rxjs';
+import { SidebarService } from '../../core/services/sidebar.service';
+import { ApiService } from '../../core/services/api.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -24,8 +26,9 @@ import {
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent implements OnInit, AfterViewInit {
-  // حالة الـ Sidebar (مفتوحة أو مغلقة)
-  isSidebarOpen: boolean = window.innerWidth > 992;
+ isSidebarOpen: boolean = false;
+  isCollapsed: boolean = false;
+  isMobile = false;
 
   menuItems: any[] = [];
   filteredMenuItems: any[] = [];
@@ -33,29 +36,91 @@ export class SidebarComponent implements OnInit, AfterViewInit {
   @ViewChild('searchInput', { static: true })
   searchInputRef!: ElementRef<HTMLInputElement>;
 
-  // حقن Router و AuthService
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private sidebarService: SidebarService,
+    private authService: AuthService,
+    private apiService: ApiService,
+  ) {}
 
-  // التهيئة عند تحميل الكومبوننت
   ngOnInit(): void {
     this.updateMenuItems();
-    // في البداية العرض يعرض القائمة كلها
-    this.filteredMenuItems = JSON.parse(JSON.stringify(this.menuItems));
-  }
+    this.updateSidebarState();
 
-  // بعد تحميل العرض
-  ngAfterViewInit(): void {
-    window.addEventListener('resize', () => {
-      this.isSidebarOpen = window.innerWidth > 992;
+    // استرجاع حالة الـ submenu
+    this.menuItems.forEach((section) => {
+      section.items?.forEach((item: any) => {
+        if (item.submenu && item.label) {
+          const saved = localStorage.getItem(`submenu_${item.label}`);
+          if (saved !== null) {
+            item.isOpen = saved === 'true';
+          }
+        }
+      });
     });
 
-    // اشتراك على أحداث الإدخال مع debounce لتقليل النداءات أثناء الكتابة
+    // ⚠️ clone بعد ما تطبق الحالات
+    this.filteredMenuItems = JSON.parse(JSON.stringify(this.menuItems));
+
+    const savedCollapsed = localStorage.getItem('sidebarCollapsed');
+    if (savedCollapsed) {
+      this.isCollapsed = savedCollapsed === 'true';
+    }
+  }
+
+  handleSpecialAction(subItem: any): void {
+    if (subItem.key === 'تسجيل الخروج') {
+      if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+        this.authService.logout();
+        this.router.navigate(['/login']);
+        this.sidebarService.close(); // إغلاق الـ sidebar لو موبايل
+      }
+    } /*else if (subItem.key === 'حذف الحساب') {
+      if (
+        confirm(
+          'هل أنت متأكد من حذف حسابك نهائيًا؟ هذا الإجراء لا يمكن التراجع عنه!',
+        )
+      ) {
+        this.deleteMyAccount();
+      }
+    }*/
+  }
+
+  /*private deleteMyAccount(): void {
+    this.apiService.deleteMyAccount().subscribe({
+      next: (response) => {
+        alert(response.message || 'تم حذف الحساب بنجاح');
+        this.authService.logout();
+        this.router.navigate(['/login']);
+        this.sidebarService.close(); // اختياري: إغلاق السايدبار
+      },
+      error: (err) => {
+        alert(err.message || 'فشل حذف الحساب، حاول مرة أخرى لاحقًا');
+      },
+    });
+  }*/
+
+  closeSidebar() {
+    this.sidebarService.close();
+  }
+
+  toggleCollapse(): void {
+    if (window.innerWidth >= 993) {
+      this.isCollapsed = !this.isCollapsed;
+      localStorage.setItem('sidebarCollapsed', this.isCollapsed.toString());
+      window.dispatchEvent(new Event('resize'));
+    }
+  }
+
+  ngAfterViewInit(): void {
+    window.addEventListener('resize', () => this.updateSidebarState());
+
     this.searchSub = fromEvent(this.searchInputRef.nativeElement, 'input')
       .pipe(
         map((e: any) => e.target.value as string),
         map((v) => v.trim()),
         debounceTime(200),
-        distinctUntilChanged()
+        distinctUntilChanged(),
       )
       .subscribe((query) => {
         this.applyFilter(query);
@@ -66,36 +131,34 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     if (this.searchSub) this.searchSub.unsubscribe();
   }
 
-  // فتح/قفل الـ Sidebar
-  toggleSidebar(): void {
-    this.isSidebarOpen = !this.isSidebarOpen;
+  private updateSidebarState(): void {
+    this.isMobile = window.innerWidth <= 992;
+
+    if (this.isMobile) {
+      this.isSidebarOpen = false;
+      this.isCollapsed = false;
+    } else {
+      this.isSidebarOpen = true;
+    }
   }
 
-  // التحقق إذا كان الرابط نشطًا
-  isActive(path: string): boolean {
-    return this.router.isActive(path, {
-      paths: 'subset',
-      queryParams: 'subset',
-      fragment: 'ignored',
-      matrixParams: 'ignored',
-    });
-  }
-
-  // دالة لفتح/إغلاق القائمة الفرعية
   toggleSubmenu(sectionIndex: number, itemIndex: number): void {
     const section = this.filteredMenuItems[sectionIndex];
-    if (!section || !section.items) return;
+    if (!section?.items) return;
+
     const item = section.items[itemIndex];
     if (!item) return;
+
     item.isOpen = !item.isOpen;
+
+    // حفظ حالة الفتح
+    if (item.label) {
+      localStorage.setItem(`submenu_${item.label}`, item.isOpen.toString());
+    }
   }
 
-  /***********************
-   * فلترة ذكية للـ menu *
-   ***********************/
   private applyFilter(query: string): void {
     if (!query) {
-      // لو البحث فاضي، رجع نسخة كاملة من الـ menu الأصلية (وأعد إغلاق القوائم الفرعية)
       this.filteredMenuItems = JSON.parse(JSON.stringify(this.menuItems));
       this.closeAllSubmenus(this.filteredMenuItems);
       return;
@@ -103,22 +166,17 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
     const q = query.toLowerCase();
 
-    // ننتج قائمة جديدة تحتوي فقط الأقسام/عناصر التي تطابق الاستعلام
     const result: any[] = [];
 
     for (const section of this.menuItems) {
       const clonedSection: any = { ...section };
-      // نحتاج نسخة مجمدة من items حتى لا نعدل المصدر الأصلي
       clonedSection.items = [];
 
-      // نتحقق من عنوان القسم نفسه (title) أولاً
       const titleMatches =
         section.title && section.title.toLowerCase().includes(q);
 
-      // لو العنوان يطابق، نعرض كل العناصر داخل هذا القسم
       if (titleMatches) {
         clonedSection.items = JSON.parse(JSON.stringify(section.items || []));
-        // نفتح كل العناصر التي تحتوي submenu افتراضياً لكي تظهر النتائج بوضوح
         if (clonedSection.items)
           clonedSection.items.forEach((it: any) => {
             if (it.submenu) it.isOpen = true;
@@ -127,19 +185,15 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         continue;
       }
 
-      // وإلا نفلتر العناصر داخل القسم
       if (section.items && section.items.length) {
         for (const item of section.items) {
           const itemLabel = (item.label || '').toLowerCase();
           let matchedItem: any = null;
 
-          // تطابق على اسم العنصر
           if (itemLabel.includes(q)) {
             matchedItem = JSON.parse(JSON.stringify(item));
-            // لو هو عنصر يحتوي submenu، نفتحها تلقائياً
             if (matchedItem.submenu) matchedItem.isOpen = true;
           } else if (item.submenu && item.submenu.length) {
-            // لو لم يطابق اسم العنصر، نبحث داخل الـ submenu
             const matchingSub: any[] = [];
             for (const sub of item.submenu) {
               const subKey = (sub.key || '').toLowerCase();
@@ -148,7 +202,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
               }
             }
             if (matchingSub.length) {
-              // نأخذ نسخة من العنصر ونضع فيها فقط الـ subitems المطابقة ونفتحه
               matchedItem = {
                 ...JSON.parse(JSON.stringify(item)),
                 submenu: matchingSub,
@@ -162,7 +215,6 @@ export class SidebarComponent implements OnInit, AfterViewInit {
           }
         }
 
-        // لو وجدنا أي عنصر متطابق داخل القسم نضيف القسم
         if (clonedSection.items.length) {
           result.push(clonedSection);
         }

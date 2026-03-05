@@ -13,4 +13,7 @@ export interface UserData {
   email: string;
   role: string;
   token: string | null;
+  userId?: string;
+  fullName?: string | null;
+  phone?: string | null;
 }

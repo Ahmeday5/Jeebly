@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { MainCategory, SubCategory } from '../../../../types/categories.type';
-import { ApiService } from '../../../../services/api.service';
+import { MainCategory, SubCategory } from '../../../../core/types/categories.type';
+import { ApiService } from '../../../../core/services/api.service';
 
 @Component({
   selector: 'app-add-list-sub',

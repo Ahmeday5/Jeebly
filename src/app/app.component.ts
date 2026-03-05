@@ -1,34 +1,13 @@
 import { Component } from '@angular/core';
-import { Router, RouterOutlet } from '@angular/router';
-import { AuthService } from './services/auth.service';
-import { Observable } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { CommonModule } from '@angular/common';
-import { SidebarComponent } from './layout/sidebar/sidebar.component';
-import { HeaderComponent } from './layout/header/header.component';
+import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, SidebarComponent, HeaderComponent],
+  imports: [RouterOutlet],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
   title = 'jeebly';
-  isLoggedIn$: Observable<boolean>;
-
-  constructor(private authService: AuthService, private router: Router) {
-    this.isLoggedIn$ = this.authService.isLoggedIn$;
-    this.checkAuth();
-  }
-
-  checkAuth(): void {
-    this.isLoggedIn$.pipe(take(1)).subscribe((isLoggedIn) => {
-      if (!isLoggedIn) {
-        this.authService.logout();
-        this.router.navigate(['']);
-      }
-    });
-  }
 }

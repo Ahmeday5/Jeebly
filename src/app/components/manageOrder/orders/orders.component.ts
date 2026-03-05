@@ -1,10 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../../services/api.service';
-import { Order } from '../../../types/orders.type'; // غيرنا OrdersResponse لـ Order فقط
+import { ApiService } from '../../../core/services/api.service';
+import { Order } from '../../../core/types/orders.type'; // غيرنا OrdersResponse لـ Order فقط
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { PaginationComponent } from '../../../layout/pagination/pagination.component';
+import { PaginationComponent } from '../../../shared/pagination/pagination.component';
 
 @Component({
   selector: 'app-orders',

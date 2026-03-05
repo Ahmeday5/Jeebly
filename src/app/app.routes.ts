@@ -1,345 +1,380 @@
-import { CanActivateFn, Router, Routes } from '@angular/router';
-import { AuthService } from './services/auth.service';
+import { CanActivateFn, Routes } from '@angular/router';
 import { inject } from '@angular/core';
-import { map } from 'rxjs';
-import { LoginComponent } from './components/login/login.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { OrdersComponent } from './components/manageOrder/orders/orders.component';
-import { SubscriptionRequestsComponent } from './components/manageOrder/subscription-requests/subscription-requests.component';
-import { DeliverySearchComponent } from './components/manageOrder/deliveryManagement/delivery-search/delivery-search.component';
-import { RequestsProgressComponent } from './components/manageOrder/deliveryManagement/requests-progress/requests-progress.component';
-import { OrderReturnsComponent } from './components/manageOrder/order-returns/order-returns.component';
-import { AddRestaurantComponent } from './components/manageRestaurants/Restaurants/add-restaurant/add-restaurant.component';
-import { ListRestaurantsComponent } from './components/manageRestaurants/Restaurants/list-restaurants/list-restaurants.component';
-import { NewJoinRequestComponent } from './components/manageRestaurants/Restaurants/new-join-request/new-join-request.component';
-import { SettingAreasComponent } from './components/manageRestaurants/setting-areas/setting-areas.component';
-import { SettAreaComponent } from './components/manageRestaurants/setting-areas/sett-area/sett-area.component';
-import { EditSettingAreaComponent } from './components/manageRestaurants/edit-setting-area/edit-setting-area.component';
-import { TypeFoodComponent } from './components/manageRestaurants/type-food/type-food.component';
-import { DetailsRestaurantComponent } from './components/manageRestaurants/Restaurants/details-restaurant/details-restaurant.component';
-import { TransactionsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/transactions/transactions.component';
-import { SettingsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/settings/settings.component';
-import { RatingsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/ratings/ratings.component';
-import { QRcodeComponent } from './components/manageRestaurants/Restaurants/details-restaurant/qrcode/qrcode.component';
-import { PaymentsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/payments/payments.component';
-import { OverviewComponent } from './components/manageRestaurants/Restaurants/details-restaurant/overview/overview.component';
-import { OrdersRestComponent } from './components/manageRestaurants/Restaurants/details-restaurant/orders-rest/orders-rest.component';
-import { MetaComponent } from './components/manageRestaurants/Restaurants/details-restaurant/meta/meta.component';
-import { FoodsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/foods/foods.component';
-import { AddFoodComponent } from './components/manageRestaurants/Restaurants/details-restaurant/foods/add-food/add-food.component';
-import { DiscountsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/discounts/discounts.component';
-import { ConversationsComponent } from './components/manageRestaurants/Restaurants/details-restaurant/conversations/conversations.component';
-import { BuisnessComponent } from './components/manageRestaurants/Restaurants/details-restaurant/buisness/buisness.component';
-import { EditRestaurantComponent } from './components/manageRestaurants/Restaurants/edit-restaurant/edit-restaurant.component';
-import { AddListComponent } from './components/Categories/mainCategories/add-list/add-list.component';
-import { UpdateCategoryComponent } from './components/Categories/mainCategories/update-category/update-category.component';
-import { AddListSubComponent } from './components/Categories/subCategories/add-list-sub/add-list-sub.component';
-import { UpdateSubCategoryComponent } from './components/Categories/subCategories/update-sub-category/update-sub-category.component';
-import { ListFoodComponent } from './components/Foods/list-food/list-food.component';
-import { EdtiFoodComponent } from './components/Foods/edti-food/edti-food.component';
-import { EvaluationFoodComponent } from './components/Foods/evaluation-food/evaluation-food.component';
-import { ListBasicCampaignComponent } from './components/Campaigns/list-basic-campaign/list-basic-campaign.component';
-import { AddBasicCampaignComponent } from './components/Campaigns/add-basic-campaign/add-basic-campaign.component';
-import { ListfoodCampaignComponent } from './components/Campaigns/listfood-campaign/listfood-campaign.component';
-import { AddfoodCampaignComponent } from './components/Campaigns/addfood-campaign/addfood-campaign.component';
-import { CouponsComponent } from './components/manageOffers/coupons/coupons.component';
-import { CashbackComponent } from './components/manageOffers/cashback/cashback.component';
-import { BannersComponent } from './components/manageOffers/banners/banners.component';
-import { PromotionalBannerComponent } from './components/manageOffers/promotional-banner/promotional-banner.component';
-import { NewAdComponent } from './components/manageOffers/advertisements/new-ad/new-ad.component';
-import { AdvertisementRequestsComponent } from './components/manageOffers/advertisements/advertisement-requests/advertisement-requests.component';
-import { NotificationsComponent } from './components/manageOffers/notifications/notifications.component';
-import { CustomersComponent } from './components/manageCustomer/customers/customers.component';
-import { BonusComponent } from './components/manageCustomer/Wallet/bonus/bonus.component';
-import { CustomerPointsReportComponent } from './components/manageCustomer/LoyaltyPoint/customer-points-report/customer-points-report.component';
-import { ListOfSharedEmailsComponent } from './components/manageCustomer/list-of-shared-emails/list-of-shared-emails.component';
-import { SettingUpCarTypesComponent } from './components/manageDelivery/setting-up-car-types/setting-up-car-types.component';
-import { ShiftSettingComponent } from './components/manageDelivery/shift-setting/shift-setting.component';
-import { DeliveryRequestNewMemberComponent } from './components/manageDelivery/delivery/delivery-request-new-member/delivery-request-new-member.component';
+import { map } from 'rxjs/operators';
+import { AuthService } from './core/services/auth.service'; // تأكد من المسار الصحيح
+import { AuthLayoutComponent } from './core/layouts/auth-layout/auth-layout.component';
+import { MainLayoutComponent } from './core/layouts/main-layout/main-layout.component';
+import { authGuard, loginGuard } from './core/guards/auth.guard';
 
-export const canActivate: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-
-  return authService.isLoggedIn$.pipe(
-    map((isLoggedIn) => {
-      if (!isLoggedIn) {
-        return router.createUrlTree(['/login']);
-      }
-      return true;
-    })
-  );
-};
-
-export const canActivateRole: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
-  const allowedRoles = (route.data['allowedRoles'] as string[]) || [];
-
-  return authService.role$.pipe(
-    map((role) => {
-      if (!role || !allowedRoles.some((r) => role.includes(r))) {
-        return router.createUrlTree(['/dashboard']);
-      }
-      return true;
-    })
-  );
-};
-
+// ────────────────────────────────────────────────
+// الروتات الرئيسية
 export const routes: Routes = [
+  // ─── Auth Routes ──────────────────────────────────────
   {
-    path: '',
-    component: LoginComponent,
-    canActivate: [
-      () => {
-        const authService = inject(AuthService);
-        const router = inject(Router);
-        return authService.isLoggedIn$.pipe(
-          map((isLoggedIn) => {
-            if (isLoggedIn) {
-              return router.createUrlTree(['/dashboard']);
-            }
-            return true;
-          })
-        );
-      },
-    ],
-  },
-  {
-    path: '',
-    component: LoginComponent,
-    canActivate: [canActivate],
-    title: 'تسجيل الدخول',
-  },
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-    title: 'اللوحة الرئيسية',
-  },
-  {
-    path: 'Orders',
-    component: OrdersComponent,
-    title: 'الطلبيات',
-  },
-  {
-    path: 'subscription-requests',
-    component: SubscriptionRequestsComponent,
-    title: 'طلبيات الاشتراكات',
-  },
-  {
-    path: 'delivery-search',
-    component: DeliverySearchComponent,
-    title: 'بحث عن دليفري',
-  },
-  {
-    path: 'request-progress',
-    component: RequestsProgressComponent,
-    title: 'طلبات شغالة',
-  },
-  {
-    path: 'order-return',
-    component: OrderReturnsComponent,
-    title: 'مرتجعات',
-  },
-  {
-    path: 'add-restaurant',
-    component: AddRestaurantComponent,
-    title: 'إضافة مطعم',
-  },
-  {
-    path: 'list-restaurants',
-    component: ListRestaurantsComponent,
-    title: 'قائمة المطاعم',
-  },
-  {
-    path: 'edit-restaurant',
-    component: EditRestaurantComponent,
-    title: 'تحديث مطعم',
-  },
-  {
-    path: 'newJoin-Request',
-    component: NewJoinRequestComponent,
-    title: 'طلب انضمام جديد',
-  },
-  {
-    path: 'setting-areas',
-    component: SettingAreasComponent,
-    title: 'إعداد المناطق',
-  },
-  {
-    path: 'sett-area',
-    component: SettAreaComponent,
-    title: 'إعداد منطقة تجارية',
-  },
-  {
-    path: 'edit-setting-area/:id',
-    component: EditSettingAreaComponent,
-    title: 'تعديل المناطق',
-  },
-  {
-    path: 'type-food',
-    component: TypeFoodComponent,
-    title: 'نوع الاكل',
-  },
-  {
-    path: 'details-restaurant',
-    component: DetailsRestaurantComponent,
+    path: 'auth',
+    component: AuthLayoutComponent,
     children: [
-      { path: 'overview', component: OverviewComponent, title: 'نظرة عامة' },
-      { path: 'orders', component: OrdersRestComponent, title: 'الطلبات' },
       {
-        path: 'foods',
-        component: FoodsComponent,
-        title: 'الأكلات',
+        path: 'login',
+        canActivate: [loginGuard],
+        loadComponent: () =>
+          import('./components/login/login.component').then(m => m.LoginComponent),
+        title: 'تسجيل الدخول',
       },
-      { path: 'ratings', component: RatingsComponent, title: 'التقييمات' },
-      { path: 'discounts', component: DiscountsComponent, title: 'الخصومات' },
-      { path: 'Meta', component: MetaComponent, title: 'Meta' },
-      { path: 'Payments', component: PaymentsComponent, title: 'المدفوعات' },
-      { path: 'QRcode', component: QRcodeComponent, title: 'QRcode' },
-      { path: 'Settings', component: SettingsComponent, title: 'الاعدادات' },
-      {
-        path: 'Transactions',
-        component: TransactionsComponent,
-        title: 'المعاملات',
-      },
-      {
-        path: 'Conversations',
-        component: ConversationsComponent,
-        title: 'المحادثات',
-      },
-      { path: 'Buisness', component: BuisnessComponent, title: 'Buisness' },
-      { path: '', redirectTo: 'overview', pathMatch: 'full' },
+
+      // redirect إذا دخل /auth مباشرة
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
     ],
   },
+
+  // ─── Main Protected Routes ─────────────────────────────
   {
-    path: 'add-food',
-    component: AddFoodComponent,
-    title: 'إضافة طعام',
+    path: '',
+    component: MainLayoutComponent,
+    canActivate: [authGuard],
+    children: [
+      // الصفحة الافتراضية بعد اللوجن
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+
+      {
+        path: 'dashboard',
+        loadComponent: () =>
+          import('./components/dashboard/dashboard.component').then(m => m.DashboardComponent),
+        title: 'اللوحة الرئيسية',
+      },
+
+      // ─── Orders & Delivery ──────────────────────────────
+      {
+        path: 'Orders',
+        loadComponent: () =>
+          import('./components/manageOrder/orders/orders.component').then(m => m.OrdersComponent),
+        title: 'الطلبيات',
+      },
+      {
+        path: 'subscription-requests',
+        loadComponent: () =>
+          import('./components/manageOrder/subscription-requests/subscription-requests.component').then(m => m.SubscriptionRequestsComponent),
+        title: 'طلبيات الاشتراكات',
+      },
+      {
+        path: 'delivery-search',
+        loadComponent: () =>
+          import('./components/manageOrder/deliveryManagement/delivery-search/delivery-search.component').then(m => m.DeliverySearchComponent),
+        title: 'بحث عن دليفري',
+      },
+      {
+        path: 'request-progress',
+        loadComponent: () =>
+          import('./components/manageOrder/deliveryManagement/requests-progress/requests-progress.component').then(m => m.RequestsProgressComponent),
+        title: 'طلبات شغالة',
+      },
+      {
+        path: 'order-return',
+        loadComponent: () =>
+          import('./components/manageOrder/order-returns/order-returns.component').then(m => m.OrderReturnsComponent),
+        title: 'مرتجعات',
+      },
+
+      // ─── Restaurants ─────────────────────────────────────
+      {
+        path: 'add-restaurant',
+        loadComponent: () =>
+          import('./components/manageRestaurants/Restaurants/add-restaurant/add-restaurant.component').then(m => m.AddRestaurantComponent),
+        title: 'إضافة مطعم',
+      },
+      {
+        path: 'list-restaurants',
+        loadComponent: () =>
+          import('./components/manageRestaurants/Restaurants/list-restaurants/list-restaurants.component').then(m => m.ListRestaurantsComponent),
+        title: 'قائمة المطاعم',
+      },
+      {
+        path: 'edit-restaurant',
+        loadComponent: () =>
+          import('./components/manageRestaurants/Restaurants/edit-restaurant/edit-restaurant.component').then(m => m.EditRestaurantComponent),
+        title: 'تحديث مطعم',
+      },
+      {
+        path: 'newJoin-Request',
+        loadComponent: () =>
+          import('./components/manageRestaurants/Restaurants/new-join-request/new-join-request.component').then(m => m.NewJoinRequestComponent),
+        title: 'طلب انضمام جديد',
+      },
+
+      // ─── Areas ───────────────────────────────────────────
+      {
+        path: 'setting-areas',
+        loadComponent: () =>
+          import('./components/manageRestaurants/setting-areas/setting-areas.component').then(m => m.SettingAreasComponent),
+        title: 'إعداد المناطق',
+      },
+      {
+        path: 'sett-area',
+        loadComponent: () =>
+          import('./components/manageRestaurants/setting-areas/sett-area/sett-area.component').then(m => m.SettAreaComponent),
+        title: 'إعداد منطقة تجارية',
+      },
+      {
+        path: 'edit-setting-area/:id',
+        loadComponent: () =>
+          import('./components/manageRestaurants/edit-setting-area/edit-setting-area.component').then(m => m.EditSettingAreaComponent),
+        title: 'تعديل المناطق',
+      },
+
+      {
+        path: 'type-food',
+        loadComponent: () =>
+          import('./components/manageRestaurants/type-food/type-food.component').then(m => m.TypeFoodComponent),
+        title: 'نوع الاكل',
+      },
+
+      // ─── Restaurant Details (nested routes) ──────────────
+      {
+        path: 'details-restaurant',
+        loadComponent: () =>
+          import('./components/manageRestaurants/Restaurants/details-restaurant/details-restaurant.component').then(m => m.DetailsRestaurantComponent),
+        children: [
+          { path: '', redirectTo: 'overview', pathMatch: 'full' },
+          {
+            path: 'overview',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/overview/overview.component').then(m => m.OverviewComponent),
+            title: 'نظرة عامة',
+          },
+          {
+            path: 'orders',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/orders-rest/orders-rest.component').then(m => m.OrdersRestComponent),
+            title: 'الطلبات',
+          },
+          {
+            path: 'foods',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/foods/foods.component').then(m => m.FoodsComponent),
+            title: 'الأكلات',
+          },
+          {
+            path: 'ratings',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/ratings/ratings.component').then(m => m.RatingsComponent),
+            title: 'التقييمات',
+          },
+          {
+            path: 'discounts',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/discounts/discounts.component').then(m => m.DiscountsComponent),
+            title: 'الخصومات',
+          },
+          {
+            path: 'Meta',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/meta/meta.component').then(m => m.MetaComponent),
+            title: 'Meta',
+          },
+          {
+            path: 'Payments',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/payments/payments.component').then(m => m.PaymentsComponent),
+            title: 'المدفوعات',
+          },
+          {
+            path: 'QRcode',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/qrcode/qrcode.component').then(m => m.QRcodeComponent),
+            title: 'QRcode',
+          },
+          {
+            path: 'Settings',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/settings/settings.component').then(m => m.SettingsComponent),
+            title: 'الاعدادات',
+          },
+          {
+            path: 'Transactions',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/transactions/transactions.component').then(m => m.TransactionsComponent),
+            title: 'المعاملات',
+          },
+          {
+            path: 'Conversations',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/conversations/conversations.component').then(m => m.ConversationsComponent),
+            title: 'المحادثات',
+          },
+          {
+            path: 'Buisness',
+            loadComponent: () => import('./components/manageRestaurants/Restaurants/details-restaurant/buisness/buisness.component').then(m => m.BuisnessComponent),
+            title: 'Buisness',
+          },
+        ],
+      },
+
+      {
+        path: 'add-food',
+        loadComponent: () =>
+          import('./components/manageRestaurants/Restaurants/details-restaurant/foods/add-food/add-food.component').then(m => m.AddFoodComponent),
+        title: 'إضافة طعام',
+      },
+
+      // ─── Categories ──────────────────────────────────────
+      {
+        path: 'add-list-category',
+        loadComponent: () =>
+          import('./components/Categories/mainCategories/add-list/add-list.component').then(m => m.AddListComponent),
+        title: 'قائمة الفئات',
+      },
+      {
+        path: 'update-category',
+        loadComponent: () =>
+          import('./components/Categories/mainCategories/update-category/update-category.component').then(m => m.UpdateCategoryComponent),
+        title: 'تحديث فئة',
+      },
+      {
+        path: 'add-list-subcategory',
+        loadComponent: () =>
+          import('./components/Categories/subCategories/add-list-sub/add-list-sub.component').then(m => m.AddListSubComponent),
+        title: 'قائمة الفئات الفرعية',
+      },
+      {
+        path: 'update-subcategory',
+        loadComponent: () =>
+          import('./components/Categories/subCategories/update-sub-category/update-sub-category.component').then(m => m.UpdateSubCategoryComponent),
+        title: 'تحديث فئة فرعية',
+      },
+
+      // ─── Foods ───────────────────────────────────────────
+      {
+        path: 'list-food',
+        loadComponent: () =>
+          import('./components/Foods/list-food/list-food.component').then(m => m.ListFoodComponent),
+        title: 'قائمة الأطعمة',
+      },
+      {
+        path: 'edit-food',
+        loadComponent: () =>
+          import('./components/Foods/edti-food/edti-food.component').then(m => m.EdtiFoodComponent),
+        title: 'تعديل طعام',
+      },
+      {
+        path: 'evaluation-food',
+        loadComponent: () =>
+          import('./components/Foods/evaluation-food/evaluation-food.component').then(m => m.EvaluationFoodComponent),
+        title: 'تقييم الطعام',
+      },
+
+      // ─── Campaigns ───────────────────────────────────────
+      {
+        path: 'list-basicCampaign',
+        loadComponent: () =>
+          import('./components/Campaigns/list-basic-campaign/list-basic-campaign.component').then(m => m.ListBasicCampaignComponent),
+        title: 'حملة أساسية',
+      },
+      {
+        path: 'add-basicCampaign',
+        loadComponent: () =>
+          import('./components/Campaigns/add-basic-campaign/add-basic-campaign.component').then(m => m.AddBasicCampaignComponent),
+        title: 'إضافة حملة',
+      },
+      {
+        path: 'list-foodCampaign',
+        loadComponent: () =>
+          import('./components/Campaigns/listfood-campaign/listfood-campaign.component').then(m => m.ListfoodCampaignComponent),
+        title: 'حملة اكل',
+      },
+      {
+        path: 'add-foodCampaign',
+        loadComponent: () =>
+          import('./components/Campaigns/addfood-campaign/addfood-campaign.component').then(m => m.AddfoodCampaignComponent),
+        title: 'إضافة حملة اكل',
+      },
+
+      // ─── Offers ──────────────────────────────────────────
+      {
+        path: 'add-Coupons',
+        loadComponent: () =>
+          import('./components/manageOffers/coupons/coupons.component').then(m => m.CouponsComponent),
+        title: 'إضافة كوبون',
+      },
+      {
+        path: 'add-Cashback',
+        loadComponent: () =>
+          import('./components/manageOffers/cashback/cashback.component').then(m => m.CashbackComponent),
+        title: 'اضافة عرض استرداد جديد',
+      },
+      {
+        path: 'add-Banner',
+        loadComponent: () =>
+          import('./components/manageOffers/banners/banners.component').then(m => m.BannersComponent),
+        title: 'إضافة بانر جديد',
+      },
+      {
+        path: 'add-PromotionalBanner',
+        loadComponent: () =>
+          import('./components/manageOffers/promotional-banner/promotional-banner.component').then(m => m.PromotionalBannerComponent),
+        title: 'إضافة بانر ترويجي',
+      },
+
+      // ─── Advertisements ──────────────────────────────────
+      {
+        path: 'add-Ad',
+        loadComponent: () =>
+          import('./components/manageOffers/advertisements/new-ad/new-ad.component').then(m => m.NewAdComponent),
+        title: 'إضافة اعلان جديد',
+      },
+      {
+        path: 'requests-Ads',
+        loadComponent: () =>
+          import('./components/manageOffers/advertisements/advertisement-requests/advertisement-requests.component').then(m => m.AdvertisementRequestsComponent),
+        title: 'طلبات الاعلانات',
+      },
+
+      {
+        path: 'Notifications',
+        loadComponent: () =>
+          import('./components/manageOffers/notifications/notifications.component').then(m => m.NotificationsComponent),
+        title: 'الاشعارات',
+      },
+
+      // ─── Customers ───────────────────────────────────────
+      {
+        path: 'Customers',
+        loadComponent: () =>
+          import('./components/manageCustomer/customers/customers.component').then(m => m.CustomersComponent),
+        title: 'العملاء',
+      },
+      {
+        path: 'Wallet-bonus',
+        loadComponent: () =>
+          import('./components/manageCustomer/Wallet/bonus/bonus.component').then(m => m.BonusComponent),
+        title: 'مكافأة المحفظة',
+      },
+      {
+        path: 'CustomerPoints-report',
+        loadComponent: () =>
+          import('./components/manageCustomer/LoyaltyPoint/customer-points-report/customer-points-report.component').then(m => m.CustomerPointsReportComponent),
+        title: 'تقرير نقاط ولاء العميل',
+      },
+      {
+        path: 'ListOfShared-emails',
+        loadComponent: () =>
+          import('./components/manageCustomer/list-of-shared-emails/list-of-shared-emails.component').then(m => m.ListOfSharedEmailsComponent),
+        title: 'قائمة الإيميلات المشتركة',
+      },
+
+      // ─── Delivery Settings ───────────────────────────────
+      {
+        path: 'Setting-CarTypes',
+        loadComponent: () =>
+          import('./components/manageDelivery/setting-up-car-types/setting-up-car-types.component').then(m => m.SettingUpCarTypesComponent),
+        title: 'إعداد أنواع العربيات',
+      },
+      {
+        path: 'Shift-Setting',
+        loadComponent: () =>
+          import('./components/manageDelivery/shift-setting/shift-setting.component').then(m => m.ShiftSettingComponent),
+        title: 'إعداد الشيفتات',
+      },
+      {
+        path: 'RequestNew-delivery',
+        loadComponent: () =>
+          import('./components/manageDelivery/delivery/delivery-request-new-member/delivery-request-new-member.component').then(m => m.DeliveryRequestNewMemberComponent),
+        title: 'طلب انضمام دليفري جديد',
+      },
+
+      // ─── 404 fallback داخل الـ main layout (اختياري) ───
+      { path: '**', redirectTo: 'dashboard' },
+    ],
   },
-  {
-    path: 'add-list-category',
-    component: AddListComponent,
-    title: 'قائمة الفئات',
-  },
-  {
-    path: 'update-category',
-    component: UpdateCategoryComponent,
-    title: 'تحديث فئة',
-  },
-  {
-    path: 'add-list-subcategory',
-    component: AddListSubComponent,
-    title: 'قائمة الفئات الفرعية',
-  },
-  {
-    path: 'update-subcategory',
-    component: UpdateSubCategoryComponent,
-    title: 'تحديث فئة فرعية',
-  },
-  {
-    path: 'list-food',
-    component: ListFoodComponent,
-    title: 'قائمة',
-  },
-  {
-    path: 'edit-food',
-    component: EdtiFoodComponent,
-    title: 'تعديل طعام',
-  },
-  {
-    path: 'evaluation-food',
-    component: EvaluationFoodComponent,
-    title: 'تقييم الطعام',
-  },
-  {
-    path: 'list-basicCampaign',
-    component: ListBasicCampaignComponent,
-    title: 'حملة أساسية',
-  },
-  {
-    path: 'add-basicCampaign',
-    component: AddBasicCampaignComponent,
-    title: 'اضافة حملة',
-  },
-  {
-    path: 'list-foodCampaign',
-    component: ListfoodCampaignComponent,
-    title: 'حملة اكل',
-  },
-  {
-    path: 'add-foodCampaign',
-    component: AddfoodCampaignComponent,
-    title: 'اضافة حملة اكل',
-  },
-  {
-    path: 'add-Coupons',
-    component: CouponsComponent,
-    title: 'اضافة كوبون',
-  },
-  {
-    path: 'add-Cashback',
-    component: CashbackComponent,
-    title: 'اضافة عرض استرداد جديد',
-  },
-  {
-    path: 'add-Banner',
-    component: BannersComponent,
-    title: 'إضافة بانر جديد',
-  },
-  {
-    path: 'add-PromotionalBanner',
-    component: PromotionalBannerComponent,
-    title: 'إضافة بانر ترويجي',
-  },
-  {
-    path: 'add-Ad',
-    component: NewAdComponent,
-    title: 'إضافة اعلان جديد',
-  },
-  {
-    path: 'requests-Ads',
-    component: AdvertisementRequestsComponent,
-    title: 'طلبات الاعلانات',
-  },
-  {
-    path: 'Notifications',
-    component: NotificationsComponent,
-    title: 'الاشعارات',
-  },
-  {
-    path: 'Customers',
-    component: CustomersComponent,
-    title: 'العملاء',
-  },
-  {
-    path: 'Wallet-bonus',
-    component: BonusComponent,
-    title: 'مكافأة المحفظة',
-  },
-  {
-    path: 'CustomerPoints-report',
-    component: CustomerPointsReportComponent,
-    title: 'تقرير نقاط ولاء العميل',
-  },
-  {
-    path: 'ListOfShared-emails',
-    component: ListOfSharedEmailsComponent,
-    title: 'قائمة الإيميلات المشتركة',
-  },
-  {
-    path: 'Setting-CarTypes',
-    component: SettingUpCarTypesComponent,
-    title: 'إعداد أنواع العربيات',
-  },
-  {
-    path: 'Shift-Setting',
-    component: ShiftSettingComponent,
-    title: 'إعداد الشيفتات',
-  },
-  {
-    path: 'RequestNew-delivery',
-    component: DeliveryRequestNewMemberComponent,
-    title: 'طلب انضمام دليفري جديد',
-  },
+
+  // ─── Global fallback ─────────────────────────────────────
+  { path: '**', redirectTo: '/auth/login' },
 ];

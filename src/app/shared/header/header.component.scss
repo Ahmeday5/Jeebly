@@ -1,0 +1,35 @@
+.header {
+  height: 70px;
+  background: var(--second-color);
+  z-index: 1030;
+}
+
+.text-brand {
+  color: var(--main-color);
+}
+
+.header-logo {
+  max-width: 50px;
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+  background: var(--main-color);
+  border-radius: 5px;
+}
+
+.user-avatar {
+  width: 42px;
+  height: 42px;
+  background: var(--main-color);
+}
+
+// للشاشات الصغيرة
+@media (max-width: 576px) {
+  .header {
+    padding: 0 1rem;
+  }
+
+  .header-logo {
+    height: 40px;
+  }
+}
