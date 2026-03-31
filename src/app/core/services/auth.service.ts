@@ -99,13 +99,11 @@ export class AuthService {
   // جلب الدور الحالي
   getCurrentRole(): string | null {
     const role = this.roleSubject.value;
-    console.log('الدور الحالي:', role);
     return role;
   }
 
   getSavedEmail(): string | null {
     const savedEmail = localStorage.getItem('savedEmail');
-    console.log('email: ', savedEmail);
     return savedEmail;
   }
 }
