@@ -1,0 +1,33 @@
+/*********************partTwo*******************/
+
+.cardParentsetting {
+  border: 3px solid var(--third-color);
+  border-radius: 12px;
+  padding: 10px;
+}
+
+.border-bottoms-red {
+  border-bottom: 3px solid var(--main-color) !important;
+  padding-bottom: 10px;
+}
+
+.fees .form-section .form-control {
+  border: 1px solid var(--main-color);
+  padding: 0px 10px;
+  color: var(--main-color);
+}
+
+.fees .form-section .form-control:focus {
+  border: 1px solid var(--main-color);
+}
+
+.fees .form-section .form-control::placeholder {
+  color: var(--main-color);
+}
+
+.add-incentive .btn-add {
+  color: var(--main-color);
+  font-weight: bold;
+  font-size: 25px;
+  margin-top: 10px;
+}

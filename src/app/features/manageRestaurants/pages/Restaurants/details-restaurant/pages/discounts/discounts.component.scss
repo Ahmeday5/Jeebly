@@ -1,0 +1,32 @@
+.discount {
+  color: var(--main-color);
+}
+
+@media (max-width: 992px) {
+  .filter {
+    top: 8%;
+    right: 25%;
+  }
+}
+
+/************************/
+
+.alert {
+  color: var(--main-color);
+}
+
+
+/****************modal**************/
+
+.modal {
+  padding-top: 95px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 69%;
+  left: 1.5%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  padding: 5px;
+}

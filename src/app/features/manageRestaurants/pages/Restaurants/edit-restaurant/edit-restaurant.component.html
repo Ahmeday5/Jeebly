@@ -1,0 +1,418 @@
+<div class="add-restaurant mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <!-- SVG Icons for alerts -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none">
+      <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+          d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z" />
+      </symbol>
+      <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+        <path
+          d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
+      </symbol>
+    </svg>
+
+    <!-- Success and Error Messages -->
+    <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center mt-4" role="alert">
+      <svg class="bi flex-shrink-0 me-2 ms-3" width="24" height="24">
+        <use xlink:href="#check-circle-fill" />
+      </svg>
+      <div>{{ successMessage }}</div>
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center mt-4" role="alert">
+      <svg class="bi flex-shrink-0 me-2 ms-3" width="24" height="24">
+        <use xlink:href="#exclamation-triangle-fill" />
+      </svg>
+      <div>{{ errorMessage }}</div>
+    </div>
+
+    <form #editForm="ngForm" (ngSubmit)="editForm.valid && handleSubmit(editForm.valid)" class="mt-4 needs-validation"
+      novalidate>
+      <!-- name and logo -->
+      <div class="row p-0">
+        <div class="page-title">
+          <h3>
+            <span class="icon"><i class="fas fa-edit"></i></span>
+            تحديث المطعم
+          </h3>
+        </div>
+        <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
+          <div class="title d-flex justify-content-start">
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">English (EN)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic -
+              العربية (AR)</h6>
+          </div>
+
+          <!-- Arabic Name -->
+          <div class="form-section mt-4" *ngIf="selectedLanguage === 'arabic'">
+            <label class="form-label">اسم المطعم (العربية)<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [placeholder]="selectedLanguagePlaceholder" name="nameAr"
+              [(ngModel)]="nameAr" #nameArControl="ngModel" required minlength="2"
+              [ngClass]="{'is-invalid': editForm.submitted && nameArControl.invalid, 'is-valid': editForm.submitted && nameArControl.valid}" />
+            <div class="invalid-feedback">يرجى إدخال اسم صالح (حرفين على الأقل)</div>
+            <div class="valid-feedback">يبدو جيدًا!</div>
+          </div>
+
+          <!-- English Name -->
+          <div class="form-section mt-4" *ngIf="selectedLanguage === 'english'">
+            <label class="form-label">Restaurant Name (English)<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" [placeholder]="selectedLanguagePlaceholder" name="nameEn"
+              [(ngModel)]="nameEn" #nameEnControl="ngModel" required minlength="2" pattern="[A-Za-z\s\-]+"
+              [ngClass]="{'is-invalid': editForm.submitted && nameEnControl.invalid, 'is-valid': editForm.submitted && nameEnControl.valid}" />
+            <div class="invalid-feedback">Please enter a valid name (letters only, at least 2 characters)</div>
+            <div class="valid-feedback">Looks good!</div>
+          </div>
+
+          <!-- Arabic Address -->
+          <div class="form-section" *ngIf="selectedLanguage === 'arabic'">
+            <label class="form-label">عنوان المطعم (العربية)<span class="text-danger">*</span></label>
+            <textarea class="form-control" [placeholder]="selectedLanguagePlaceholder" name="addressAr"
+              [(ngModel)]="addressAr" #addressArControl="ngModel" required rows="2"
+              [ngClass]="{'is-invalid': editForm.submitted && addressArControl.invalid, 'is-valid': editForm.submitted && addressArControl.valid}"></textarea>
+            <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
+            <div class="valid-feedback">يبدو جيدًا!</div>
+          </div>
+
+          <!-- English Address -->
+          <div class="form-section" *ngIf="selectedLanguage === 'english'">
+            <label class="form-label">Restaurant Address (English)<span class="text-danger">*</span></label>
+            <textarea class="form-control" [placeholder]="selectedLanguagePlaceholder" name="addressEn"
+              [(ngModel)]="addressEn" #addressEnControl="ngModel" required rows="2"
+              [ngClass]="{'is-invalid': editForm.submitted && addressEnControl.invalid, 'is-valid': editForm.submitted && addressEnControl.valid}"></textarea>
+            <div class="invalid-feedback">Please enter a valid address</div>
+            <div class="valid-feedback">Looks good!</div>
+          </div>
+        </div>
+
+        <div class="col-xl-6 col-lg-6 col-md-12 mt-2">
+          <div class="logo">
+            <div class="page-title">
+              <h3>
+                <span class="icon"><i class="fas fa-image"></i></span>
+                شعار المطعم وغطاءاته
+              </h3>
+            </div>
+
+            <div class="row">
+              <!-- الشعار -->
+              <div class="col-md-6">
+                <h6 class="mb-3">الشعار (نسبة 1:1)</h6>
+                <div class="upload-area text-center p-4 border rounded position-relative" style="min-height: 220px;">
+
+                  <!-- صورة موجودة أو جديدة -->
+                  <ng-container *ngIf="LogoPreview">
+                    <img [src]="LogoPreview" class="img-fluid rounded"
+                      style="max-height: 180px; max-width: 100%; object-fit: contain;" />
+                    <button type="button"
+                      class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle shadow"
+                      (click)="removeImage('logo')" title="حذف الشعار">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </ng-container>
+
+                  <!-- منطقة رفع إذا ماكانش فيه صورة -->
+                  <div *ngIf="!LogoPreview" class="py-5">
+                    <label for="logoUpload" class="d-block cursor-pointer">
+                      <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                      <p class="text-muted mb-1">اضغط لرفع شعار جديد</p>
+                      <small class="text-muted">jpg, png, gif – الحد الأقصى 2 ميجا</small>
+                    </label>
+                    <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
+                      accept=".jpg,.jpeg,.png,.gif,.jfif" style="display: none;" />
+                  </div>
+                </div>
+
+                <div class="text-danger text-center mt-2 fw-bold" *ngIf="logoError">
+                  <i class="fas fa-exclamation-triangle me-2"></i>{{ logoError }}
+                </div>
+              </div>
+
+              <!-- Cover -->
+              <div class="col-md-6">
+                <h6 class="mb-3">غلاف المطعم (نسبة 2:1)</h6>
+                <div class="upload-area text-center p-4 border rounded position-relative" style="min-height: 220px;">
+
+                  <!-- صورة موجودة أو جديدة -->
+                  <ng-container *ngIf="CoverPreview">
+                    <img [src]="CoverPreview" class="img-fluid rounded"
+                      style="max-height: 180px; max-width: 100%; object-fit: cover;" />
+                    <button type="button"
+                      class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle shadow"
+                      (click)="removeImage('cover')" title="حذف الغلاف">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </ng-container>
+
+                  <!-- منطقة رفع إذا ماكانش فيه صورة -->
+                  <div *ngIf="!CoverPreview" class="py-5">
+                    <label for="coverUpload" class="d-block cursor-pointer">
+                      <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                      <p class="text-muted mb-1">اضغط لرفع غلاف جديد</p>
+                      <small class="text-muted">jpg, png, gif – الحد الأقصى 2 ميجا</small>
+                    </label>
+                    <input type="file" id="coverUpload" (change)="onFileChange($event, 'cover')"
+                      accept=".jpg,.jpeg,.png,.gif,.jfif" style="display: none;" />
+                  </div>
+                </div>
+
+                <div class="text-danger text-center mt-2 fw-bold" *ngIf="coverError">
+                  <i class="fas fa-exclamation-triangle me-2"></i>{{ coverError }}
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات المطعم -->
+      <div class="row p-0 mt-3">
+        <div class="information">
+          <div class="page-title">
+            <h3>
+              <span class="icon"><i class="fas fa-info-circle"></i></span>
+              معلومات المطعم
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-section">
+                  <label class="form-label">الضريبة/الضريبة المضافة (%)<span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" name="taxPercentage" [(ngModel)]="taxPercentage"
+                    #taxControl="ngModel" required min="0"
+                    [ngClass]="{'is-invalid': editForm.submitted && taxControl.invalid, 'is-valid': editForm.submitted && taxControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال قيمة صالحة (0 أو أكثر)</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-section">
+                  <label class="form-label">الحد الأدنى لوقت التوصيل (دقائق)<span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" name="minDeliveryTime" [(ngModel)]="minDeliveryTime"
+                    #minTimeControl="ngModel" required min="0"
+                    [ngClass]="{'is-invalid': editForm.submitted && minTimeControl.invalid, 'is-valid': editForm.submitted && minTimeControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال قيمة صالحة (0 أو أكثر)</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+                <div class="form-section">
+                  <label class="form-label">الحد الأقصى لوقت التوصيل (دقائق)<span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" name="maxDeliveryTime" [(ngModel)]="maxDeliveryTime"
+                    #maxTimeControl="ngModel" required min="0"
+                    [ngClass]="{'is-invalid': editForm.submitted && maxTimeControl.invalid, 'is-valid': editForm.submitted && maxTimeControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال قيمة صالحة (0 أو أكثر)</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- نوع الأكل والمنطقة والإحداثيات -->
+      <div class="row p-0 mt-3">
+        <div class="typeFood">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-section">
+                <label class="form-label">نوع الخدمة<span class="text-danger">*</span></label>
+                <select dir="rtl" class="form-select custom-select" name="serviceId" [(ngModel)]="serviceId"
+                  #serviceControl="ngModel" required>
+                  <option value="" disabled selected>اختر</option>
+                  <option *ngFor="let service of services" [value]="service.id">{{ service.name }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="editForm.submitted && serviceControl.invalid">يرجى اختيار نوع خدمة
+                </div>
+                <div class="valid-feedback" *ngIf="editForm.submitted && serviceControl.valid">يبدو جيدًا!</div>
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">نوع الأكل<span class="text-danger">*</span></label>
+                <select dir="rtl" class="form-select custom-select" name="foodType" [(ngModel)]="foodType"
+                  #foodControl="ngModel" required>
+                  <option value="" disabled selected>اختر</option>
+                  <option *ngFor="let type of foodTypes" [value]="type.id">{{ type.name }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="editForm.submitted && foodControl.invalid">يرجى اختيار نوع أكل
+                </div>
+                <div class="valid-feedback" *ngIf="editForm.submitted && foodControl.valid">يبدو جيدًا!</div>
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">المنطقة<span class="text-danger">*</span></label>
+                <select dir="rtl" class="form-select custom-select" name="areaId" [(ngModel)]="areaId"
+                  #areaControl="ngModel" required>
+                  <option value="" disabled selected>اختر</option>
+                  <option *ngFor="let area of areas" [value]="area.id">{{ area.nameAr }}</option>
+                </select>
+                <div class="invalid-feedback" *ngIf="editForm.submitted && areaControl.invalid">يرجى اختيار منطقة</div>
+                <div class="valid-feedback" *ngIf="editForm.submitted && areaControl.valid">يبدو جيدًا!</div>
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">خط العرض<span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="latitude" [(ngModel)]="latitude" #latControl="ngModel"
+                  required step="any"
+                  [ngClass]="{'is-invalid': editForm.submitted && latControl.invalid, 'is-valid': editForm.submitted && latControl.valid}" />
+                <div class="invalid-feedback">يرجى إدخال خط عرض صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+
+              <div class="form-section">
+                <label class="form-label">خط الطول<span class="text-danger">*</span></label>
+                <input type="number" class="form-control" name="longitude" [(ngModel)]="longitude"
+                  #longControl="ngModel" required step="any"
+                  [ngClass]="{'is-invalid': editForm.submitted && longControl.invalid, 'is-valid': editForm.submitted && longControl.valid}" />
+                <div class="invalid-feedback">يرجى إدخال خط طول صالح</div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <img src="/assets/img/New folder/خريطة.png" class="img-fluid" alt="خريطة">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات المالك -->
+      <div class="row p-0 mt-3">
+        <div class="owner">
+          <div class="page-title">
+            <h3>
+              <span class="icon"><i class="fas fa-user-tie"></i></span>
+              معلومات المالك
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-section">
+                  <label class="form-label">الاسم الأول<span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="ownerFirstName" [(ngModel)]="ownerFirstName"
+                    #firstNameControl="ngModel" required minlength="2"
+                    [ngClass]="{'is-invalid': editForm.submitted && firstNameControl.invalid, 'is-valid': editForm.submitted && firstNameControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال اسم أول صالح (حرفين على الأقل)</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-section">
+                  <label class="form-label">الاسم الأخير<span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="ownerLastName" [(ngModel)]="ownerLastName"
+                    #lastNameControl="ngModel" required minlength="2"
+                    [ngClass]="{'is-invalid': editForm.submitted && lastNameControl.invalid, 'is-valid': editForm.submitted && lastNameControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال اسم أخير صالح (حرفين على الأقل)</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-section">
+                  <label class="form-label">الهاتف<span class="text-danger">*</span></label>
+                  <input type="text" class="form-control" name="ownerPhone" [(ngModel)]="ownerPhone"
+                    #phoneControl="ngModel" required pattern="^\d{10,15}$"
+                    [ngClass]="{'is-invalid': editForm.submitted && phoneControl.invalid, 'is-valid': editForm.submitted && phoneControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال رقم هاتف صالح (10-15 أرقام)</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- الملاحظات -->
+      <div class="row p-0 mt-3">
+        <div class="tage">
+          <div class="page-title">
+            <h3>
+              <span class="icon"><i class="fas fa-tags"></i></span>
+              الملاحظات
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-12">
+                <div class="form-section">
+                  <input type="text" class="form-control" name="notes" [(ngModel)]="notes" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- معلومات الحساب -->
+      <div class="row p-0 mt-3">
+        <div class="account">
+          <div class="page-title">
+            <h3>
+              <span class="icon"><i class="fas fa-user-cog"></i></span>
+              معلومات الحساب
+            </h3>
+          </div>
+          <div class="inputs">
+            <div class="row">
+              <div class="col-md-4">
+                <div class="form-section">
+                  <label class="form-label">البريد الإلكتروني<span class="text-danger">*</span></label>
+                  <input type="email" class="form-control" name="email" [(ngModel)]="email" #emailControl="ngModel"
+                    required email
+                    [ngClass]="{'is-invalid': editForm.submitted && emailControl.invalid, 'is-valid': editForm.submitted && emailControl.valid}" />
+                  <div class="invalid-feedback">يرجى إدخال بريد إلكتروني صالح</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-section">
+                  <label class="form-label">كلمة السر</label>
+                  <input [type]="showPassword ? 'text' : 'password'" class="form-control" name="password"
+                    [(ngModel)]="password" #passwordControl="ngModel" minlength="6"
+                    [ngClass]="{'is-invalid': editForm.submitted && passwordControl.invalid, 'is-valid': editForm.submitted && passwordControl.valid}" />
+                  <span class="password-toggle" (click)="togglePassword()">
+                    <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}" style="color: #8C0F14;"></i>
+                  </span>
+                  <div class="invalid-feedback">كلمة السر يجب أن تكون 6 أحرف على الأقل</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-section">
+                  <label class="form-label">تأكيد كلمة السر</label>
+                  <input [type]="showConfirmPassword ? 'text' : 'password'" class="form-control" name="confirmPassword"
+                    [(ngModel)]="confirmPassword" #confirmControl="ngModel"
+                    [ngClass]="{'is-invalid': editForm.submitted && (confirmControl.invalid || password !== confirmPassword), 'is-valid': editForm.submitted && confirmControl.valid && password === confirmPassword}" />
+                  <span class="password-toggle" (click)="toggleConfirmPassword()">
+                    <i class="fa-regular {{ showConfirmPassword ? 'fa-eye-slash' : 'fa-eye' }}"
+                      style="color: #8C0F14;"></i>
+                  </span>
+                  <div class="invalid-feedback" *ngIf="editForm.submitted && password !== confirmPassword">كلمات السر
+                    غير متطابقة</div>
+                  <div class="invalid-feedback" *ngIf="editForm.submitted && confirmControl.invalid">يرجى تأكيد كلمة
+                    السر</div>
+                  <div class="valid-feedback">يبدو جيدًا!</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- الأزرار -->
+      <div class="row p-0 mt-3">
+        <div class="btns">
+          <div class="row">
+            <div class="col-sm-12 d-flex justify-content-end align-items-center">
+              <button type="button" class="btn btn-rest" (click)="resetForm()">إعادة تعيين</button>
+              <button type="submit" class="btn btn-save" [disabled]="isLoading">
+                <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                حفظ المعلومات
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+.payments {
+  color: var(--main-color);
+}
+
+.alert {
+  padding-top: 100px;
+  padding-bottom: 100px;
+}
+
+.alert h4 {
+  font-weight: bold;
+  color: var(--main-color);
+  font-size: 25px;
+}
+
+.icons {
+  position: relative;
+}
+
+.icons .fa-folder {
+  font-size: 120px;
+  font-weight: bold;
+}
+
+.fa-folder {
+  color: transparent;
+  -webkit-text-stroke: 3px var(--main-color); /* لإضافة حدود سوداء */
+}
+
+.icons .fa-times {
+  color: var(--main-color);
+  position: absolute;
+  top: 39%;
+  left: 48.5%;
+}

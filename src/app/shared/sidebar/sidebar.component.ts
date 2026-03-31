@@ -26,7 +26,7 @@ import { ApiService } from '../../core/services/api.service';
   styleUrls: ['./sidebar.component.scss'],
 })
 export class SidebarComponent implements OnInit, AfterViewInit {
- isSidebarOpen: boolean = false;
+  isSidebarOpen: boolean = false;
   isCollapsed: boolean = false;
   isMobile = false;
 
@@ -66,6 +66,10 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     if (savedCollapsed) {
       this.isCollapsed = savedCollapsed === 'true';
     }
+
+    this.sidebarService.sidebar$.subscribe((isOpen) => {
+      this.isSidebarOpen = isOpen;
+    });
   }
 
   handleSpecialAction(subItem: any): void {
@@ -240,7 +244,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         items: [
           {
             label: 'اللوحة الرئيسية',
-            path: '/dashboard',
+            path: 'dashboard/mainDashboard',
             icons: 'fa-solid fa-gauge-high',
           },
         ],
@@ -250,12 +254,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         items: [
           {
             label: 'الطلبات',
-            path: '/Orders',
+            path: 'manageOrder/Orders',
             icons: 'fa-solid fa-list-check',
           },
           {
             label: 'طلبات الاشتراكات',
-            path: '/subscription-requests',
+            path: 'manageOrder/subscription-requests',
             icons: 'fa-solid fa-receipt',
           },
           {
@@ -264,12 +268,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'البحث عن دليفري',
-                path: '/delivery-search',
+                path: 'manageOrder/delivery-search',
                 icon: 'fa-solid fa-id-card',
               },
               {
                 key: 'طلبات شغالة',
-                path: '/request-progress',
+                path: 'manageOrder/request-progress',
                 icon: 'fa-solid fa-map-location-dot',
               },
             ],
@@ -280,7 +284,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'طلبات مرتجع جديدة',
-                path: '/order-return',
+                path: 'manageOrder/order-returns',
                 icon: 'fa-solid fa-user-ninja',
               },
             ],
@@ -292,12 +296,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         items: [
           {
             label: 'إعداد المناطق',
-            path: '/setting-areas',
+            path: 'manageRestaurants/setting-areas',
             icons: 'fa-solid fa-map',
           },
           {
             label: 'نوع الأكل',
-            path: '/type-food',
+            path: 'manageRestaurants/type-food',
             icons: 'fa-solid fa-utensils',
           },
           {
@@ -306,17 +310,17 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'ضيف مطعم',
-                path: '/add-restaurant',
+                path: 'manageRestaurants/add-restaurant',
                 icon: 'fa-solid fa-burger',
               },
               {
                 key: 'قائمة المطاعم',
-                path: '/list-restaurants',
+                path: 'manageRestaurants/list-restaurants',
                 icon: 'fa-solid fa-burger',
               },
               {
                 key: 'طلب انضمام جديد',
-                path: '/newJoin-Request',
+                path: 'manageRestaurants/newJoin-Request',
                 icon: 'fa-solid fa-star-half-stroke',
               },
             ],
@@ -332,12 +336,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'فئة',
-                path: '/add-list-category',
+                path: 'Categories/add-list-category',
                 icon: 'fa-solid fa-tags',
               },
               {
                 key: 'فئة فرعية',
-                path: '/add-list-subcategory',
+                path: 'Categories/add-list-subcategory',
                 icon: 'fa-solid fa-diagram-project',
               },
             ],
@@ -348,17 +352,17 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'اضف جديد',
-                path: '/add-food',
+                path: 'Foods/add-food',
                 icon: 'fa-solid fa-pizza-slice',
               },
               {
                 key: 'قائمة الاكل',
-                path: '/list-food',
+                path: 'Foods/list-food',
                 icon: 'fa-solid fa-carrot',
               },
               {
                 key: 'تقييم',
-                path: '/evaluation-food',
+                path: 'Foods/evaluation-food',
                 icon: 'fa-solid fa-carrot',
               },
             ],
@@ -374,34 +378,34 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'حملة اساسية',
-                path: '/list-basicCampaign',
+                path: 'Campaigns/list-basicCampaign',
                 icon: 'fa-solid fa-check-circle',
               },
               {
                 key: 'حملة اكل',
-                path: '/list-foodCampaign',
+                path: 'Campaigns/list-foodCampaign',
                 icon: 'fa-solid fa-circle-xmark',
               },
             ],
           },
           {
             label: 'كوبونات',
-            path: '/add-Coupons',
+            path: 'manageOffers/add-Coupons',
             icons: 'fa-solid fa-ticket',
           },
           {
             label: 'استرداد نقدي',
-            path: '/add-Cashback',
+            path: 'manageOffers/add-Cashback',
             icons: 'fa-solid fa-money-bill-transfer',
           },
           {
             label: 'لافتات',
-            path: '/add-Banner',
+            path: 'manageOffers/add-Banner',
             icons: 'fa-solid fa-image',
           },
           {
             label: 'بانر ترويجي',
-            path: '/add-PromotionalBanner',
+            path: 'manageOffers/add-PromotionalBanner',
             icons: 'fa-solid fa-rectangle-ad',
           },
           {
@@ -410,19 +414,19 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'اعلان جديد',
-                path: '/add-Ad',
+                path: 'manageOffers/add-Ad',
                 icon: 'fa-solid fa-dollar-sign',
               },
               {
                 key: 'طلبات الاعلانات',
-                path: '/requests-Ads',
+                path: 'manageOffers/requests-Ads',
                 icon: 'fa-solid fa-bullseye',
               },
             ],
           },
           {
             label: 'إشعارات',
-            path: '/Notifications',
+            path: 'manageOffers/Notifications',
             icons: 'fa-solid fa-bell',
           },
         ],
@@ -447,7 +451,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         items: [
           {
             label: 'العملاء',
-            path: '/Customers',
+            path: 'manageCustomers/Customers',
             icons: 'fa-solid fa-users',
           },
           {
@@ -456,12 +460,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'بونص',
-                path: '/Wallet-bonus',
+                path: 'manageCustomers/Wallet-bonus',
                 icon: 'fa-solid fa-coins',
               },
               {
                 key: 'المعاملات',
-                path: '/wallet-transactions',
+                path: 'manageCustomers/wallet-transactions',
                 icon: 'fa-solid fa-arrow-right-arrow-left',
               },
             ],
@@ -472,14 +476,14 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'تقرير',
-                path: '/CustomerPoints-report',
+                path: 'manageCustomers/CustomerPoints-report',
                 icon: 'fa-solid fa-trophy',
               },
             ],
           },
           {
             label: 'قائمة الإيميلات المشتركة',
-            path: '/ListOfShared-emails',
+            path: 'manageCustomers/ListOfShared-emails',
             icons: 'fa-solid fa-envelope',
           },
         ],
@@ -489,12 +493,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         items: [
           {
             label: 'إعداد أنواع العربيات',
-            path: '/Setting-CarTypes',
+            path: 'manageDelivery/Setting-CarTypes',
             icons: 'fa-solid fa-car-side',
           },
           {
             label: 'إعداد الشيفتات',
-            path: '/Shift-Setting',
+            path: 'manageDelivery/Shift-Setting',
             icons: 'fa-solid fa-clock',
           },
           {
@@ -503,12 +507,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             submenu: [
               {
                 key: 'طلب انضمام جديد',
-                path: '/RequestNew-delivery',
+                path: 'manageDelivery/RequestNew-delivery',
                 icon: 'fa-solid fa-id-badge',
               },
               {
                 key: 'تتبع التوصيل',
-                path: '/tracking',
+                path: 'manageDelivery/tracking',
                 icon: 'fa-solid fa-route',
               },
             ],

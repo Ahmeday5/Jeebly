@@ -32,7 +32,7 @@ export const canActivateRole: CanActivateFn = (route, state) => {
   );
 };
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (route, state) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 

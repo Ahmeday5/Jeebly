@@ -1,0 +1,45 @@
+.ratings {
+  color: var(--main-color);
+}
+
+.progress-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.2rem;
+  font-size: 1rem;
+}
+
+.progress-value {
+  width: 50px;
+  font-weight: bold;
+  color: var(--main-color);
+  text-align: left;
+}
+
+.progress {
+  flex: 1;
+  height: 12px;
+  background-color: var(--third-color) !important;
+  border-radius: 6px;
+  margin: 0 15px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  background-color: var(--main-color) !important;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+
+.progress-label {
+  font-weight: bold;
+  color: var(--main-color);
+  white-space: nowrap;
+}
+
+@media (max-width: 992px) {
+  .filter {
+    top: 8%;
+    right: 25%;
+  }
+}

@@ -1,0 +1,51 @@
+<div class="list-restaurant mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <div class="row p-0">
+      <div class="col-md-12 p-0">
+        <div class="row">
+          <div class="page-title">
+            <h3>
+              <span class="icon">
+                <i class="fas fa-store-alt fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+              </span>
+              demores
+            </h3>
+          </div>
+        </div>
+
+
+        <div class="row-cols-1 row-cols-md-10 row-cols-lg-11 mt-1">
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/overview">نظرة عامة</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/orders">الطلبات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/foods">أكلات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/ratings">التقييمات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/discounts">الخصومات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/Transactions">المعاملات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/Settings">الإعدادات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/Conversations">المحادثات</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/Buisness">Buisness</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/Meta">Meta</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/QRcode">رمز QR</button>
+          <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
+            routerLink="manageRestaurants/Payments">المدفوعات</button>
+        </div>
+
+
+        <div class="content mt-2">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

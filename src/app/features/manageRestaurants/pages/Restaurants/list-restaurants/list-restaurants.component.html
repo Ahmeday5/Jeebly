@@ -1,0 +1,167 @@
+<div class="list-restaurant mt-2 mb-3">
+  <div class="container-fluid p-0">
+    <!-- Alert -->
+    <div *ngIf="alertMessage" class="alert alert-{{alertType}}" role="alert">
+      {{ alertMessage }}
+    </div>
+
+    <div class="row">
+      <div class="page-title">
+        <h3>
+          <span class="icon"><i class="fas fa-store-alt"></i></span>
+          مطاعم
+        </h3>
+      </div>
+
+      <div class="filter mt-1">
+        <div class="row">
+          <div class="col-md-6 col-sm-6 mt-2">
+            <div class="form-section">
+              <select dir="rtl" class="form-select custom-select" [(ngModel)]="selectedStatus"
+                (change)="onFilterChange()">
+                <option value="" selected>اختر الحالة</option>
+                <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-6 mt-2">
+            <div class="form-section">
+              <select dir="rtl" class="form-select custom-select">
+                <option value="" disabled selected>اختر المنطقة</option>
+                <option value="cairo">القاهرة</option>
+                <option value="alex">الإسكندرية</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="statistics mt-3">
+        <div class="row">
+          <div class="col-md-4 col-sm-6 mt-2">
+            <div class="total d-flex justify-content-between align-items-center">
+              <div class="number">
+                <h6>{{ totalCount }}</h6>
+                <h6>إجمالي المطاعم</h6>
+              </div>
+              <div class="logo">
+                <i class="fas fa-store total-restaurant"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 mt-2">
+            <div class="active d-flex justify-content-between align-items-center">
+              <div class="number">
+                <h6>{{ activeCount }}</h6>
+                <h6>المطاعم النشطة</h6>
+              </div>
+              <div class="logo">
+                <i class="fas fa-door-open open-restaurant"></i>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 mt-2">
+            <div class="noactive d-flex justify-content-between align-items-center">
+              <div class="number">
+                <h6>{{ notActiveCount }}</h6>
+                <h6>المطاعم غير النشطة</h6>
+              </div>
+              <div class="logo">
+                <i class="fas fa-ban closed-restaurant"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stat mt-3">
+        <div class="row justify-content-between">
+          <div class="col-md-4 col-sm-6 mt-2">
+            <div class="total d-flex align-items-center">
+              <div class="img">
+                <img src="/assets/img/list-restaur/1.png" alt="">
+              </div>
+              <div class="text">
+                <p style="color: #056D78;">إجمالي المعاملات : 0.00</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 mt-2">
+            <div class="total d-flex align-items-center">
+              <div class="img">
+                <img src="/assets/img/list-restaur/2.png" alt="">
+              </div>
+              <div class="text">
+                <p style="color: #048042;"> العمولة المكتسبة : 0.00</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4 col-sm-6 mt-2">
+            <div class="total d-flex align-items-center">
+              <div class="img">
+                <img src="/assets/img/list-restaur/3.png" alt="">
+              </div>
+              <div class="text">
+                <p style="color: #8C0F14;">إجمالي سحوبات المطاعم : 0.00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="row mt-4">
+        <div class="page-title">
+          <h3>قائمة المطاعم</h3>
+        </div>
+      </div>
+      <div class="cardParent">
+        <div class="row justify-content-end border-bottoms">
+          <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث عن المطعم....."
+            [(ngModel)]="restaurantName" (input)="onFilterChange()" />
+          <div class="coulm mt-2">
+            <button class="btn"><i class="fa-solid fa-download"></i>تصدير<i class="fa-solid fa-caret-down"></i></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive custom-table">
+            <table class="table custom-table-design text-center">
+              <thead>
+                <tr>
+                  <th>م</th>
+                  <th>معرف المطبخ</th>
+                  <th>اسم المطعم</th>
+                  <th>اسم صاحب المطعم</th>
+                  <th>المنطقة</th>
+                  <th>الحالة</th>
+                  <th>الاجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let restaurant of restaurants; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>{{ restaurant.id }}</td>
+                  <td>{{ restaurant.nameOfResturantAr }}</td>
+                  <td>{{ restaurant.nameOfResturantOwner }}</td>
+                  <td>{{ restaurant.areaOfResturantAr }}</td>
+                  <td class="text-center">
+                    <div class="form-check form-switch">
+                      <input class="form-check-input" type="checkbox" [checked]="restaurant.status === 'Active'"
+                        id="flexSwitchCheckDefault{{i}}">
+                    </div>
+                  </td>
+                  <td class="text-center">
+                    <i (click)="detailsRestaurant()" class="fa-regular fa-eye fa-lg"
+                      style="color: var(--main-color); cursor: pointer;"></i>
+                    <i (click)="editRestaurant(restaurant.id)" class="fas fa-edit"
+                      style="color: var(--main-color); cursor: pointer;"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -61,18 +61,16 @@ export class AuthService {
     }
   }
 
-  login(response: UserData): void {
-    if (!response.email || !response.role || !response.token) {
-      throw new Error('بيانات تسجيل الدخول غير صالحة');
-    }
-    this.userData = response;
+  login(response: any): void {
+    const user = response.data;
+    this.userData = user;
     this.isLoggedInSubject.next(true);
     this.roleSubject.next(response.role);
     this.displayName$.next(this.displayName);
     this.email$.next(this.email);
     localStorage.setItem('isLoggedIn', 'true');
     localStorage.setItem('userData', JSON.stringify(response));
-    localStorage.setItem('token', response.token || '');
+    localStorage.setItem('token', user.token);
   }
 
   logout(): void {
@@ -95,7 +93,6 @@ export class AuthService {
 
   getToken(): string | null {
     const token = localStorage.getItem('token');
-    console.log('توكن من AuthService:', token);
     return token;
   }
 
