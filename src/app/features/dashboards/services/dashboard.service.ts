@@ -11,7 +11,7 @@ export class DashboardService {
   private readonly baseEndpoint = '/api/Dashboard/category';
 
   constructor() {}
-
+  
   // ====================== GET ALL ======================
   getAll(): Observable<Category[]> {
     return this.apiService.get<Category[]>(this.baseEndpoint);

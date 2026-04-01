@@ -15,7 +15,7 @@ export class MainCategoriesService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiBaseUrl;
   constructor() {}
-
+  
   /*******************************************categories*******************************************/
 
   // إضافة الفئات الرئيسية

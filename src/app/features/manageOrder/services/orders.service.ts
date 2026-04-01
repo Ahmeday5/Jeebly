@@ -1,65 +1,57 @@
 import { inject, Injectable } from '@angular/core';
 import { Order } from '../model/orders.type';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpParams,
-} from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
+import { ApiService } from '../../../core/services/api.service';
+
+const ORDER_STATUS_MAP: Record<string, string> = {
+  معلق: 'Pending',
+  مقبول: 'Confirmed',
+  'تحت المعالجة': 'Cooking',
+  'الاكل في الطريق': 'ReadyToDeliver',
+  اتسلمت: 'Delivered',
+  اتلغت: 'Canceled',
+  فشل: 'Failed',
+  'فشل الدفع': 'FailedPayment',
+  اتكررت: 'Repeated',
+  اترددت: 'Refunded',
+  'تناول الطعام في المكان': 'DineIn',
+  'offline payment': 'VerifyOfflinePayment',
+};
 
 @Injectable({
   providedIn: 'root',
 })
 export class OrdersService {
-  private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiBaseUrl;
+  private readonly api = inject(ApiService);
 
   constructor() {}
 
-  /*******************************************order*********************************************/
-
+  // ====================== GET FILTERED ORDERS ======================
   getOrdersFiltered(
     status: string = '',
     code: string = '',
   ): Observable<Order[]> {
+    const params = this.buildParams(status, code);
+    return this.api.get<Order[]>('/api/AllOrders/GetOrdersFiltered', params);
+  }
+
+  // ====================== HELPERS ======================
+  private buildParams(status?: string, code?: string): HttpParams {
     let params = new HttpParams();
 
-    // إذا كان الفلتر مش "الكل"، نحول العربي للإنجليزي الفعلي اللي الـ API بيفهمه (من الأمثلة مثل 'Pending')
     if (status && status !== 'الكل') {
-      // الـ map الجديد بناءً على الـ JSON: كل فلتر عربي يقابل orderStatus الإنجليزي
-      const statusMap: { [key: string]: string } = {
-        معلق: 'Pending',
-        مقبول: 'Confirmed',
-        'تحت المعالجة': 'Cooking',
-        'الاكل في الطريق': 'ReadyToDeliver',
-        اتسلمت: 'Delivered',
-        اتلغت: 'Canceled',
-        فشل: 'Failed',
-        'فشل الدفع': 'FailedPayment',
-        اتكررت: 'Repeated',
-        اترددت: 'Refunded',
-        'تناول الطعام في المكان': 'DineIn',
-        'offline payment': 'VerifyOfflinePayment',
-      };
-      const apiStatus = statusMap[status];
+      const apiStatus = ORDER_STATUS_MAP[status];
       if (apiStatus) {
-        params = params.set('status', apiStatus); // الـ param هو 'status=Pending' زي الأمثلة
+        params = params.set('status', apiStatus);
       }
     }
 
-    // إذا كان فيه code، أضفه مع trim عشان يشيل مسافات
-    if (code && code.trim() !== '') {
+    if (code?.trim()) {
       params = params.set('code', code.trim());
     }
 
-    const url = `${this.baseUrl}/api/AllOrders/GetOrdersFiltered`;
-
-    return this.http.get<Order[]>(url, { params }).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error('خطأ في جلب الطلبات:', error);
-        return throwError(() => error);
-      }),
-    );
+    return params;
   }
 }

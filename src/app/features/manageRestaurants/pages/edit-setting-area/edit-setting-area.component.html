@@ -79,29 +79,41 @@
               </div>
               }
 
-              <form #editForm="ngForm" (ngSubmit)="editForm.valid && handleUpdateArea()" class="needs-validation"
-                novalidate>
+              <form [formGroup]="form" (ngSubmit)="handleUpdateArea()">
                 <div class="row">
                   <div class="col-md-12">
                     <div class="form-section mt-4" *ngIf="selectedLanguage === 'arabic'">
                       <label for="nameArInput" class="form-label">اسم المنطقة التجارية (العربية)<span
                           class="text-danger">*</span></label>
                       <input type="text" id="nameArInput" class="form-control" placeholder="يرجى إدخال الاسم بالعربية"
-                        name="zoneNameAr" name="nameAr" [(ngModel)]="editArea.nameAr" #nameAr="ngModel" required
-                        minlength="2"
-                        [ngClass]="{'is-invalid': editForm.submitted && nameAr.invalid, 'is-valid': editForm.submitted && nameAr.valid}" />
-                      <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
+                        name="nameAr" formControlName="nameAr"
+                        [ngClass]="{ 'is-invalid': form.get('nameAr')?.touched && form.get('nameAr')?.invalid}" />
+                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['required']">
+                        الاسم العربي مطلوب
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['minlength']">
+                        حرفين على الأقل
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['pattern']">
+                        مسموح فقط بحروف عربية
+                      </div>
                     </div>
+
                     <div class="form-section mt-4" *ngIf="selectedLanguage === 'english'">
                       <label for="nameEnInput" class="form-label"><span class="text-danger">*</span>Commercial Area Name
                         (English)</label>
-                      <input type="text" id="nameEnInput" class="form-control"
-                        placeholder="Please enter the name in English" name="nameEn" [(ngModel)]="editArea.nameEn"
-                        #nameEn="ngModel" required minlength="2" pattern="[A-Za-z\s\-]+"
-                        [ngClass]="{'is-invalid': editForm.submitted && nameEn.invalid, 'is-valid': editForm.submitted && nameEn.valid}" />
-                      <div class="valid-feedback">Looks good!</div>
-                      <div class="invalid-feedback">Please enter a valid English name (letters only)</div>
+                      <input type="text" class="form-control" formControlName="nameEn"
+                        placeholder="Please enter the name in English"
+                        [ngClass]="{'is-invalid': form.get('nameEn')?.touched && form.get('nameEn')?.invalid}" />
+                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['required']">
+                        English name is required
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['minlength']">
+                        Minimum 2 characters required
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['pattern']">
+                        Only English letters allowed
+                      </div>
                     </div>
                   </div>
                   <div class="col-12 mt-2">
@@ -109,8 +121,8 @@
                   </div>
                   <div class="btns mt-2">
                     <div class="row justify-content-end">
-                      <button class="btn btn-rest" (click)="resetAddZoneForm()">إعادة تعيين</button>
-                      <button type="submit" class="btn btn-save" [disabled]="isLoading">
+                      <button class="btn btn-rest" (click)="resetForm()">إعادة تعيين</button>
+                      <button type="submit" class="btn btn-save mt-2" [disabled]="isLoading">
                         @if (isLoading) {
                         <span class="spinner-border spinner-border-sm me-2"></span>
                         }تحديث البيانات</button>

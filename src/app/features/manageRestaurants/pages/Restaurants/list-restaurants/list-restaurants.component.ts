@@ -4,11 +4,13 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { FilteredRestaurant } from '../../../model/restaurant.type';
 import { RestaurantsService } from '../../../services/restaurants.service';
+import { PaginationComponent } from '../../../../../shared/pagination/pagination.component';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-list-restaurants',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PaginationComponent],
   templateUrl: './list-restaurants.component.html',
   styleUrls: ['./list-restaurants.component.scss'],
 })
@@ -21,9 +23,14 @@ export class ListRestaurantsComponent implements OnInit {
   restaurantName: string = '';
   alertMessage: string | null = null;
   alertType: 'success' | 'danger' | null = null;
+  currentPage: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 1;
+  isLoading: boolean = false;
+  LoadingStatistics: boolean = false;
 
   // خيارات الـ status
-  statuses = ['Pending', 'Active', 'Inactive']; // أضف المزيد لو حابب
+  statuses = ['Pending', 'Active', 'notActive']; // أضف المزيد لو حابب
 
   constructor(
     private apiService: RestaurantsService,
@@ -36,36 +43,80 @@ export class ListRestaurantsComponent implements OnInit {
   }
 
   loadStatistics(): void {
-    this.apiService.getRestaurantsCount().subscribe({
-      next: (res) => (this.totalCount = res.count || 0),
-      error: (err) => console.error('Error loading total count:', err),
-    });
+    this.LoadingStatistics = true;
 
-    this.apiService.getActiveRestaurantsCount().subscribe({
-      next: (res) => (this.activeCount = res.activeCount || 0),
-      error: (err) => console.error('Error loading active count:', err),
-    });
+    forkJoin({
+      total: this.apiService.getRestaurantsCount(),
+      active: this.apiService.getActiveRestaurantsCount(),
+      notActive: this.apiService.getNotActiveRestaurantsCount(),
+    }).subscribe({
+      next: (res) => {
+        this.totalCount = res.total.data || 0;
+        this.activeCount = res.active.data || 0;
+        this.notActiveCount = res.notActive.data || 0;
 
-    this.apiService.getNotActiveRestaurantsCount().subscribe({
-      next: (res) => (this.notActiveCount = res.notactiveCount || 0),
-      error: (err) => console.error('Error loading not active count:', err),
+        this.LoadingStatistics = false; // ✅ هنا الصح
+      },
+      error: (err) => {
+        console.error('Error loading statistics:', err);
+        this.LoadingStatistics = false; // ✅ مهم جدًا
+      },
     });
   }
 
   loadRestaurants(): void {
+    this.isLoading = true;
     this.apiService
-      .getFilteredRestaurants(this.selectedStatus, this.restaurantName)
+      .getFilteredRestaurants(
+        this.selectedStatus,
+        this.restaurantName,
+        this.currentPage,
+        this.pageSize,
+      )
       .subscribe({
-        next: (data) => (this.restaurants = data),
+        next: (res) => {
+          this.restaurants = res.restaurants;
+          this.totalPages = res.totalPages;
+          this.totalCount = res.totalCount;
+          this.isLoading = false;
+        },
         error: (err) => {
           this.showAlert('danger', 'فشل جلب قائمة المطاعم');
-          console.error('Error loading restaurants:', err);
+          console.error(err);
+          this.isLoading = false;
         },
       });
   }
 
   onFilterChange(): void {
+    this.currentPage = 1;
     this.loadRestaurants();
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.loadRestaurants();
+  }
+
+  onStatusToggle(restaurant: FilteredRestaurant, index: number): void {
+    const newStatus = restaurant.status === 'Active' ? 'notActive' : 'Active';
+    // تأكيد قبل التغيير
+    const confirmChange = confirm(
+      `هل أنت متأكد من تغيير حالة المطعم إلى ${newStatus}?`,
+    );
+    if (!confirmChange) return;
+
+    this.apiService.changeRestaurantStatus(restaurant.id, newStatus).subscribe({
+      next: (res) => {
+        // تحديث الحالة في الـ UI مباشرة بعد نجاح الطلب
+        this.restaurants[index].status = newStatus;
+        this.showAlert('success', 'تم تغيير الحالة بنجاح');
+      },
+      error: (err) => {
+        this.showAlert('danger', 'فشل تغيير حالة المطعم');
+        console.error('Error changing restaurant status:', err);
+      },
+    });
   }
 
   showAlert(type: 'success' | 'danger', message: string): void {
@@ -74,7 +125,7 @@ export class ListRestaurantsComponent implements OnInit {
     setTimeout(() => {
       this.alertMessage = null;
       this.alertType = null;
-    }, 5000);
+    }, 3000);
   }
 
   detailsRestaurant(): void {

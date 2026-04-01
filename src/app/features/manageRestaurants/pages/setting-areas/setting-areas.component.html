@@ -71,27 +71,41 @@
               </div>
               }
 
-              <form #form="ngForm" (ngSubmit)="form.valid && handleSubmit()" class="mt-2 needs-validation" novalidate>
+              <form [formGroup]="form" (ngSubmit)="handleSubmit()" class="mt-2">
                 <div class="row">
                   <div class="col-md-12"> <!-- غيرناه إلى 12 بدلاً من 6 ليشغل المساحة -->
                     <div class="form-section mt-4" *ngIf="selectedLanguage === 'arabic'">
                       <label for="nameArInput" class="form-label">اسم المنطقة التجارية (العربية)<span
                           class="text-danger">*</span></label>
-                      <input type="text" id="nameArInput" class="form-control" placeholder="يرجى إدخال الاسم بالعربية"
-                        name="nameAr" [(ngModel)]="area.nameAr" #nameAr="ngModel" required minlength="2"
-                        [ngClass]="{'is-invalid': form.submitted && nameAr.invalid, 'is-valid': form.submitted && nameAr.valid}" />
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                      <div class="invalid-feedback">يرجى إدخال اسم عربي صالح (حرفين على الأقل)</div>
+                      <input type="text" class="form-control" formControlName="nameAr"
+                        placeholder="يرجى إدخال الاسم بالعربية" [ngClass]="{
+                        'is-invalid': form.get('nameAr')?.touched && form.get('nameAr')?.invalid}" />
+                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['required']">
+                        الاسم العربي مطلوب
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['minlength']">
+                        حرفين على الأقل
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['pattern']">
+                        مسموح فقط بحروف عربية
+                      </div>
                     </div>
+
                     <div class="form-section mt-4" *ngIf="selectedLanguage === 'english'">
                       <label for="nameEnInput" class="form-label"><span class="text-danger">*</span>Commercial Area Name
                         (English)</label>
-                      <input type="text" id="nameEnInput" class="form-control"
-                        placeholder="Please enter the name in English" name="nameEn" [(ngModel)]="area.nameEn"
-                        #nameEn="ngModel" required minlength="2" pattern="[A-Za-z\s\-]+"
-                        [ngClass]="{'is-invalid': form.submitted && nameEn.invalid, 'is-valid': form.submitted && nameEn.valid}" />
-                      <div class="valid-feedback">Looks good!</div>
-                      <div class="invalid-feedback">Please enter a valid English name (letters only)</div>
+                      <input type="text" class="form-control" formControlName="nameEn"
+                        placeholder="Please enter the name in English"
+                        [ngClass]="{'is-invalid': form.get('nameEn')?.touched && form.get('nameEn')?.invalid}" />
+                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['required']">
+                        English name is required
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['minlength']">
+                        Minimum 2 characters required
+                      </div>
+                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['pattern']">
+                        Only English letters allowed
+                      </div>
                     </div>
                   </div>
                   <div class="col-12 mt-2">
@@ -99,8 +113,8 @@
                   </div>
                   <div class="btns mt-2">
                     <div class="row justify-content-end">
-                      <button class="btn btn-rest" (click)="resetAddZoneForm()">إعادة تعيين</button>
-                      <button type="submit" class="btn btn-save" [disabled]="isLoading">
+                      <button class="btn btn-rest" type="button" (click)="resetForm()">إعادة تعيين</button>
+                      <button type="submit" class="btn btn-save mt-2" [disabled]="isLoading">
                         @if (isLoading) {
                         <span class="spinner-border spinner-border-sm me-2"></span>
                         }حفظ البيانات</button>
@@ -137,14 +151,9 @@
         <!-- Table -->
         <div class="cardParent mt-1">
           <div class="row justify-content-end border-bottoms">
-            <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث عن طلبك....."
-              name="productName" />
             <div class="coulm mt-2">
               <button class="btn"><i class="fa-solid fa-download"></i>تصدير<i
                   class="fa-solid fa-caret-down"></i></button>
-            </div>
-            <div class="coulm mt-2">
-              <button class="btn"><i class="fa-solid fa-caret-down"></i>الأعمدة</button>
             </div>
           </div>
           <div class="card-body">

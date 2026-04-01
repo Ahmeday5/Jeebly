@@ -24,18 +24,28 @@ export interface Restaurant {
 
 export interface FilteredRestaurant {
   id: number;
-  serviceId: number;
+  serviceId: number | null;
   nameOfResturantAr: string;
   nameOfResturantEn: string;
   nameOfResturantOwner: string;
-  areaOfResturantAr: string;
-  areaOfResturantEn: string;
+  areaOfResturantAr: string | null;
+  areaOfResturantEn: string | null;
   status: string;
   categoryName: string[];
 }
 
 export interface CountResponse {
-  count?: number;
-  activeCount?: number;
-  notactiveCount?: number;
+  data: number;
+}
+
+export interface PaginatedResponse<T> {
+  statusCode: number;
+  message: string;
+  data: {
+    pageNumber: number;
+    pageSize: number;
+    totalCount: number;
+    totalPages: number;
+    data: T[];
+  };
 }

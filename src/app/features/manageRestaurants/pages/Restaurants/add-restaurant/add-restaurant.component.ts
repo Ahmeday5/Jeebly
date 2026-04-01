@@ -1,15 +1,20 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { allArea } from '../../../model/area.type'; // من types
 import { RestaurantsService } from '../../../services/restaurants.service';
 import { SettingAreasService } from '../../../services/setting-areas.service';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 @Component({
   selector: 'app-add-restaurant',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-restaurant.component.html',
   styleUrls: ['./add-restaurant.component.scss'],
 })
@@ -35,27 +40,7 @@ export class AddRestaurantComponent implements OnInit {
   successMessage: string | null = null;
   errorMessage: string | null = null;
   isLoading: boolean = false;
-
-  // نموذج البيانات
-  nameAr: string = '';
-  nameEn: string = '';
-  addressAr: string = '';
-  addressEn: string = '';
-  serviceId: number | null = null;
-  latitude: number | null = null;
-  longitude: number | null = null;
-  foodType: number | null = null;
-  areaId: number | null = null;
-  taxPercentage: number | null = null;
-  minDeliveryTime: number | null = null;
-  maxDeliveryTime: number | null = null;
-  ownerFirstName: string = '';
-  ownerLastName: string = '';
-  ownerPhone: string = '';
-  notes: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
+  form!: FormGroup;
 
   services = [
     { id: 1, name: 'مطاعم' },
@@ -69,10 +54,54 @@ export class AddRestaurantComponent implements OnInit {
     private sanitizer: DomSanitizer,
     private apiService: RestaurantsService,
     private areaService: SettingAreasService,
+    private fb: FormBuilder,
   ) {}
 
   ngOnInit(): void {
+    this.initForm();
     this.loadAreas();
+  }
+
+  initForm() {
+    this.form = this.fb.group({
+      nameAr: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern(/^[\u0600-\u06FF\s]+$/),
+        ],
+      ],
+      nameEn: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern(/^[A-Za-z\s]+$/),
+        ],
+      ],
+      addressAr: ['', Validators.required],
+      addressEn: ['', Validators.required],
+      serviceId: [null, Validators.required],
+      latitude: [null, Validators.required],
+      longitude: [null, Validators.required],
+      foodType: [null, Validators.required],
+      areaId: [null, Validators.required],
+      taxPercentage: [0, [Validators.required, Validators.min(0)]],
+      minDeliveryTime: [15, [Validators.required, Validators.min(0)]],
+      maxDeliveryTime: [45, [Validators.required, Validators.min(0)]],
+      ownerFirstName: ['', [Validators.required, Validators.minLength(2)]],
+      ownerLastName: ['', [Validators.required, Validators.minLength(2)]],
+      ownerPhone: [
+        '',
+        [Validators.required, Validators.pattern(/^\d{10,15}$/)],
+      ],
+      notes: [''],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+      resturantStatus: ['Active'],
+    });
   }
 
   loadAreas(): void {
@@ -155,16 +184,6 @@ export class AddRestaurantComponent implements OnInit {
     reader.readAsDataURL(file); // ← هنا السر: Data URL للمعاينة الفورية
   }
 
-  /*private setError(type: 'logo' | 'cover', msg: string): void {
-    if (type === 'logo') this.logoError = msg;
-    else this.coverError = msg;
-  }
-
-  private clearError(type: 'logo' | 'cover'): void {
-    if (type === 'logo') this.logoError = null;
-    else this.coverError = null;
-  }*/
-
   clearImage(type: 'logo' | 'cover'): void {
     if (type === 'logo') {
       this.LogoPreview = null;
@@ -184,136 +203,72 @@ export class AddRestaurantComponent implements OnInit {
     if (input) input.value = '';
   }
 
-  handleSubmit(form: any): void {
-    this.successMessage = null;
-    this.errorMessage = null;
-    this.logoRequiredError = null;
-    this.coverRequiredError = null;
-
-    // التحقق من الصور إجباريًا
-    if (!this.Logo) {
-      this.logoRequiredError = 'الشعار مطلوب';
-    }
-    if (!this.Cover) {
-      this.coverRequiredError = 'الغلاف مطلوب';
-    }
+  handleSubmit(): void {
+    this.form.markAllAsTouched();
 
     if (
-      !form.valid ||
-      this.logoError ||
-      this.coverError ||
+      this.form.invalid ||
       !this.Logo ||
       !this.Cover ||
-      this.password !== this.confirmPassword
+      this.form.value.password !== this.form.value.confirmPassword
     ) {
-      this.errorMessage = 'يرجى تصحيح جميع الأخطاء الموجودة';
+      this.errorMessage = 'يرجى تصحيح جميع الأخطاء';
       return;
     }
 
-    // إضافة قيم افتراضية إذا كانت فارغة
-    const lat = this.latitude ?? Math.random() * 90 - 45;
-    const lng = this.longitude ?? Math.random() * 180 - 90;
+    const formValue = this.form.value;
 
     const formData = new FormData();
 
-    // إضافة الحقول النصية أولاً
-    formData.append('NameAr', this.nameAr.trim());
-    formData.append('NameEn', this.nameEn.trim());
-    formData.append('AddressAr', this.addressAr.trim());
-    formData.append('AddressEn', this.addressEn.trim());
-    formData.append('ServiceId', this.serviceId?.toString() || '1');
-    formData.append('Latitude', lat.toString());
-    formData.append('Longitude', lng.toString());
-    formData.append('FoodType', this.foodType?.toString() || '1');
-    formData.append('AreaId', this.areaId?.toString() || '');
-    formData.append('TaxPercentage', this.taxPercentage?.toString() || '0');
-    formData.append(
-      'MinDeliveryTime',
-      this.minDeliveryTime?.toString() || '15',
-    );
-    formData.append(
-      'MaxDeliveryTime',
-      this.maxDeliveryTime?.toString() || '45',
-    );
-    formData.append('ResturantOwnerFirstName', this.ownerFirstName.trim());
-    formData.append('ResturantOwnerLastName', this.ownerLastName.trim());
-    formData.append('ResturantOwnerPhone', this.ownerPhone.trim());
-    formData.append('Notes', this.notes.trim());
-    formData.append('Email', this.email.trim());
-    formData.append('Password', this.password);
-    formData.append('ConfirmPassword', this.confirmPassword);
+    formData.append('NameAr', formValue.nameAr.trim());
+    formData.append('NameEn', formValue.nameEn.trim());
+    formData.append('AddressAr', formValue.addressAr.trim());
+    formData.append('AddressEn', formValue.addressEn.trim());
+    formData.append('ServiceId', formValue.serviceId);
+    formData.append('Latitude', formValue.latitude);
+    formData.append('Longitude', formValue.longitude);
+    formData.append('FoodType', formValue.foodType);
+    formData.append('AreaId', formValue.areaId);
+    formData.append('TaxPercentage', formValue.taxPercentage);
+    formData.append('MinDeliveryTime', formValue.minDeliveryTime);
+    formData.append('MaxDeliveryTime', formValue.maxDeliveryTime);
+    formData.append('ResturantOwnerFirstName', formValue.ownerFirstName);
+    formData.append('ResturantOwnerLastName', formValue.ownerLastName);
+    formData.append('ResturantOwnerPhone', formValue.ownerPhone);
+    formData.append('Notes', formValue.notes || '');
+    formData.append('Email', formValue.email);
+    formData.append('Password', formValue.password);
+    formData.append('ConfirmPassword', formValue.confirmPassword);
+    formData.append('ResturantStatus', formValue.resturantStatus);
 
-    // إضافة الملفات أخيرًا
-    if (this.Logo) {
-      formData.append('Logo', this.Logo, this.Logo.name);
-    }
-    if (this.Cover) {
-      formData.append('Cover', this.Cover, this.Cover.name);
-    }
-
-    // طباعة للتحقق (افتح console)
-    console.log('FormData contents:');
-    for (const [key, value] of (formData as any).entries()) {
-      console.log(key, value instanceof File ? `${value.name} (File)` : value);
-    }
+    if (this.Logo) formData.append('Logo', this.Logo);
+    if (this.Cover) formData.append('Cover', this.Cover);
 
     this.isLoading = true;
 
     this.apiService.addRestaurant(formData).subscribe({
       next: (res) => {
-        this.successMessage = res.message || 'تم إضافة المطعم بنجاح';
+        this.successMessage = 'تم إضافة المطعم بنجاح';
         this.isLoading = false;
-        setTimeout(() => this.resetForm(), 4000);
+        this.form.reset();
+        setTimeout(() => {
+          this.resetForm();
+        }, 3000);
       },
       error: (err) => {
-        console.error('خطأ في إضافة المطعم:', err);
-        this.errorMessage =
-          err.error?.errors?.Logo?.[0] ||
-          err.error?.errors?.Cover?.[0] ||
-          err.error?.title ||
-          'حدث خطأ أثناء إضافة المطعم، حاول مرة أخرى';
+        this.errorMessage = err.error?.title || 'حدث خطأ';
         this.isLoading = false;
       },
     });
   }
 
-  resetForm(): void {
-    this.nameAr = '';
-    this.nameEn = '';
-    this.addressAr = '';
-    this.addressEn = '';
-    this.serviceId = null;
-    this.latitude = null;
-    this.longitude = null;
-    this.foodType = null;
-    this.areaId = null;
-    this.taxPercentage = null;
-    this.minDeliveryTime = null;
-    this.maxDeliveryTime = null;
-    this.ownerFirstName = '';
-    this.ownerLastName = '';
-    this.ownerPhone = '';
-    this.notes = '';
-    this.email = '';
-    this.password = '';
-    this.confirmPassword = '';
+  resetForm() {
+    this.form.reset();
     this.Logo = null;
     this.Cover = null;
     this.LogoPreview = null;
     this.CoverPreview = null;
-    this.logoError = null;
-    this.coverError = null;
-    this.logoRequiredError = null;
-    this.coverRequiredError = null;
-    this.successMessage = null;
     this.errorMessage = null;
-
-    // إعادة تعيين inputs الملفات
-    const logoInput = document.getElementById('logoUpload') as HTMLInputElement;
-    const coverInput = document.getElementById(
-      'coverUpload',
-    ) as HTMLInputElement;
-    if (logoInput) logoInput.value = '';
-    if (coverInput) coverInput.value = '';
+    this.successMessage = null;
   }
 }

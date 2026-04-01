@@ -2,8 +2,9 @@ import { inject, Injectable } from '@angular/core';
 import {
   HttpClient,
   HttpErrorResponse,
+  HttpParams,
 } from '@angular/common/http';
-import { catchError, Observable, throwError } from 'rxjs';
+import { catchError, map, Observable, throwError } from 'rxjs';
 import { LoginCredentials, LoginResponse } from '../types/login.type';
 import { environment } from '../../../environments/environment';
 
@@ -17,12 +18,25 @@ export class ApiService {
   constructor() {}
 
   // ====================== GET ======================
-  get<T>(endpoint: string): Observable<T> {
+  get<T>(endpoint: string, params?: any): Observable<T> {
+    let httpParams = new HttpParams();
+
+    if (params) {
+      Object.keys(params).forEach((key) => {
+        if (
+          params[key] !== null &&
+          params[key] !== undefined &&
+          params[key] !== ''
+        ) {
+          httpParams = httpParams.set(key, params[key]);
+        }
+      });
+    }
+
     return this.http
-      .get<T>(`${this.baseUrl}${endpoint}`)
+      .get<T>(`${this.baseUrl}${endpoint}`, { params: httpParams })
       .pipe(catchError(this.handleError));
   }
-
   // ====================== POST (يدعم FormData + JSON) ======================
   post<T>(endpoint: string, body: any): Observable<T> {
     return this.http
@@ -31,10 +45,11 @@ export class ApiService {
   }
 
   // ====================== PUT ======================
-  put<T>(endpoint: string, body: any): Observable<T> {
-    return this.http
-      .put<T>(`${this.baseUrl}${endpoint}`, body)
-      .pipe(catchError(this.handleError));
+  put<T>(endpoint: string, body: any, options?: any): Observable<T> {
+    return this.http.put<T>(`${this.baseUrl}${endpoint}`, body, options).pipe(
+      map((event: any) => (event.body ? event.body : event)),
+      catchError(this.handleError),
+    );
   }
 
   // ====================== DELETE ======================

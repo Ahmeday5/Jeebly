@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
-import { Observable, of } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 import {
   FilteredRestaurant,
   Restaurant,
   CountResponse,
+  PaginatedResponse,
 } from '../model/restaurant.type';
 
 @Injectable({
@@ -25,18 +26,28 @@ export class RestaurantsService {
   getFilteredRestaurants(
     status: string = '',
     restaurantName: string = '',
-  ): Observable<FilteredRestaurant[]> {
-    const params: Record<string, string> = {};
-    if (status) params['status'] = status;
-    if (restaurantName) params['ResturantName'] = restaurantName;
+    pageNumber: number = 1,
+    pageSize: number = 10,
+  ) {
+    const params: any = {
+      pageNumber,
+      pageSize,
+    };
 
-    // تحويل الـ params ل query string
-    const queryString = new URLSearchParams(params).toString();
-    const url = queryString
-      ? `/api/AddRestaurant/GetResturantsFiltered?${queryString}`
-      : '/api/AddRestaurant/GetResturantsFiltered';
+    if (status) params.status = status;
+    if (restaurantName) params.ResturantName = restaurantName;
 
-    return this.api.get<FilteredRestaurant[]>(url);
+    return this.api
+      .get<
+        PaginatedResponse<FilteredRestaurant>
+      >('/api/AddRestaurant/GetResturantsFiltered', params)
+      .pipe(
+        map((res) => ({
+          restaurants: res.data.data,
+          totalPages: res.data.totalPages,
+          totalCount: res.data.totalCount,
+        })),
+      );
   }
 
   // ========================== GET RESTAURANTS COUNT ==========================
@@ -65,5 +76,16 @@ export class RestaurantsService {
       '/api/AddRestaurant/UpdateRestaurant',
       formData,
     );
+  }
+  // ========================== CHANGE RESTAURANT STATUS ==========================
+  changeRestaurantStatus(
+    id: number,
+    status: 'Active' | 'notActive',
+  ): Observable<string> {
+    const url = `/api/AddRestaurant/change-status/${id}?status=${status}`;
+
+    return this.api.put<string>(url, null, {
+      responseType: 'text' as 'json', 
+    });
   }
 }

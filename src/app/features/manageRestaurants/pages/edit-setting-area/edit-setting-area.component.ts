@@ -6,12 +6,12 @@ import {
   OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, NgForm } from '@angular/forms';
+import { FormGroup, FormsModule, NgForm, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { SettingAreasService } from '../../services/setting-areas.service';
+import { FormBuilder } from '@angular/forms';
+import { EditSettingAreaService } from '../../services/edit-setting-area.service';
 
 @Component({
   selector: 'app-edit-setting-area',
@@ -31,33 +31,17 @@ export class EditSettingAreaComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  //form
-  @ViewChild('editForm') editForm!: NgForm;
-  @ViewChild('editForm', { static: false, read: ElementRef })
-  editFormElement!: ElementRef<HTMLFormElement>;
-
-  editArea: {
-    nameAr: string;
-    nameEn: string;
-    latitude: number;
-    longitude: number;
-    point3: number;
-  } = {
-    nameAr: '',
-    nameEn: '',
-    latitude: 0,
-    longitude: 0,
-    point3: 0,
-  };
+  //فورمات التعديل
+  form!: FormGroup;
 
   currentEditingAreaId: number | null = null;
 
   constructor(
-    private apiService: SettingAreasService,
+    private apiService: EditSettingAreaService,
     private router: Router,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -77,6 +61,32 @@ export class EditSettingAreaComponent implements OnInit {
       this.errorMessage = 'لم يتم تحديد منطقة للتعديل';
       setTimeout(() => this.router.navigate(['/setting-areas']), 2000);
     }
+
+    this.initForm();
+  }
+
+  initForm() {
+    this.form = this.fb.group({
+      nameAr: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern(/^[\u0600-\u06FF\s]+$/), // ✅ اتحلت
+        ],
+      ],
+      nameEn: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern(/^[A-Za-z\s]+$/), // ✅ اتحلت
+        ],
+      ],
+      latitude: [0],
+      longitude: [0],
+      point3: [0],
+    });
   }
 
   // دالة لتحديث اللغة المختارة (نزيل default)
@@ -92,15 +102,15 @@ export class EditSettingAreaComponent implements OnInit {
 
     this.apiService.getAreaById(id).subscribe({
       next: (res) => {
-        const area = res.data || res ;
+        const area = res.data || res;
         // نملأ البيانات في editEmployeeAdvance
-        this.editArea = {
+        this.form.patchValue({
           nameAr: area.nameAr || '',
           nameEn: area.nameEn || '',
           latitude: area.latitude || 0,
           longitude: area.longitude || 0,
           point3: area.point3 || 0,
-        };
+        });
 
         this.Loading = false;
         this.cdr.detectChanges();
@@ -115,11 +125,11 @@ export class EditSettingAreaComponent implements OnInit {
   }
 
   async handleUpdateArea(): Promise<void> {
-    // السطرين دول هما السحر: بيخلوا كل الحقول تُعتبر "ملموسة" ويظهر الأخطاء فورًا
-    this.editForm.form.markAllAsTouched();
-    this.editFormElement.nativeElement.classList.add('was-validated');
+    this.form.markAllAsTouched();
 
-    if (!this.editForm.valid) {
+    if (this.form.invalid) {
+      this.errorMessage =
+        'الاسم بالعربي والانجليزي مطلوب ويجب أن يكون على الأقل حرفين';
       return;
     }
 
@@ -128,41 +138,31 @@ export class EditSettingAreaComponent implements OnInit {
     this.successMessage = null;
 
     const body = {
-      nameAr: this.editArea.nameAr.trim(),
-      nameEn: this.editArea.nameEn.trim(),
-      latitude: this.editArea.latitude,
-      longitude: this.editArea.longitude,
-      point3: this.editArea.point3,
+      ...this.form.value,
+      nameAr: this.form.value.nameAr.trim(),
+      nameEn: this.form.value.nameEn.trim(),
     };
-
-    try {
-      const result = await firstValueFrom(
-        this.apiService.updateArea(this.currentEditingAreaId!, body)
-      );
-
-      if (result.success) {
-        this.successMessage = 'تم تعديل بيانات المنطقة بنجاح ✓';
-        setTimeout(() => (this.successMessage = null), 3000);
-      } else {
-        this.errorMessage = result.message || 'حدث خطأ أثناء التعديل';
-        setTimeout(() => (this.errorMessage = null), 3000);
-      }
-    } catch (err: any) {
-      this.errorMessage = 'فشل الاتصال بالخادم';
-      setTimeout(() => (this.errorMessage = null), 3000);
-    } finally {
-      this.isLoading = false;
-    }
+    this.apiService.updateArea(this.currentEditingAreaId!, body).subscribe({
+      next: (res) => {
+        this.successMessage = 'تم تعديل بيانات المنطقة بنجاح';
+        this.isLoading = false;
+        this.form.reset();
+        setTimeout(() => {
+          this.resetForm();
+          this.router.navigate(['/manageRestaurants/setting-areas']);
+        }, 2000);
+      },
+      error: (err) => {
+        console.error('خطأ في تعديل المنطقة:', err);
+        this.errorMessage = err.error?.title || 'حدث خطأ أثناء تعديل المنطقة';
+        this.isLoading = false;
+      },
+    });
   }
 
-  // دالة الريست (تفريغ الاسمين)
-  resetAddZoneForm() {
-    this.nameAr = '';
-    this.nameEn = '';
-    this.successMessage = '';
-    this.errorMessage = '';
-    if (this.editForm) {
-      this.editForm.resetForm(); // نفرغ الفورم
-    }
+  resetForm() {
+    this.form.reset();
+    this.errorMessage = null;
+    this.successMessage = null;
   }
 }
