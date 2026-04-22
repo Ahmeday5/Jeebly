@@ -18,7 +18,7 @@ export const FOODS_ROUTES: Routes = [
     title: 'اضافة الطعام',
   },
   {
-    path: 'edit-food',
+    path: 'edit-food/:id',
     loadComponent: () =>
       import('./pages/edti-food/edti-food.component').then(
         (m) => m.EdtiFoodComponent,

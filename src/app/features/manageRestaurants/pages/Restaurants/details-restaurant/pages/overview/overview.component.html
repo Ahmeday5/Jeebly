@@ -72,17 +72,17 @@
             <div class="row">
               <div class="col-md-6 d-flex deta">
                 <div class="imgs">
-                  <img src="/assets/img/deta-rest/1.png" class="img-fluid" alt="">
+                  <img [src]="getImageUrl(restaurant?.logo)" class="img-fluid" alt="logo">
                 </div>
                 <div class="title">
-                  <h4>demores</h4>
-                  <h6>demores</h6>
-                  <h6>0123456789</h6>
-                  <h6>Demo2025-res.com</h6>
+                  <h4>{{ restaurant?.nameAr }}</h4>
+                  <h6>{{ restaurant?.nameEn }}</h6>
+                  <h6>{{restaurant?.addressAr}}</h6>
+                  <h6>{{restaurant?.ownerEmail}}</h6>
                 </div>
               </div>
               <div class="col-md-6 map">
-                <img src="/assets/img/deta-rest/2.png" class="img-fluid" alt="">
+                <img [src]="getImageUrl(restaurant?.coverUrl)" class="img-fluid" alt="cover">
               </div>
             </div>
           </div>
@@ -105,13 +105,13 @@
             <div class="row">
               <div class="col-md-12 d-flex deta">
                 <div class="imgs">
-                  <img src="/assets/img/deta-rest/1.png" class="img-fluid" alt="">
+                  <img [src]="getImageUrl(restaurant?.logo)" class="img-fluid" alt="logo">
                 </div>
                 <div class="title">
-                  <h4>demores</h4>
-                  <h6>demores</h6>
-                  <h6>0123456789</h6>
-                  <h6>Demo2025-res.com</h6>
+                 <h4>{{ restaurant?.nameAr }}</h4>
+                  <h6>{{ restaurant?.nameEn }}</h6>
+                  <h6>{{restaurant?.ownerPhone}}</h6>
+                  <h6>{{restaurant?.ownerEmail}}</h6>
                 </div>
               </div>
             </div>

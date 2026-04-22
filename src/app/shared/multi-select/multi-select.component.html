@@ -1,0 +1,57 @@
+<div class="multi-select-wrapper">
+
+  <!-- Trigger -->
+  <div class="multi-select-trigger"
+       [class.open]="isOpen"
+       [class.is-invalid]="invalid && required && selectedIds.length === 0"
+       (click)="toggle()">
+
+    <!-- Chips for selected items -->
+    @if (selectedIds.length > 0) {
+      <div class="chips-wrap">
+        @for (id of selectedIds; track id) {
+          <span class="chip">
+            {{ getItemName(id) }}
+            <button type="button" class="chip-remove" (click)="removeItem(id, $event)" title="حذف">
+              <i class="fas fa-times"></i>
+            </button>
+          </span>
+        }
+      </div>
+      <button type="button" class="clear-all" (click)="clearAll($event)" title="مسح الكل">
+        <i class="fas fa-times-circle"></i>
+      </button>
+    } @else {
+      <span class="placeholder-text">{{ placeholder }}</span>
+    }
+
+    <i class="fas fa-chevron-down arrow" [class.rotated]="isOpen"></i>
+  </div>
+
+  <!-- Dropdown panel -->
+  @if (isOpen) {
+    <div class="multi-select-dropdown">
+      @if (items.length === 0) {
+        <div class="no-items">لا توجد عناصر متاحة</div>
+      }
+      @for (item of items; track item.id) {
+        <div class="dropdown-item" [class.selected]="isSelected(item.id)"
+             (click)="toggleItem(item.id, $event)">
+          <span class="checkbox-icon">
+            @if (isSelected(item.id)) {
+              <i class="fas fa-check-square"></i>
+            } @else {
+              <i class="far fa-square"></i>
+            }
+          </span>
+          <span class="item-name">{{ item.name }}</span>
+        </div>
+      }
+    </div>
+  }
+
+  @if (invalid && required && selectedIds.length === 0) {
+    <div class="invalid-msg">يرجى اختيار نوع الأكل</div>
+  }
+
+</div>

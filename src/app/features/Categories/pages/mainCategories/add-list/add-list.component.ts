@@ -1,20 +1,33 @@
 import { CommonModule } from '@angular/common';
+import { environment } from '../../../../../../environments/environment';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { MainCategoriesService } from '../../../services/main-categories.service';
+import { MainCategory } from '../../../model/categories.type';
+import {
+  ReactiveFormsModule,
+  FormBuilder,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { FilteredRestaurant } from '../../../../manageRestaurants/model/restaurant.type';
+import { RestaurantsService } from '../../../../manageRestaurants/services/restaurants.service';
+import { ToastService } from '../../../../../core/services/toast.service';
+import { ConfirmService } from '../../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-add-list',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './add-list.component.html',
   styleUrl: './add-list.component.scss',
 })
 export class AddListComponent implements OnInit {
-  selectedLanguage: string = 'default'; //تتبع اللغة المختارة
-  selectedLanguageLabel: string = 'افتراضي';
+  readonly baseUrl = environment.apiBaseUrl;
+  selectedLanguage: string = 'arabic'; //تتبع اللغة المختارة
+  selectedLanguageLabel: string = 'عربية';
   selectedLanguageePlaceholder: string = 'يرجي ادخال لغة عربية';
 
   logoError: string | null = null;
@@ -25,16 +38,15 @@ export class AddListComponent implements OnInit {
   LogoPreview: SafeUrl | null = null;
   Logo: File | null = null;
 
-  categories: any[] = [];
+  categories: MainCategory[] = [];
   isLoading: boolean = false;
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
 
   // نموذج البيانات
-  RestaurantId: number | null = null;
-  ServiesId: number | null = null;
-  nameAr: string = '';
-  nameEn: string = '';
+  form!: FormGroup;
+
+  currentPage = 1;
+  pageSize = 30; // نخليها كبيرة عشان نقلل عدد اللف
+  totalPages = 1;
 
   services = [
     { id: 1, name: 'مطاعم' },
@@ -48,12 +60,23 @@ export class AddListComponent implements OnInit {
     private apiService: MainCategoriesService,
     private router: Router,
     private sanitizer: DomSanitizer,
+    private fb: FormBuilder,
+    private toast: ToastService,
+    private confirm: ConfirmService,
   ) {}
 
   ngOnInit() {
     this.loadCategories();
+    this.initForm();
   }
 
+  initForm() {
+    this.form = this.fb.group({
+      ServiesId: [0, Validators.required],
+      NameAr: ['', [Validators.required, Validators.minLength(2)]],
+      NameEn: ['', [Validators.required, Validators.minLength(2)]],
+    });
+  }
   // دالة لتحديث اللغة المختارة
   selectLanguage(language: string) {
     this.selectedLanguage = language;
@@ -100,12 +123,11 @@ export class AddListComponent implements OnInit {
     // فلترة بسيطة للصيغ والحجم (اختياري)
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      alert('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
+      this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      // 5 ميجا كحد أقصى مثال
-      alert('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
+      this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
       return;
     }
 
@@ -152,24 +174,73 @@ export class AddListComponent implements OnInit {
 
   loadCategories() {
     this.isLoading = true;
-    this.errorMessage = null;
     this.apiService.getAllCategories(this.selectedServiceId).subscribe({
-      next: (data) => {
-        this.categories = Array.isArray(data) ? data : [];
-        if (this.categories.length === 0) {
-          this.errorMessage = 'لا يوجد فئات متاحة';
-        }
+      next: (res) => {
+        this.categories = res.Categories;
         this.isLoading = false;
       },
       error: (error) => {
         console.error('خطأ في جلب كل الفئات:', error);
-        this.errorMessage = 'فشل جلب الفئات';
+        this.toast.error('فشل جلب الفئات');
         this.isLoading = false;
       },
     });
   }
 
-  editCategory() {
-    this.router.navigate(['Categories/update-category']);
+  handleSubmit() {
+    this.form.markAllAsTouched();
+
+    if (this.form.invalid || !this.Logo) {
+      this.toast.error('يرجى إدخال كل البيانات');
+      return;
+    }
+
+    const formValue = this.form.value;
+
+    const formData = new FormData();
+
+    formData.append('ServiesId', formValue.ServiesId);
+    formData.append('NameAr', formValue.NameAr.trim());
+    formData.append('NameEn', formValue.NameEn.trim());
+
+    if (this.Logo) {
+      formData.append('Image', this.Logo);
+    }
+
+    this.isLoading = true;
+
+    this.apiService.addCategories(formData).subscribe({
+      next: () => {
+        this.toast.success('تم إضافة الفئة بنجاح');
+        this.form.reset();
+        this.Logo = null;
+        this.LogoPreview = null;
+        this.loadCategories();
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.toast.error(err.message || 'حدث خطأ أثناء الإضافة');
+        this.isLoading = false;
+      },
+    });
+  }
+
+  deleteCategory(id: number) {
+    this.confirm.confirm('هل أنت متأكد من حذف هذه الفئة؟ لا يمكن التراجع.', 'حذف الفئة').subscribe((ok) => {
+      if (!ok) return;
+      this.apiService.deleteCategory(id).subscribe({
+        next: () => {
+          this.toast.success('تم حذف الفئة بنجاح');
+          this.loadCategories();
+        },
+        error: () => {
+          this.toast.error('فشل حذف الفئة');
+        },
+      });
+    });
+  }
+
+  editCategory(id: number) {
+    this.router.navigate(['Categories/update-category', id]);
   }
 }

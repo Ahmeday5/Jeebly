@@ -2,7 +2,9 @@
 export interface MainCategory {
   id: number;
   name: string;
+  image: string;
 }
+
 export interface addMainCategory {
   RestaurantId: number;
   ServiesId: number;
@@ -18,8 +20,11 @@ export interface SubCategory {
   categoryId: number;
 }
 
-// نوع الرد من API للفئات الرئيسية
-export type MainCategoriesResponse = MainCategory[];
+export interface MainCategoriesResponse<T> {
+  statusCode: number;
+  message: string;
+  data: T[]; // ✅ مش nested
+}
 
 // نوع الرد من API للفئات الفرعية (لما تجيبها بـ categoryId)
 export type SubCategoriesResponse = SubCategory[];

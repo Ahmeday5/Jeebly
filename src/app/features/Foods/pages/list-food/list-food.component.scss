@@ -169,6 +169,16 @@
 }
 /**************/
 
+.btn-add {
+  background: var(--main-color);
+  color: var(--second-color);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border: none;
+  &:hover { opacity: 0.9; color: var(--second-color); }
+}
+
 @media (max-width: 992px) {
   .filter {
     top: 8%;

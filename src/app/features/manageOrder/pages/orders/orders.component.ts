@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../../core/services/api.service';
-import { Order } from '../../model/orders.type'; // غيرنا OrdersResponse لـ Order فقط
+import { Order, OrdersResponse } from '../../model/orders.type'; // غيرنا OrdersResponse لـ Order فقط
 import { Subject, debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { PaginationComponent } from '../../../../shared/pagination/pagination.component';
 import { OrdersService } from '../../services/orders.service';
@@ -124,9 +124,9 @@ export class OrdersComponent implements OnInit, OnDestroy {
     this.apiService
       .getOrdersFiltered(this.activeFilter, this.searchCode)
       .subscribe({
-        next: (response: Order[]) => {
+        next: (response: OrdersResponse) => {
           // الـ response array مباشرة, مش .data
-          this.orders = response || [];
+          this.orders = response?.data || [];
           this.totalItems = this.orders.length;
           this.currentPage = 1; // رجع للصفحة 1 بعد جلب جديد
           this.updateDisplayedOrders(); // حدث الطلبات المعروضة

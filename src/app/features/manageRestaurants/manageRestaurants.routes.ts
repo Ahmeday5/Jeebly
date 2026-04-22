@@ -42,7 +42,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
     title: 'إعداد المناطق',
   },
   {
-    path: 'sett-area',
+    path: 'sett-area/:id',
     loadComponent: () =>
       import('./pages/setting-areas/sett-area/sett-area.component').then(
         (m) => m.SettAreaComponent,
@@ -68,7 +68,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
 
   // ─── Restaurant Details (nested routes) ──────────────
   {
-    path: 'details-restaurant',
+    path: 'details-restaurant/:id',
     loadComponent: () =>
       import('./pages/Restaurants/details-restaurant/details-restaurant.component').then(
         (m) => m.DetailsRestaurantComponent,
@@ -116,7 +116,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'الخصومات',
       },
       {
-        path: 'Meta',
+        path: 'meta',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/meta/meta.component').then(
             (m) => m.MetaComponent,
@@ -124,7 +124,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'Meta',
       },
       {
-        path: 'Payments',
+        path: 'payments',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/payments/payments.component').then(
             (m) => m.PaymentsComponent,
@@ -132,7 +132,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'المدفوعات',
       },
       {
-        path: 'QRcode',
+        path: 'qrcode',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/qrcode/qrcode.component').then(
             (m) => m.QRcodeComponent,
@@ -140,7 +140,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'QRcode',
       },
       {
-        path: 'Settings',
+        path: 'settings',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/settings/settings.component').then(
             (m) => m.SettingsComponent,
@@ -148,7 +148,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'الاعدادات',
       },
       {
-        path: 'Transactions',
+        path: 'transactions',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/transactions/transactions.component').then(
             (m) => m.TransactionsComponent,
@@ -156,7 +156,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'المعاملات',
       },
       {
-        path: 'Conversations',
+        path: 'conversations',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/conversations/conversations.component').then(
             (m) => m.ConversationsComponent,
@@ -164,7 +164,7 @@ export const MANAGE_RESTAURANTS_ROUTES: Routes = [
         title: 'المحادثات',
       },
       {
-        path: 'Buisness',
+        path: 'business',
         loadComponent: () =>
           import('./pages/Restaurants/details-restaurant/pages/buisness/buisness.component').then(
             (m) => m.BuisnessComponent,

@@ -1,109 +1,198 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { ProductsService } from '../../services/list-food.service';
+import { RestaurantsService } from '../../../manageRestaurants/services/restaurants.service';
+import { FilteredRestaurant } from '../../../manageRestaurants/model/restaurant.type';
+import { RestaurantCategory } from '../../model/food.type';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
-  selector: 'app-edti-food',
+  selector: 'app-add-food',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './add-food.component.html',
   styleUrl: './add-food.component.scss',
 })
+export class AddFoodComponent implements OnInit {
+  form!: FormGroup;
+  selectedLanguage = 'arabic';
 
-export class AddFoodComponent {
-  selectedLanguage: string = 'default'; //تتبع اللغة المختارة
-  selectedLanguageLabel: string = 'افتراضي';
-  selectedLanguageePlaceholder: string = 'يرجي ادخال لغة عربية';
-  logoError: string | null = null; // رسالة خطأ للشعار
-  coverError: string | null = null; // رسالة خطأ لغلاف المطعم
-  showPassword: boolean = false;
-  showConfirmPassword: boolean = false;
+  ImagePreview: SafeUrl | null = null;
+  ImageFile: File | null = null;
 
-  togglePassword() {
-    this.showPassword = !this.showPassword;
-  }
+  restaurants: FilteredRestaurant[] = [];
+  categories: RestaurantCategory[] = [];
+  isLoading = false;
+  isSaving = false;
 
-  toggleConfirmPassword() {
-    this.showConfirmPassword = !this.showConfirmPassword;
-  }
+  services = [
+    { id: 1, name: 'مطاعم' },
+    { id: 2, name: 'تغذية' },
+    { id: 3, name: 'متاجر' },
+  ];
 
-  // دالة لتحديث اللغة المختارة
-  selectLanguage(language: string) {
-    this.selectedLanguage = language;
-    this.selectedLanguageLabel = this.getLanguageLabel(language);
-    this.selectedLanguageePlaceholder = this.getLanguagePlaceholder(language);
-  }
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private sanitizer: DomSanitizer,
+    private productsService: ProductsService,
+    private restaurantsService: RestaurantsService,
+    private toast: ToastService,
+  ) {}
 
-  private getLanguageLabel(language: string): string {
-    switch (language) {
-      case 'default':
-        return 'افتراضي';
-      case 'english':
-        return 'English (EN)';
-      case 'arabic':
-        return 'Arabic - العربية (AR)';
-      default:
-        return 'افتراضي';
+  ngOnInit(): void {
+    this.initForm();
+    this.loadRestaurants();
+
+    const restaurantId = this.route.snapshot.queryParamMap.get('restaurantId');
+    if (restaurantId) {
+      this.form.patchValue({ ResturantId: Number(restaurantId) });
+      this.loadCategoriesByRestaurant(Number(restaurantId));
     }
+
+    this.form.get('ResturantId')!.valueChanges.subscribe((id) => {
+      if (id) this.loadCategoriesByRestaurant(id);
+      else this.categories = [];
+    });
   }
 
-  private getLanguagePlaceholder(language: string): string {
-    switch (language) {
-      case 'default':
-        return 'يرجي ادخال لغة عربية';
-      case 'english':
-        return 'يرجي ادخال لغة انجليزية';
-      case 'arabic':
-        return 'يرجي ادخال لغة عربية';
-      default:
-        return 'افتراضي';
-    }
+  initForm(): void {
+    this.form = this.fb.group({
+      ServiceId:     [1, Validators.required],
+      ResturantId:   [null, Validators.required],
+      CategoryId:    [null, Validators.required],
+      NameAr:        ['', [Validators.required, Validators.minLength(2)]],
+      NameEn:        ['', [Validators.required, Validators.minLength(2)]],
+      DescriptionAr: ['', Validators.required],
+      DescriptionEn: ['', Validators.required],
+      Price:         [null, [Validators.required, Validators.min(0)]],
+      Quantity:      [1,  [Validators.required, Validators.min(0)]],
+      IsActive:      [true],
+      Lang:          ['1'],
+    });
   }
 
-  // التحقق من الملفات المرفوعة (شعار أو غلاف)
-  onFileChange(event: Event, type: 'logo' | 'cover'): void {
+  loadRestaurants(): void {
+    this.isLoading = true;
+    const loadPage = (page: number, acc: FilteredRestaurant[] = []) => {
+      this.restaurantsService.getFilteredRestaurants('', '', page, 50).subscribe({
+        next: (res) => {
+          acc.push(...res.restaurants);
+          if (page < res.totalPages) {
+            loadPage(page + 1, acc);
+          } else {
+            this.restaurants = acc;
+            this.isLoading = false;
+          }
+        },
+        error: () => { this.isLoading = false; },
+      });
+    };
+    loadPage(1);
+  }
+
+  loadCategoriesByRestaurant(restaurantId: number): void {
+    this.categories = [];
+    this.form.patchValue({ CategoryId: null });
+    this.productsService.getCategoriesByRestaurant(restaurantId).subscribe({
+      next: (cats) => (this.categories = cats),
+      error: () => this.toast.error('فشل تحميل الفئات'),
+    });
+  }
+
+  selectLanguage(lang: string): void {
+    this.selectedLanguage = lang;
+  }
+
+  onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const maxSizeMB = 2 * 1024 * 1024; // 2 ميجابايت بالبايت
-      const validFormats = ['image/jpeg', 'image/png', 'image/gif'];
+    if (!input.files?.length) return;
+    const file = input.files[0];
 
-      // التحقق من صيغة الملف
-      if (!validFormats.includes(file.type)) {
-        this.setError(type, 'يرجى رفع صورة بصيغة jpg, png, أو gif فقط');
-        return;
-      }
-
-      // التحقق من الحجم
-      if (file.size > maxSizeMB) {
-        this.setError(type, 'حجم الملف يجب ألا يتجاوز 2 ميجابايت');
-        return;
-      }
-
-      // التحقق من نسبة العرض إلى الارتفاع (2:1)
-      const img = new Image();
-      img.onload = () => {
-        const aspectRatio = img.width / img.height;
-        if (aspectRatio !== 2) {
-          this.setError(type, 'نسبة العرض إلى الارتفاع يجب أن تكون 2:1');
-          return;
-        }
-        this.clearError(type); // مسح الخطأ إذا كان كل شيء صحيح
-      };
-      img.src = URL.createObjectURL(file);
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png');
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.ImagePreview = this.sanitizer.bypassSecurityTrustUrl(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    this.ImageFile = file;
   }
 
-  // تعيين رسالة الخطأ
-  private setError(type: 'logo' | 'cover', message: string): void {
-    if (type === 'logo') this.logoError = message;
-    else this.coverError = message;
+  removeImage(): void {
+    this.ImagePreview = null;
+    this.ImageFile = null;
+    const input = document.getElementById('imageUpload') as HTMLInputElement;
+    if (input) input.value = '';
   }
 
-  // مسح رسالة الخطأ
-  private clearError(type: 'logo' | 'cover'): void {
-    if (type === 'logo') this.logoError = null;
-    else this.coverError = null;
+  handleSubmit(): void {
+    this.form.markAllAsTouched();
+
+    if (this.form.invalid || !this.ImageFile) {
+      if (!this.ImageFile) this.toast.error('يرجى رفع صورة للمنتج');
+      else this.toast.error('يرجى تصحيح جميع الأخطاء');
+      return;
+    }
+
+    const v = this.form.value;
+    const fd = new FormData();
+    fd.append('ServiceId',     String(v.ServiceId));
+    fd.append('ResturantId',   String(v.ResturantId));
+    fd.append('CategoryId',    String(v.CategoryId));
+    fd.append('NameAr',        v.NameAr.trim());
+    fd.append('NameEn',        v.NameEn.trim());
+    fd.append('DescriptionAr', v.DescriptionAr.trim());
+    fd.append('DescriptionEn', v.DescriptionEn.trim());
+    fd.append('Price',         String(v.Price));
+    fd.append('Quantity',      String(v.Quantity));
+    fd.append('IsActive',      v.IsActive ? 'true' : 'false');
+    fd.append('Lang',          v.Lang ?? '1');
+    fd.append('ImageUrl',      this.ImageFile);
+
+    this.isSaving = true;
+    this.productsService.addProduct(fd).subscribe({
+      next: () => {
+        this.toast.success('تم إضافة المنتج بنجاح');
+        this.isSaving = false;
+        this.resetForm();
+      },
+      error: (err) => {
+        this.toast.error(err.message || 'فشل إضافة المنتج');
+        this.isSaving = false;
+      },
+    });
+  }
+
+  resetForm(): void {
+    this.form.reset({ ServiceId: 1, Quantity: 1, IsActive: true, Lang: '1' });
+    this.ImagePreview = null;
+    this.ImageFile = null;
+    this.categories = [];
+  }
+
+  goBack(): void {
+    const restaurantId = this.route.snapshot.queryParamMap.get('restaurantId');
+    if (restaurantId) {
+      this.router.navigate([`/manageRestaurants/details-restaurant/${restaurantId}/foods`]);
+    } else {
+      this.router.navigate(['/Foods/list-food']);
+    }
   }
 }

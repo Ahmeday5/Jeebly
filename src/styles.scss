@@ -379,3 +379,158 @@ svg {
   height: 25px;
   margin-left: 20px;
 }
+
+/* ==================== Toast Notifications ==================== */
+
+.toast-container.toast-top-center {
+  top: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+  width: max-content !important;
+  min-width: 360px !important;
+  max-width: 460px !important;
+}
+
+@keyframes toastSlideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.jeebly-toast {
+  font-family: var(--font-latin) !important;
+  direction: rtl !important;
+  border-radius: 14px !important;
+  padding: 16px 20px 16px 20px !important;
+  background-image: none !important;
+  opacity: 1 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  box-shadow:
+    0 4px 6px rgba(0,0,0,0.07),
+    0 12px 40px rgba(0,0,0,0.13) !important;
+  animation: toastSlideDown 0.3s ease !important;
+  border: none !important;
+  cursor: default !important;
+  width: 100% !important;
+}
+
+/* شريط ملوّن علي أعلى التوست */
+.jeebly-toast::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 4px;
+  border-radius: 14px 14px 0 0;
+}
+
+.toast-success.jeebly-toast {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  &::after { background: #22c55e; }
+}
+
+.toast-error.jeebly-toast {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  &::after { background: #8c0f14; }
+}
+
+.toast-warning.jeebly-toast {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  &::after { background: #f59e0b; }
+}
+
+.toast-info.jeebly-toast {
+  background-color: #ffffff !important;
+  color: #1a1a1a !important;
+  &::after { background: #3b82f6; }
+}
+
+.jeebly-toast .toast-title {
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+
+  &::before {
+    font-family: "Font Awesome 7 Free";
+    font-weight: 900;
+    font-size: 14px;
+  }
+}
+
+.toast-success .toast-title::before {
+  content: "\f058";
+  color: #22c55e;
+}
+
+.toast-error .toast-title::before {
+  content: "\f057";
+  color: #8c0f14;
+}
+
+.toast-warning .toast-title::before {
+  content: "\f071";
+  color: #f59e0b;
+}
+
+.toast-info .toast-title::before {
+  content: "\f05a";
+  color: #3b82f6;
+}
+
+.jeebly-toast .toast-message {
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  color: #4b5563 !important;
+  padding-left: 30px !important;
+}
+
+.jeebly-toast .toast-close-button {
+  position: absolute !important;
+  top: 10px !important;
+  left: 12px !important;
+  right: auto !important;
+  color: #9ca3af !important;
+  opacity: 1 !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  text-shadow: none !important;
+  line-height: 1 !important;
+  padding: 4px 6px !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  z-index: 10 !important;
+
+  &:hover { color: #374151 !important; }
+}
+
+.toast-progress {
+  position: absolute !important;
+  bottom: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+  height: 3px !important;
+  border-radius: 0 0 14px 14px !important;
+  opacity: 0.5 !important;
+}
+
+.toast-success .toast-progress { background: #22c55e !important; }
+.toast-error   .toast-progress { background: #8c0f14 !important; }
+.toast-warning .toast-progress { background: #f59e0b !important; }
+.toast-info    .toast-progress { background: #3b82f6 !important; }
+
+.toast-container {
+  z-index: 10000 !important;
+}
+
+/* ============================================================ */

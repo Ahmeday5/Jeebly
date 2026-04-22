@@ -1,70 +1,84 @@
-<div class="add-category mt-2 mb-3">
-  <div class="container-fluid  p-0">
-    <form action="" class="mt-4 form-add-category">
-      <!-----------------name and logo----------------->
+<div class="update-category mt-2 mb-3">
+  <div class="container-fluid p-0">
+
+    <!-- Loading -->
+    @if (isLoading) {
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">جاري التحميل...</span>
+      </div>
+    </div>
+    } @else {
+
+    <form [formGroup]="form" (ngSubmit)="handleSubmit()" class="mt-4">
+
       <div class="row p-0">
         <div class="page-title">
           <h3>
-            <span class="icon">
-              <i class="fas fa-folder-open"></i>
-            </span>
+            <span class="icon"><i class="fas fa-folder-open"></i></span>
             تحديث الفئة
           </h3>
         </div>
+
+        <!-- Name fields -->
         <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
           <div class="title d-flex justify-content-start">
-            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
-              افتراضي
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">
+              Arabic - العربية (AR)
             </h6>
             <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
-              English
-              (EN)
+              English (EN)
             </h6>
-            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
-              -
-              العربية (AR)</h6>
           </div>
+
+          @if (selectedLanguage === 'arabic') {
           <div class="form-section mt-4">
-            <label for="validationCustom01" class="form-label"> الاسم ({{ selectedLanguageLabel }})</label>
-            <input type="text" id="validationCustom01" class="form-control"
-              placeholder="{{ selectedLanguageePlaceholder }}" name="restaurantName" required />
-            <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
-            <div class="valid-feedback">يبدو جيدًا!</div>
+            <label class="form-label">اسم الفئة (العربية)<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="NameAr"
+              [ngClass]="{'is-invalid': form.get('NameAr')?.invalid && form.get('NameAr')?.touched,
+                           'is-valid':   form.get('NameAr')?.valid   && form.get('NameAr')?.touched}">
+            <div class="invalid-feedback">يرجى إدخال اسم صالح (حرفين على الأقل)</div>
           </div>
+          }
+
+          @if (selectedLanguage === 'english') {
+          <div class="form-section mt-4">
+            <label class="form-label">Category Name (English)<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="NameEn"
+              [ngClass]="{'is-invalid': form.get('NameEn')?.invalid && form.get('NameEn')?.touched,
+                           'is-valid':   form.get('NameEn')?.valid   && form.get('NameEn')?.touched}">
+            <div class="invalid-feedback">Please enter a valid name (min 2 characters)</div>
+          </div>
+          }
         </div>
+
+        <!-- Image upload -->
         <div class="col-xl-6 col-lg-6 col-md-12 mt-2">
           <div class="logo">
-            <div class="page-title">
-              <h3>
-                <span class="icon">
-                  <i class="fas fa-image"></i>
-                </span>
-                شعار المطعم وغطاءاته
-              </h3>
-            </div>
-            <div class="row justify-content-center">
-              <div class="col-md-8">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h6 class="text-center">صورة الفئة</h6>
+            <div class="row">
+              <div class="col-md-6 mb-4">
+                <label class="form-label fw-bold">صورة الفئة</label>
+                <div class="border rounded p-3 text-center position-relative"
+                  style="min-height: 220px; background: #f8f9fa; cursor: pointer;">
+
+                  @if (LogoPreview) {
+                  <div class="position-relative d-inline-block">
+                    <img [src]="LogoPreview" alt="صورة الفئة" class="img-fluid rounded shadow"
+                      style="max-height: 180px; max-width: 100%; object-fit: contain;">
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle"
+                      (click)="removeImage()" title="حذف الصورة">
+                      <i class="fas fa-times"></i>
+                    </button>
                   </div>
-                  <div class="col-12">
-                    <div class="form-section">
-                      <label class="upload-label">
-                        <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
-                        <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
-                          accept=".jpg,.png,.jpeg,.gif" />
-                      </label>
-                      <div class="upload-details">
-                        <p>صيغة الصورة</p>
-                        <p>jpg, png, jpeg, gif</p>
-                        <p>حجم الصورة</p>
-                        <p>الحد الأقصى: 2 ميجابايت</p>
-                        <p>نسبة الصورة - 1:1</p>
-                      </div>
-                      <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
-                    </div>
-                  </div>
+                  } @else {
+                  <label for="logoUpload" class="d-block cursor-pointer py-5" style="cursor: pointer;">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-1">اضغط هنا لتغيير الصورة</p>
+                    <small class="text-muted">(jpg/png – حد أقصى 5 ميجا)</small>
+                  </label>
+                  <input type="file" id="logoUpload" accept="image/jpeg,image/png,image/jpg"
+                    (change)="onFileChange($event)" class="d-none" />
+                  }
                 </div>
               </div>
             </div>
@@ -72,15 +86,22 @@
         </div>
       </div>
 
-      <!----------------------btns----------------------->
+      <!-- Buttons -->
       <div class="row p-0 mt-3">
         <div class="btns">
           <div class="row justify-content-end">
-            <button class="btn btn-rest">إعادة تعيين</button>
-            <button class="btn btn-save">تحديث</button>
+            <button type="button" class="btn btn-rest" (click)="goBack()">رجوع</button>
+            <button type="submit" class="btn btn-save" [disabled]="isSaving">
+              @if (isSaving) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+              }
+              تحديث
+            </button>
           </div>
         </div>
       </div>
+
     </form>
+    }
   </div>
 </div>

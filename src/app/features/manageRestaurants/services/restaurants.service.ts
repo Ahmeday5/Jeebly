@@ -49,7 +49,7 @@ export class RestaurantsService {
         })),
       );
   }
-
+  
   // ========================== GET RESTAURANTS COUNT ==========================
   getRestaurantsCount(): Observable<CountResponse> {
     return this.api.get<CountResponse>('/api/AddRestaurant/restaurants/count');
@@ -67,7 +67,16 @@ export class RestaurantsService {
 
   // ========================== GET RESTAURANT BY ID ==========================
   getRestaurantById(id: number): Observable<Restaurant> {
-    return this.api.get<Restaurant>(`/api/AddRestaurant/${id}/RestaurantById`);
+    return this.api
+      .get<any>(`/api/AddRestaurant/${id}/RestaurantById`)
+      .pipe(map((res) => res.data));
+  }
+
+  // ========================== GET RESTAURANT FOR EDIT (includes categoryName) ==========================
+  getRestaurantForEdit(id: number): Observable<any> {
+    return this.api
+      .get<any>(`/api/AddRestaurant/${id}`)
+      .pipe(map((res) => res.data));
   }
 
   // ========================== UPDATE RESTAURANT ==========================
@@ -77,6 +86,7 @@ export class RestaurantsService {
       formData,
     );
   }
+
   // ========================== CHANGE RESTAURANT STATUS ==========================
   changeRestaurantStatus(
     id: number,
@@ -85,7 +95,7 @@ export class RestaurantsService {
     const url = `/api/AddRestaurant/change-status/${id}?status=${status}`;
 
     return this.api.put<string>(url, null, {
-      responseType: 'text' as 'json', 
+      responseType: 'text' as 'json',
     });
   }
 }

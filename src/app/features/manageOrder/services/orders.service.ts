@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { Order } from '../model/orders.type';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { Order, OrdersResponse } from '../model/orders.type';
+import { HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
 import { ApiService } from '../../../core/services/api.service';
 
 const ORDER_STATUS_MAP: Record<string, string> = {
@@ -32,9 +31,9 @@ export class OrdersService {
   getOrdersFiltered(
     status: string = '',
     code: string = '',
-  ): Observable<Order[]> {
+  ): Observable<OrdersResponse> {
     const params = this.buildParams(status, code);
-    return this.api.get<Order[]>('/api/AllOrders/GetOrdersFiltered', params);
+    return this.api.get<OrdersResponse>('/api/AllOrders/GetOrdersFiltered', params);
   }
 
   // ====================== HELPERS ======================

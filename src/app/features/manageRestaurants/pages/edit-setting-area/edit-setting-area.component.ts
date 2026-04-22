@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs';
 import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { EditSettingAreaService } from '../../services/edit-setting-area.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-edit-setting-area',
@@ -28,8 +29,6 @@ export class EditSettingAreaComponent implements OnInit {
   nameEn: string = ''; // الاسم الإنجليزي
   isLoading: boolean = false;
   Loading: boolean = false;
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
 
   //فورمات التعديل
   form!: FormGroup;
@@ -42,6 +41,7 @@ export class EditSettingAreaComponent implements OnInit {
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
     private route: ActivatedRoute,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -54,11 +54,11 @@ export class EditSettingAreaComponent implements OnInit {
         this.currentEditingAreaId = id;
         this.loadAreaForEdit(id);
       } else {
-        this.errorMessage = 'معرف المنطقة غير صالح';
+        this.toast.error('معرف المنطقة غير صالح');
         setTimeout(() => this.router.navigate(['/setting-areas']), 2000);
       }
     } else {
-      this.errorMessage = 'لم يتم تحديد منطقة للتعديل';
+      this.toast.error('لم يتم تحديد منطقة للتعديل');
       setTimeout(() => this.router.navigate(['/setting-areas']), 2000);
     }
 
@@ -117,8 +117,7 @@ export class EditSettingAreaComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error loading area for edit:', err);
-        this.errorMessage = 'فشل جلب بيانات المنطقة للتعديل';
-        setTimeout(() => (this.errorMessage = null), 3000);
+        this.toast.error('فشل جلب بيانات المنطقة للتعديل');
         this.Loading = false;
       },
     });
@@ -128,33 +127,28 @@ export class EditSettingAreaComponent implements OnInit {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      this.errorMessage =
-        'الاسم بالعربي والانجليزي مطلوب ويجب أن يكون على الأقل حرفين';
+      this.toast.error('الاسم بالعربي والانجليزي مطلوب ويجب أن يكون على الأقل حرفين');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
-
     const body = {
       ...this.form.value,
       nameAr: this.form.value.nameAr.trim(),
       nameEn: this.form.value.nameEn.trim(),
     };
     this.apiService.updateArea(this.currentEditingAreaId!, body).subscribe({
-      next: (res) => {
-        this.successMessage = 'تم تعديل بيانات المنطقة بنجاح';
+      next: () => {
+        this.toast.success('تم تعديل بيانات المنطقة بنجاح');
         this.isLoading = false;
-        this.form.reset();
         setTimeout(() => {
-          this.resetForm();
+          this.form.reset();
           this.router.navigate(['/manageRestaurants/setting-areas']);
-        }, 2000);
+        }, 1500);
       },
       error: (err) => {
         console.error('خطأ في تعديل المنطقة:', err);
-        this.errorMessage = err.error?.title || 'حدث خطأ أثناء تعديل المنطقة';
+        this.toast.error(err.error?.title || 'حدث خطأ أثناء تعديل المنطقة');
         this.isLoading = false;
       },
     });
@@ -162,7 +156,5 @@ export class EditSettingAreaComponent implements OnInit {
 
   resetForm() {
     this.form.reset();
-    this.errorMessage = null;
-    this.successMessage = null;
   }
 }

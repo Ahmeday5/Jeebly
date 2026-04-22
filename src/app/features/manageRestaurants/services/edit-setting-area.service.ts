@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { allArea } from '../model/area.type';
+import { allArea, allAreaDeliveryFees } from '../model/area.type';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +15,7 @@ export class EditSettingAreaService {
     return this.api.get<allArea[]>(`/api/Areas/${id}`);
   }
 
-  // تعديل سلفة
+  // تعديل  منطقة
   updateArea(
     id: number,
     body: {
@@ -28,6 +28,27 @@ export class EditSettingAreaService {
   ): Observable<{ success: boolean; message: string }> {
     return this.api.put<{ success: boolean; message: string }>(
       `/api/Areas/${id}`,
+      body,
+    );
+  }
+
+  getByIdAreaDeliveryFees(id: number): Observable<any> {
+    return this.api.get<allAreaDeliveryFees[]>(`/api/Areas/${id}/GetByIdAreaDeliveryFees`);
+  }
+
+  // تعديل  منطقة
+  updateAreaDeliveryFees(
+    areaId: number,
+    body: {
+      lowestDeliveryFees: number;
+      maximumDeliveryFees: number;
+      deliveryFeePerKilometre: number;
+      increasedDeliveryFees: number;
+      messageOfIncreasedDeliveryFees: string;
+    },
+  ): Observable<{ success: boolean; message: string }> {
+    return this.api.post<{ success: boolean; message: string }>(
+      `/api/Areas/Area/${areaId}/DeliveryFees`,
       body,
     );
   }

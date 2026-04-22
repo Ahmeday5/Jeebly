@@ -7,6 +7,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { ApiService } from '../../../../core/services/api.service';
 import { LoginResponse } from '../../../../core/types/login.type';
 import { firstValueFrom } from 'rxjs';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -20,12 +21,12 @@ export class LoginComponent implements OnInit {
   password: string = '';
   showPassword: boolean = false;
   isLoading: boolean = false;
-  errorMessage: string | null = null; // لتخزين رسائل الخطأ
 
   constructor(
     private router: Router,
     private authService: AuthService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
@@ -40,39 +41,31 @@ export class LoginComponent implements OnInit {
   }
 
   async onSubmit(form: NgForm): Promise<void> {
-    this.errorMessage = null;
     if (form.valid) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(this.email)) {
-        this.errorMessage = 'البريد الإلكتروني غير صالح.';
+        this.toast.error('البريد الإلكتروني غير صالح.');
         return;
       }
-
-      // التحقق من طول كلمة المرور
       if (this.password.length < 6) {
-        this.errorMessage = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل.';
+        this.toast.error('كلمة المرور يجب أن تكون 6 أحرف على الأقل.');
         return;
       }
       this.isLoading = true;
       try {
-        const credentials = {
-          email: this.email,
-          password: this.password,
-        };
-
+        const credentials = { email: this.email, password: this.password };
         const response = (await firstValueFrom(
           this.apiService.login(credentials)
         )) as LoginResponse;
         this.authService.login(response);
-        this.errorMessage = null;
         await this.router.navigate(['/dashboard']);
       } catch (error: any) {
-        this.errorMessage = error.message || 'حدث خطأ غير معروف.';
+        this.toast.error(error.message || 'حدث خطأ غير معروف.');
       } finally {
         this.isLoading = false;
       }
     } else {
-      this.errorMessage = 'يرجى تعبئة جميع الحقول بشكل صحيح.';
+      this.toast.error('يرجى تعبئة جميع الحقول بشكل صحيح.');
     }
   }
 }

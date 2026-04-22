@@ -34,12 +34,12 @@ export class AddListSubComponent {
   ngOnInit(): void {
     this.fetchMainCategories();
   }
-
+  
   fetchMainCategories() {
     this.loading = true;
     this.MainCategoriesService.getAllCategories(1).subscribe({
       next: (data) => {
-        this.mainCategories = data;
+        this.mainCategories = Array.isArray(data) ? data : [];
         this.loading = false;
         if (this.mainCategories.length > 0) {
           this.selectedCategoryId = this.mainCategories[0].id;

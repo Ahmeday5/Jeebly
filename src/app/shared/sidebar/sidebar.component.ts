@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
-import { CommonModule } from '@angular/common'; // إضافة CommonModule
+import { CommonModule } from '@angular/common';
 import {
   debounceTime,
   distinctUntilChanged,
@@ -17,6 +17,7 @@ import {
 } from 'rxjs';
 import { SidebarService } from '../../core/services/sidebar.service';
 import { ApiService } from '../../core/services/api.service';
+import { ConfirmService } from '../../core/services/confirm.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -41,6 +42,7 @@ export class SidebarComponent implements OnInit, AfterViewInit {
     private sidebarService: SidebarService,
     private authService: AuthService,
     private apiService: ApiService,
+    private confirm: ConfirmService,
   ) {}
 
   ngOnInit(): void {
@@ -74,11 +76,12 @@ export class SidebarComponent implements OnInit, AfterViewInit {
 
   handleSpecialAction(subItem: any): void {
     if (subItem.key === 'تسجيل الخروج') {
-      if (confirm('هل أنت متأكد من تسجيل الخروج؟')) {
+      this.confirm.confirm('هل أنت متأكد من تسجيل الخروج؟', 'تسجيل الخروج').subscribe((ok) => {
+        if (!ok) return;
         this.authService.logout();
         this.router.navigate(['/login']);
-        this.sidebarService.close(); // إغلاق الـ sidebar لو موبايل
-      }
+        this.sidebarService.close();
+      });
     } /*else if (subItem.key === 'حذف الحساب') {
       if (
         confirm(
@@ -299,11 +302,11 @@ export class SidebarComponent implements OnInit, AfterViewInit {
             path: 'manageRestaurants/setting-areas',
             icons: 'fa-solid fa-map',
           },
-          {
+          /*{
             label: 'نوع الأكل',
             path: 'manageRestaurants/type-food',
             icons: 'fa-solid fa-utensils',
-          },
+          },*/
           {
             label: 'مطاعم',
             icons: 'fa-solid fa-store',

@@ -1,10 +1,5 @@
 <div class="list-restaurant mt-2 mb-3">
   <div class="container-fluid p-0">
-    <!-- Alert -->
-    <div *ngIf="alertMessage" class="alert alert-{{alertType}}" role="alert">
-      {{ alertMessage }}
-    </div>
-
     <div class="row">
       <div class="page-title">
         <h3>
@@ -159,8 +154,8 @@
                 <tr>
                   <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
                   <td>{{ restaurant.id }}</td>
-                  <td>{{ restaurant.nameOfResturantAr }}</td>
-                  <td>{{ restaurant.nameOfResturantOwner }}</td>
+                  <td>{{ restaurant.nameAr }}</td>
+                  <td>{{ restaurant.nameEn }}</td>
                   <td>{{ restaurant.areaOfResturantAr }}</td>
                   <td class="text-center">
                     <div class="form-check form-switch">
@@ -169,7 +164,7 @@
                     </div>
                   </td>
                   <td class="text-center">
-                    <i (click)="detailsRestaurant()" class="fa-regular fa-eye fa-lg"
+                    <i (click)="detailsRestaurant(restaurant.id)" class="fa-regular fa-eye fa-lg"
                       style="color: var(--main-color); cursor: pointer;"></i>
                     <i (click)="editRestaurant(restaurant.id)" class="fas fa-edit"
                       style="color: var(--main-color); cursor: pointer;"></i>

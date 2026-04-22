@@ -1,122 +1,108 @@
-<div class="orders mt-3 mb-3">
-  <div class="container-fluid">
+<div class="list-food mt-2 mb-3">
+  <div class="container-fluid p-0">
     <div class="row">
-      <div class="col-md-12">
-        <div class="row">
-          <div class="page-title">
-            <h3>
-              قائمة الأكل
-              <span class="number">15</span>
-            </h3>
-          </div>
-        </div>
-        <!-- Filter Buttons -->
-        <div class="row-cols-1 row-cols-md-10 row-cols-lg-11">
-          @for(filter of filters; track filter) {
-          <button class="btn-filter mt-1 active" [class.active]="filter === activeFilter" (click)="setFilter(filter)">{{
-            filter }}</button>
-          }
-        </div>
 
-
-        <!-- Table -->
-        <div class="cardParent mt-3">
-          <div class="row justify-content-end border-bottoms">
-            <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث عن طلبك....."
-              name="productName" />
-            <div class="coulm mt-2">
-              <button class="btn"><i class="fa-solid fa-download"></i>تصدير<i
-                  class="fa-solid fa-caret-down"></i></button>
-            </div>
-            <div class="coulm mt-2">
-              <button class="btn"><i class="fa-solid fa-caret-down"></i>الأعمدة</button>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
-                <thead>
-                  <tr>
-                    <th>م</th>
-                    <th>الاسم</th>
-                    <th>الفئة</th>
-                    <th>المطعم</th>
-                    <th>السعر</th>
-                    <th>الحالة</th>
-                    <th>الاجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>كنتاكي</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i (click)="editFood()" style="cursor: pointer;" class="fas fa-edit"></i>
-                      <i class="fas fa-trash-alt"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>كنتاكي</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i (click)="editFood()" style="cursor: pointer;" class="fas fa-edit"></i>
-                      <i class="fas fa-trash-alt"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>كنتاكي</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i (click)="editFood()" style="cursor: pointer;" class="fas fa-edit"></i>
-                      <i class="fas fa-trash-alt"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>كنتاكي</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i (click)="editFood()" style="cursor: pointer;" class="fas fa-edit"></i>
-                      <i class="fas fa-trash-alt"></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div class="page-title">
+          <h3>
+            <span class="icon"><i class="fa-solid fa-bowl-food"></i></span>
+            قائمة المنتجات
+            <span class="number">({{ totalCount }})</span>
+          </h3>
         </div>
+        <button class="btn btn-add" (click)="addFood()">
+          <i class="fas fa-plus me-1"></i> إضافة منتج
+        </button>
       </div>
+
+      <!-- Table Card -->
+      <div class="cardParent mt-3">
+        <div class="row justify-content-end border-bottoms align-items-center">
+          <div class="coulm mt-2">
+            <button class="btn" (click)="addFood()">
+              <i class="fas fa-plus"></i> منتج جديد
+            </button>
+          </div>
+        </div>
+
+        @if (isLoading) {
+          <div class="text-center mt-2 px-5 py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">جاري التحميل...</span>
+            </div>
+          </div>
+        } @else {
+          <div class="card-body">
+            @if (products.length > 0) {
+              <div class="table-responsive custom-table">
+                <table class="table custom-table-design text-center">
+                  <thead>
+                    <tr>
+                      <th>م</th>
+                      <th>الصورة</th>
+                      <th>الاسم</th>
+                      <th>الفئة</th>
+                      <th>السعر</th>
+                      <th>الكمية</th>
+                      <th>الحالة</th>
+                      <th>الإجراءات</th>
+
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (product of products; track product.id; let i = $index) {
+                      <tr>
+                        <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                        <td>
+                          @if (product.imageUrl) {
+                            <img [src]="baseUrl + product.imageUrl" alt="{{ product.nameAr }}"
+                              class="rounded" style="width:48px; height:48px; object-fit:cover;">
+                          } @else {
+                            <span class="text-muted"><i class="fas fa-image fa-lg"></i></span>
+                          }
+                        </td>
+                        <td>{{ product.nameAr }}</td>
+                        <td>{{ product.categoryName ?? '—' }}</td>
+                        <td>{{ product.price | number:'1.2-2' }}</td>
+                        <td>{{ product.subCategoryId ?? '—' }}</td>
+                        <td class="text-center">
+                          <span class="badge" [class.bg-success]="product.isActive" [class.bg-secondary]="!product.isActive">
+                            {{ product.isActive ? 'نشط' : 'غير نشط' }}
+                          </span>
+                        </td>
+                        <td class="text-center">
+                          <i (click)="editFood(product.id)"
+                            class="fas fa-edit fa-lg me-2"
+                            style="color: var(--main-color); cursor: pointer;"
+                            title="تعديل"></i>
+                          <i (click)="deleteFood(product.id, product.nameAr)"
+                            class="fas fa-trash-alt fa-lg"
+                            style="color: #dc3545; cursor: pointer;"
+                            title="حذف"></i>
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <app-pagination
+                [currentPage]="currentPage"
+                [totalPages]="totalPages"
+                (pageChange)="onPageChange($event)">
+              </app-pagination>
+            } @else {
+              <div class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column" role="alert">
+                <h3 class="text-center my-1 w-100 icons">
+                  <i class="fas fa-folder"></i>
+                  <i class="fas fa-times"></i>
+                </h3>
+                <h4 class="text-center my-1 w-100">لم يتم العثور على أي منتجات</h4>
+              </div>
+            }
+          </div>
+        }
+      </div>
+
     </div>
   </div>
 </div>

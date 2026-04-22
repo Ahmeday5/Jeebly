@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
+import { ToastService } from '../../../../../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-add-food',
@@ -31,6 +32,7 @@ export class AddFoodComponent {
 
   constructor(
     private sanitizer: DomSanitizer,
+    private toast: ToastService,
   ) {}
 
   togglePassword() {
@@ -86,12 +88,11 @@ export class AddFoodComponent {
     // فلترة بسيطة للصيغ والحجم (اختياري)
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      alert('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
+      this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      // 5 ميجا كحد أقصى مثال
-      alert('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
+      this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
       return;
     }
 

@@ -1,28 +1,40 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
+import { forkJoin, Subscription } from 'rxjs';
 import { Restaurant } from '../../../model/restaurant.type';
 import { allArea } from '../../../model/area.type';
 import { environment } from '../../../../../../environments/environment';
 import { RestaurantsService } from '../../../services/restaurants.service';
 import { SettingAreasService } from '../../../services/setting-areas.service';
+import { ToastService } from '../../../../../core/services/toast.service';
+import { MainCategoriesService } from '../../../../Categories/services/main-categories.service';
+import { MultiSelectComponent, SelectItem } from '../../../../../shared/multi-select/multi-select.component';
 
 @Component({
   selector: 'app-edit-restaurant',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MultiSelectComponent],
   templateUrl: './edit-restaurant.component.html',
   styleUrls: ['./edit-restaurant.component.scss'],
 })
-export class EditRestaurantComponent implements OnInit {
+export class EditRestaurantComponent implements OnInit, OnDestroy {
+  private serviceIdSub?: Subscription;
   //url
   private readonly baseUrl: string = environment.apiBaseUrl;
   selectedLanguage: string = 'arabic';
   selectedLanguageLabel: string = 'Arabic - العربية (AR)';
   selectedLanguagePlaceholder: string = 'يرجى إدخال باللغة العربية';
-
+  isLoading: boolean = false;
+  Loading: boolean = false;
   logoError: string | null = null;
   coverError: string | null = null;
   logoRequiredError: string | null = null;
@@ -40,31 +52,13 @@ export class EditRestaurantComponent implements OnInit {
   newCoverFile: File | null = null;
 
   areas: allArea[] = [];
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
-  isLoading: boolean = false;
-  restaurantId: number = 0;
+  categories: SelectItem[] = [];
+  selectedCategoryIds: number[] = [];
+  foodTypeError = false;
 
   // بيانات النموذج
-  nameAr: string = '';
-  nameEn: string = '';
-  addressAr: string = '';
-  addressEn: string = '';
-  serviceId: number | null = null;
-  latitude: number | null = null;
-  longitude: number | null = null;
-  foodType: number | null = null;
-  areaId: number | null = null;
-  taxPercentage: number | null = null;
-  minDeliveryTime: number | null = null;
-  maxDeliveryTime: number | null = null;
-  ownerFirstName: string = '';
-  ownerLastName: string = '';
-  ownerPhone: string = '';
-  notes: string = '';
-  email: string = '';
-  password: string = '';
-  confirmPassword: string = '';
+  form!: FormGroup;
+  currentEditingRestaurantId: number | null = null;
 
   // لإعادة التعيين (reset)
   originalLogoPreview: SafeUrl | null = null;
@@ -76,59 +70,159 @@ export class EditRestaurantComponent implements OnInit {
     { id: 3, name: 'متاجر' },
   ];
 
-  foodTypes = [{ id: 1, name: 'إيطالي' }];
-
   constructor(
     private sanitizer: DomSanitizer,
     private apiService: RestaurantsService,
     private areaService: SettingAreasService,
+    private categoriesService: MainCategoriesService,
     private route: ActivatedRoute,
     private router: Router,
+    private fb: FormBuilder,
+    private cdr: ChangeDetectorRef,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
-    this.restaurantId = +this.route.snapshot.paramMap.get('id')!;
+    // جلب الـ ID من الـ URL
+    const idParam = this.route.snapshot.paramMap.get('id');
+
+    if (idParam) {
+      const id = Number(idParam);
+      if (!isNaN(id)) {
+        this.currentEditingRestaurantId = id;
+        this.loadRestaurant(id);
+      } else {
+        this.toast.error('معرف المطعم غير صالح');
+        setTimeout(
+          () => this.router.navigate(['/manageRestaurants/list-restaurants']),
+          2000,
+        );
+      }
+    } else {
+      this.toast.error('لم يتم تحديد منطقة للتعديل');
+      setTimeout(
+        () => this.router.navigate(['/manageRestaurants/list-restaurants']),
+        2000,
+      );
+    }
     this.loadAreas();
-    this.loadRestaurant();
+    this.initForm();
+    this.serviceIdSub = this.form.get('serviceId')!.valueChanges.subscribe((id) => {
+      if (id) this.loadCategories(id);
+    });
   }
 
-  loadRestaurant(): void {
-    this.apiService.getRestaurantById(this.restaurantId).subscribe({
-      next: (data: Restaurant) => {
-        this.nameAr = data.nameAr || '';
-        this.nameEn = data.nameEn || '';
-        this.addressAr = data.addressAr || '';
-        this.addressEn = data.addressEn || '';
-        this.serviceId = data.serviceId;
-        this.latitude = data.latitude;
-        this.longitude = data.longitude;
-        this.foodType = data.foodType;
-        this.areaId = data.areaId;
-        this.taxPercentage = data.taxPercentage;
-        this.minDeliveryTime = data.minDeliveryTime;
-        this.maxDeliveryTime = data.maxDeliveryTime;
-        this.ownerFirstName = data.ownerFirstName || '';
-        this.ownerLastName = data.ownerLastName || '';
-        this.ownerPhone = data.ownerPhone || '';
-        this.notes = data.notes || '';
-        this.email = data.ownerEmail || '';
+  ngOnDestroy(): void {
+    this.serviceIdSub?.unsubscribe();
+  }
 
-        // عرض الصور القديمة كـ preview
-        if (data.logo) {
-          const fullLogoUrl = `${this.baseUrl}${data.logo}`;
+  initForm() {
+    this.form = this.fb.group({
+      nameAr: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern(/^[\u0600-\u06FF\s]+$/),
+        ],
+      ],
+      nameEn: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(2),
+          Validators.pattern(/^[A-Za-z\s]+$/),
+        ],
+      ],
+      addressAr: ['', Validators.required],
+      addressEn: ['', Validators.required],
+      serviceId: [null, Validators.required],
+      latitude: [null, Validators.required],
+      longitude: [null, Validators.required],
+      areaId: [null, Validators.required],
+      taxPercentage: [0, [Validators.required, Validators.min(0)]],
+      minDeliveryTime: [15, [Validators.required, Validators.min(0)]],
+      maxDeliveryTime: [45, [Validators.required, Validators.min(0)]],
+      ownerFirstName: ['', [Validators.required, Validators.minLength(2)]],
+      ownerLastName: ['', [Validators.required, Validators.minLength(2)]],
+      ownerPhone: [
+        '',
+        [Validators.required, Validators.pattern(/^\d{10,15}$/)],
+      ],
+      notes: [''],
+      email: ['', [Validators.required, Validators.email]],
+    });
+  }
+
+  loadCategories(serviceId: number, namesToSelect?: string[]): void {
+    this.categoriesService.getAllCategories(serviceId).subscribe({
+      next: (res) => {
+        this.categories = res.Categories.map((c) => ({ id: c.id, name: c.name }));
+        if (namesToSelect?.length) {
+          this.selectedCategoryIds = this.categories
+            .filter((c) => namesToSelect.includes(c.name))
+            .map((c) => c.id);
+        } else {
+          this.selectedCategoryIds = [];
+        }
+      },
+      error: () => this.toast.error('فشل تحميل أنواع الأكل'),
+    });
+  }
+  
+  onCategorySelectionChange(ids: number[]): void {
+    this.selectedCategoryIds = ids;
+    this.foodTypeError = false;
+  }
+
+  loadRestaurant(id: number): void {
+    this.Loading = true;
+    forkJoin({
+      details: this.apiService.getRestaurantById(id),
+      withCategories: this.apiService.getRestaurantForEdit(id),
+    }).subscribe({
+      next: ({ details, withCategories }) => {
+        this.form.patchValue({
+          nameAr: details.nameAr || '',
+          nameEn: details.nameEn || '',
+          addressAr: details.addressAr || '',
+          addressEn: details.addressEn || '',
+          serviceId: details.serviceId,
+          latitude: details.latitude,
+          longitude: details.longitude,
+          areaId: details.areaId,
+          taxPercentage: details.taxPercentage,
+          minDeliveryTime: details.minDeliveryTime,
+          maxDeliveryTime: details.maxDeliveryTime,
+          ownerFirstName: details.ownerFirstName || '',
+          ownerLastName: details.ownerLastName || '',
+          ownerPhone: details.ownerPhone || '',
+          notes: details.notes || '',
+          email: details.ownerEmail || '',
+        }, { emitEvent: false });
+
+        const categoryNames: string[] = withCategories.categoryName || [];
+        if (details.serviceId) {
+          this.loadCategories(details.serviceId, categoryNames);
+        }
+
+        if (details.logo) {
+          const fullLogoUrl = `${this.baseUrl}${details.logo}`;
           this.LogoPreview = this.sanitizer.bypassSecurityTrustUrl(fullLogoUrl);
           this.originalLogoPreview = this.LogoPreview;
         }
-        if (data.coverUrl) {
-          const fullCoverUrl = `${this.baseUrl}${data.coverUrl}`;
-          this.CoverPreview =
-            this.sanitizer.bypassSecurityTrustUrl(fullCoverUrl);
+        if (details.coverUrl) {
+          const fullCoverUrl = `${this.baseUrl}${details.coverUrl}`;
+          this.CoverPreview = this.sanitizer.bypassSecurityTrustUrl(fullCoverUrl);
           this.originalCoverPreview = this.CoverPreview;
         }
+        this.Loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
-        this.errorMessage = 'فشل جلب بيانات المطعم';
+        this.toast.error('فشل جلب بيانات المطعم');
         console.error('Error loading restaurant:', err);
+        this.Loading = false;
       },
     });
   }
@@ -188,12 +282,11 @@ export class EditRestaurantComponent implements OnInit {
     // فلترة بسيطة للصيغ والحجم (اختياري)
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      alert('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
+      this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      // 5 ميجا كحد أقصى مثال
-      alert('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
+      this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
       return;
     }
 
@@ -232,79 +325,61 @@ export class EditRestaurantComponent implements OnInit {
     if (input) input.value = '';
   }
 
-  handleSubmit(form: any): void {
-    this.successMessage = null;
-    this.errorMessage = null;
-    this.logoRequiredError = null;
-    this.coverRequiredError = null;
-    // التحقق من الصور إجباريًا
-    if (!this.Logo) {
-      this.logoRequiredError = 'الشعار مطلوب';
-    }
-    if (!this.Cover) {
-      this.coverRequiredError = 'الغلاف مطلوب';
+  handleSubmit(): void {
+    this.form.markAllAsTouched();
+    this.foodTypeError = this.selectedCategoryIds.length === 0;
+
+    if (this.form.invalid || this.foodTypeError) {
+      this.toast.error('يرجى تصحيح جميع الأخطاء');
+      return;
     }
 
     const formData = new FormData();
-    formData.append('Id', this.restaurantId.toString());
-    formData.append('NameAr', this.nameAr);
-    formData.append('NameEn', this.nameEn);
-    formData.append('AddressAr', this.addressAr);
-    formData.append('AddressEn', this.addressEn);
-    formData.append('ServiceId', this.serviceId?.toString() || '');
-    formData.append('Latitude', this.latitude?.toString() || '');
-    formData.append('Longitude', this.longitude?.toString() || '');
-    formData.append('FoodType', this.foodType?.toString() || '');
-    formData.append('AreaId', this.areaId?.toString() || '');
-    formData.append('TaxPercentage', this.taxPercentage?.toString() || '');
-    formData.append('MinDeliveryTime', this.minDeliveryTime?.toString() || '');
-    formData.append('MaxDeliveryTime', this.maxDeliveryTime?.toString() || '');
-    formData.append('ResturantOwnerFirstName', this.ownerFirstName);
-    formData.append('ResturantOwnerLastName', this.ownerLastName);
-    formData.append('ResturantOwnerPhone', this.ownerPhone);
-    formData.append('Notes', this.notes);
-    formData.append('Email', this.email);
+    const value = this.form.value;
+    formData.append('Id', this.currentEditingRestaurantId?.toString() || '');
+    formData.append('NameAr', value.nameAr);
+    formData.append('NameEn', value.nameEn);
+    formData.append('AddressAr', value.addressAr);
+    formData.append('AddressEn', value.addressEn);
+    formData.append('ServiceId', value.serviceId?.toString() || '');
+    formData.append('Latitude', value.latitude?.toString() || '');
+    formData.append('Longitude', value.longitude?.toString() || '');
+    formData.append('AreaId', value.areaId?.toString() || '');
+    formData.append('TaxPercentage', value.taxPercentage?.toString() || '');
+    formData.append('MinDeliveryTime', value.minDeliveryTime?.toString() || '');
+    formData.append('MaxDeliveryTime', value.maxDeliveryTime?.toString() || '');
+    formData.append('ResturantOwnerFirstName', value.ownerFirstName);
+    formData.append('ResturantOwnerLastName', value.ownerLastName);
+    formData.append('ResturantOwnerPhone', value.ownerPhone);
+    formData.append('Notes', value.notes || '');
+    formData.append('Email', value.email);
 
-    if (this.password) {
-      formData.append('Password', this.password);
-      formData.append('ConfirmPassword', this.confirmPassword);
-    }
+    // إرسال الكاتجوريز كـ array of strings
+    this.selectedCategoryIds.forEach((id) =>
+      formData.append('CategoryIds', String(id))
+    );
 
-    // إذا رفع المستخدم صور جديدة → ابعتها
-    // إذا ما رفعش → الـ backend هيحتفظ بالقديمة (مش بنبعت حقل فاضي)
-    if (this.newLogoFile) {
-      formData.append('Logo', this.newLogoFile);
-    }
-    if (this.newCoverFile) {
-      formData.append('Cover', this.newCoverFile);
-    }
+    if (this.Logo) formData.append('Logo', this.Logo);
+    if (this.Cover) formData.append('Cover', this.Cover);
 
     this.isLoading = true;
     this.apiService.updateRestaurant(formData).subscribe({
-      next: (res) => {
-        this.successMessage ='تم تعديل المطعم بنجاح';
+      next: () => {
+        this.toast.success('تم تعديل المطعم بنجاح');
         this.isLoading = false;
-        setTimeout(() => (this.successMessage = null), 2000);
-        setTimeout(() => (this.errorMessage = null), 2000);
+        setTimeout(() => {
+          this.form.reset();
+          this.router.navigate(['/manageRestaurants/list-restaurants']);
+        }, 1500);
       },
       error: (err) => {
-        this.errorMessage = err.message || 'فشل تعديل المطعم';
+        this.toast.error(err.message || 'فشل تعديل المطعم');
         this.isLoading = false;
       },
     });
   }
 
-  resetForm(): void {
-    this.loadRestaurant(); // إعادة تحميل البيانات الأصلية + الصور القديمة
-    this.password = '';
-    this.confirmPassword = '';
-    this.newLogoFile = null;
-    this.newCoverFile = null;
-    this.logoError = null;
-    this.coverError = null;
-    this.successMessage = null;
-    this.errorMessage = null;
-    this.logoRequiredError = null;
-    this.coverRequiredError = null;
+  resetForm() {
+    this.form.reset();
   }
 }

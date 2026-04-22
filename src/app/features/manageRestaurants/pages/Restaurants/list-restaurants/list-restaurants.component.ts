@@ -6,6 +6,8 @@ import { FilteredRestaurant } from '../../../model/restaurant.type';
 import { RestaurantsService } from '../../../services/restaurants.service';
 import { PaginationComponent } from '../../../../../shared/pagination/pagination.component';
 import { forkJoin } from 'rxjs';
+import { ToastService } from '../../../../../core/services/toast.service';
+import { ConfirmService } from '../../../../../core/services/confirm.service';
 
 @Component({
   selector: 'app-list-restaurants',
@@ -21,8 +23,6 @@ export class ListRestaurantsComponent implements OnInit {
   notActiveCount: number = 0;
   selectedStatus: string = '';
   restaurantName: string = '';
-  alertMessage: string | null = null;
-  alertType: 'success' | 'danger' | null = null;
   currentPage: number = 1;
   pageSize: number = 10;
   totalPages: number = 1;
@@ -35,6 +35,8 @@ export class ListRestaurantsComponent implements OnInit {
   constructor(
     private apiService: RestaurantsService,
     private router: Router,
+    private toast: ToastService,
+    private confirm: ConfirmService,
   ) {}
 
   ngOnInit(): void {
@@ -81,7 +83,7 @@ export class ListRestaurantsComponent implements OnInit {
           this.isLoading = false;
         },
         error: (err) => {
-          this.showAlert('danger', 'فشل جلب قائمة المطاعم');
+          this.toast.error('فشل جلب قائمة المطاعم');
           console.error(err);
           this.isLoading = false;
         },
@@ -100,36 +102,26 @@ export class ListRestaurantsComponent implements OnInit {
 
   onStatusToggle(restaurant: FilteredRestaurant, index: number): void {
     const newStatus = restaurant.status === 'Active' ? 'notActive' : 'Active';
-    // تأكيد قبل التغيير
-    const confirmChange = confirm(
-      `هل أنت متأكد من تغيير حالة المطعم إلى ${newStatus}?`,
-    );
-    if (!confirmChange) return;
+    const label = newStatus === 'Active' ? 'تفعيل' : 'تعطيل';
 
-    this.apiService.changeRestaurantStatus(restaurant.id, newStatus).subscribe({
-      next: (res) => {
-        // تحديث الحالة في الـ UI مباشرة بعد نجاح الطلب
-        this.restaurants[index].status = newStatus;
-        this.showAlert('success', 'تم تغيير الحالة بنجاح');
-      },
-      error: (err) => {
-        this.showAlert('danger', 'فشل تغيير حالة المطعم');
-        console.error('Error changing restaurant status:', err);
-      },
+    this.confirm.confirm(`هل أنت متأكد من ${label} المطعم "${restaurant.nameAr}"؟`, 'تغيير الحالة').subscribe((ok) => {
+      if (!ok) return;
+
+      this.apiService.changeRestaurantStatus(restaurant.id, newStatus).subscribe({
+        next: () => {
+          this.restaurants[index].status = newStatus;
+          this.toast.success('تم تغيير الحالة بنجاح');
+        },
+        error: (err) => {
+          this.toast.error('فشل تغيير حالة المطعم');
+          console.error('Error changing restaurant status:', err);
+        },
+      });
     });
   }
 
-  showAlert(type: 'success' | 'danger', message: string): void {
-    this.alertType = type;
-    this.alertMessage = message;
-    setTimeout(() => {
-      this.alertMessage = null;
-      this.alertType = null;
-    }, 3000);
-  }
-
-  detailsRestaurant(): void {
-    this.router.navigate(['manageRestaurants/details-restaurant']);
+  detailsRestaurant(id: number): void {
+    this.router.navigate(['manageRestaurants/details-restaurant', id]);
   }
 
   editRestaurant(id: number): void {

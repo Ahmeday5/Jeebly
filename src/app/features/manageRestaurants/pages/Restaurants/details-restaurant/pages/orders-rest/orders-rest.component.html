@@ -13,7 +13,7 @@
           </div>
         </div>
         <!-- Filter Buttons -->
-        <div class="row-cols-1 row-cols-md-5 row-cols-lg-5 d-flex justify-content-evenly">
+        <div class="row justify-content-evenly">
           @for(filter of filters; track filter) {
           <button class="btn-filter mt-1 active" [class.active]="filter === activeFilter" (click)="setFilter(filter)">{{
             filter }}</button>|
@@ -24,215 +24,84 @@
         <!-- Table -->
         <div class="cardParent mt-3">
           <div class="row justify-content-end border-bottoms">
-            <input type="text" id="productName" class="form-control mt-2" placeholder="ابحث عن طلبك....."
-              name="productName" />
+            <input type="search" inputmode="numeric" pattern="[0-9]*" (keypress)="onlyNumbers($event)" id="productName"
+              class="form-control mt-2" placeholder="ابحث برقم الطلب..." [(ngModel)]="searchCode"
+              (input)="onSearchCodeChange()" />
+            <input type="search" id="deliveryManName" class="form-control mt-2" placeholder="ابحث باسم الدليفري ..."
+              [(ngModel)]="searchdeliveryManName" (input)="onSearchCodeChange()" />
             <div class="coulm mt-2">
-              <button class="btn"><i class="fa-solid fa-download"></i>تصدير<i
+              <button type="button" class="btn" (click)="exportCSV()"><i class="fa-solid fa-download"></i>تصدير<i
                   class="fa-solid fa-caret-down"></i></button>
             </div>
             <div class="coulm mt-2">
               <button class="btn"><i class="fa-solid fa-caret-down"></i>الأعمدة</button>
             </div>
           </div>
+          <!-- Loading Spinner -->
+          @if (loading) {
+          <div class="col-12 text-center mt-2 px-5 py-5">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">جاري...</span>
+            </div>
+          </div>
+          }@else {
           <div class="card-body">
+            @if(displayedOrders.length > 0){
             <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
+              <table class="table table-hover align-middle custom-table-design text-center">
+                <!-- أضف animation للـ table -->
                 <thead>
                   <tr>
                     <th>م</th>
-                    <th>معرف الطلب</th>
+                    <th>رقم الطلب</th>
                     <th>تاريخ الطلب</th>
-                    <th>معلومات العميل</th>
+                    <th>اسم العميل</th>
+                    <th>عنوان العميل</th>
+                    <th>محافظة العميل</th>
+                    <th>منطقة العميل</th>
+                    <th>المطعم</th>
                     <th>المبلغ الاجمالي</th>
                     <th>حالة الطلب</th>
-                    <th>الاجراءات</th>
                   </tr>
                 </thead>
                 <tbody>
+                  @for (order of displayedOrders; track order.orderNumber; let i = $index) {
                   <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
+                    <td>{{ (currentPage - 1) * pageSize + i + 1 }}</td>
+                    <td>{{ order.orderNumber }}</td>
+                    <td>{{ formatDate(order.orderDate) }}</td>
+                    <td>{{ order.customerFullName }}</td>
+                    <td>{{ order.customerAddress === 'N/A' ? 'غير متوفر' : order.customerAddress }}</td>
+                    <td>{{ order.customerGovernorate === 'N/A' ? 'غير متوفر' : order.customerGovernorate }}</td>
+                    <td>{{ order.customerDistrict === 'N/A' ? 'غير متوفر' : order.customerDistrict}}</td>
+                    <td>{{ order.restaurantName }}</td>
+                    <td>{{ order.totalAmount }} جنية</td>
+                    <td>
+                      <span class="badge" [ngClass]="getStatusBadgeClass(order.orderStatus)">
+                        {{ getStatusArabic(order.orderStatus) }}
+                      </span>
                     </td>
                   </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>56458</td>
-                    <td>25/5/2025</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>1500 جنية</td>
-                    <td class="text-center">
-                      <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
-                      </div>
-                    </td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
+                  }
                 </tbody>
               </table>
             </div>
+            <!-- إضافة الـ pagination هنا تحت الجدول -->
+            <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="onPageChange($event)">
+            </app-pagination>
+            }@else {
+            <div
+              class="alert alert-noFound d-flex justify-content-center align-content-center align-items-center flex-column"
+              role="alert">
+              <h3 class="text-center my-1 w-100 icons">
+                <i class="fas fa-folder"></i>
+                <i class="fas fa-times"></i>
+              </h3>
+              <h4 class="text-center my-1 w-100">لم يتم العثور علي أي بيانات</h4>
+            </div>
+            }
           </div>
+          }
         </div>
       </div>
     </div>

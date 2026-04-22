@@ -25,8 +25,8 @@ export interface Restaurant {
 export interface FilteredRestaurant {
   id: number;
   serviceId: number | null;
-  nameOfResturantAr: string;
-  nameOfResturantEn: string;
+  nameAr: string;
+  nameEn: string;
   nameOfResturantOwner: string;
   areaOfResturantAr: string | null;
   areaOfResturantEn: string | null;

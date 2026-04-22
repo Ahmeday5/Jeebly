@@ -1,8 +1,4 @@
-import {
-  Component,
-  ChangeDetectorRef,
-  OnInit,
-} from '@angular/core';
+import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -11,6 +7,7 @@ import { allArea } from '../../model/area.type';
 import { SettingAreasService } from '../../services/setting-areas.service';
 import { Validators } from '@angular/forms';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { ToastService } from '../../../../core/services/toast.service';
 
 function bothLanguagesRequired(
   control: AbstractControl,
@@ -36,8 +33,6 @@ export class SettingAreasComponent implements OnInit {
   showSettingsPage: boolean = true;
   showIncentiveForm: boolean = true;
   isLoading: boolean = false;
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
 
   //table
   allAreas: allArea[] = [];
@@ -49,13 +44,14 @@ export class SettingAreasComponent implements OnInit {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private fb: FormBuilder,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.loadAllArea();
   }
-  
+
   initForm() {
     this.form = this.fb.group(
       {
@@ -114,28 +110,23 @@ export class SettingAreasComponent implements OnInit {
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      this.errorMessage =
-        'الاسم بالعربي والانجليزي مطلوب ويجب أن يكون على الأقل حرفين';
+      this.toast.error('الاسم بالعربي والانجليزي مطلوب ويجب أن يكون على الأقل حرفين');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
-
     const body = this.form.value;
 
     this.apiService.addArea(body).subscribe({
-      next: (res) => {
-        this.successMessage = 'تم إضافة المنطقة بنجاح';
+      next: () => {
+        this.toast.success('تم إضافة المنطقة بنجاح');
         this.isLoading = false;
         this.form.reset();
         this.loadAllArea();
-        setTimeout(() => this.resetForm(), 3000);
       },
       error: (err) => {
         console.error('خطأ في إضافة المنطقة:', err);
-        this.errorMessage = err.error?.title || 'حدث خطأ أثناء إضافة المنطقة';
+        this.toast.error(err.error?.title || 'حدث خطأ أثناء إضافة المنطقة');
         this.isLoading = false;
       },
     });
@@ -143,8 +134,6 @@ export class SettingAreasComponent implements OnInit {
 
   resetForm() {
     this.form.reset();
-    this.errorMessage = null;
-    this.successMessage = null;
   }
 
   editArea(areaId: number) {
@@ -152,8 +141,8 @@ export class SettingAreasComponent implements OnInit {
     this.router.navigate(['manageRestaurants/edit-setting-area', areaId]);
   }
 
-  showSettings() {
-    this.router.navigate(['manageRestaurants/sett-area']);
+  showSettings(areaId: number) {
+    this.router.navigate(['manageRestaurants/sett-area', areaId]);
   }
 
   toggleIncentiveForm() {

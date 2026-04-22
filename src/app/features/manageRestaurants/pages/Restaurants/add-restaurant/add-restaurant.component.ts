@@ -1,24 +1,29 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import { allArea } from '../../../model/area.type'; // من types
+import { allArea } from '../../../model/area.type';
 import { RestaurantsService } from '../../../services/restaurants.service';
 import { SettingAreasService } from '../../../services/setting-areas.service';
+import { ToastService } from '../../../../../core/services/toast.service';
+import { MainCategoriesService } from '../../../../Categories/services/main-categories.service';
+import { MultiSelectComponent, SelectItem } from '../../../../../shared/multi-select/multi-select.component';
 import {
   ReactiveFormsModule,
   FormBuilder,
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add-restaurant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MultiSelectComponent],
   templateUrl: './add-restaurant.component.html',
   styleUrls: ['./add-restaurant.component.scss'],
 })
-export class AddRestaurantComponent implements OnInit {
+export class AddRestaurantComponent implements OnInit, OnDestroy {
+  private serviceIdSub?: Subscription;
   selectedLanguage: string = 'arabic';
   selectedLanguageLabel: string = 'Arabic - العربية (AR)';
   selectedLanguagePlaceholder: string = 'يرجى إدخال باللغة العربية';
@@ -27,7 +32,8 @@ export class AddRestaurantComponent implements OnInit {
   coverError: string | null = null;
   logoRequiredError: string | null = null;
   coverRequiredError: string | null = null;
-
+  foodTypeError = false;
+  
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
@@ -37,8 +43,8 @@ export class AddRestaurantComponent implements OnInit {
   Cover: File | null = null;
 
   areas: allArea[] = [];
-  successMessage: string | null = null;
-  errorMessage: string | null = null;
+  categories: SelectItem[] = [];
+  selectedCategoryIds: number[] = [];
   isLoading: boolean = false;
   form!: FormGroup;
 
@@ -48,18 +54,25 @@ export class AddRestaurantComponent implements OnInit {
     { id: 3, name: 'متاجر' },
   ];
 
-  foodTypes = [{ id: 1, name: 'إيطالي' }];
-
   constructor(
     private sanitizer: DomSanitizer,
     private apiService: RestaurantsService,
     private areaService: SettingAreasService,
+    private categoriesService: MainCategoriesService,
     private fb: FormBuilder,
+    private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
     this.loadAreas();
+    this.serviceIdSub = this.form.get('serviceId')!.valueChanges.subscribe((id) => {
+      if (id) this.loadCategories(id);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.serviceIdSub?.unsubscribe();
   }
 
   initForm() {
@@ -85,14 +98,13 @@ export class AddRestaurantComponent implements OnInit {
       serviceId: [null, Validators.required],
       latitude: [null, Validators.required],
       longitude: [null, Validators.required],
-      foodType: [null, Validators.required],
       areaId: [null, Validators.required],
       taxPercentage: [0, [Validators.required, Validators.min(0)]],
       minDeliveryTime: [15, [Validators.required, Validators.min(0)]],
       maxDeliveryTime: [45, [Validators.required, Validators.min(0)]],
-      ownerFirstName: ['', [Validators.required, Validators.minLength(2)]],
-      ownerLastName: ['', [Validators.required, Validators.minLength(2)]],
-      ownerPhone: [
+      FirstName: ['', [Validators.required, Validators.minLength(2)]],
+      LastName: ['', [Validators.required, Validators.minLength(2)]],
+      PhoneNumber: [
         '',
         [Validators.required, Validators.pattern(/^\d{10,15}$/)],
       ],
@@ -109,6 +121,21 @@ export class AddRestaurantComponent implements OnInit {
       next: (data) => (this.areas = data),
       error: (err) => console.error('Error loading areas:', err),
     });
+  }
+
+  loadCategories(serviceId: number): void {
+    this.categoriesService.getAllCategories(serviceId).subscribe({
+      next: (res) => {
+        this.categories = res.Categories.map((c) => ({ id: c.id, name: c.name }));
+        this.selectedCategoryIds = [];
+      },
+      error: () => this.toast.error('فشل تحميل أنواع الأكل'),
+    });
+  }
+
+  onCategorySelectionChange(ids: number[]): void {
+    this.selectedCategoryIds = ids;
+    this.foodTypeError = false;
   }
 
   togglePassword(): void {
@@ -159,12 +186,11 @@ export class AddRestaurantComponent implements OnInit {
     // فلترة بسيطة للصيغ والحجم (اختياري)
     const validTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
     if (!validTypes.includes(file.type)) {
-      alert('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
+      this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png أو gif');
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      // 5 ميجا كحد أقصى مثال
-      alert('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
+      this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
       return;
     }
 
@@ -205,19 +231,20 @@ export class AddRestaurantComponent implements OnInit {
 
   handleSubmit(): void {
     this.form.markAllAsTouched();
+    this.foodTypeError = this.selectedCategoryIds.length === 0;
 
     if (
       this.form.invalid ||
       !this.Logo ||
       !this.Cover ||
+      this.foodTypeError ||
       this.form.value.password !== this.form.value.confirmPassword
     ) {
-      this.errorMessage = 'يرجى تصحيح جميع الأخطاء';
+      this.toast.error('يرجى تصحيح جميع الأخطاء');
       return;
     }
 
     const formValue = this.form.value;
-
     const formData = new FormData();
 
     formData.append('NameAr', formValue.nameAr.trim());
@@ -227,19 +254,23 @@ export class AddRestaurantComponent implements OnInit {
     formData.append('ServiceId', formValue.serviceId);
     formData.append('Latitude', formValue.latitude);
     formData.append('Longitude', formValue.longitude);
-    formData.append('FoodType', formValue.foodType);
     formData.append('AreaId', formValue.areaId);
     formData.append('TaxPercentage', formValue.taxPercentage);
     formData.append('MinDeliveryTime', formValue.minDeliveryTime);
     formData.append('MaxDeliveryTime', formValue.maxDeliveryTime);
-    formData.append('ResturantOwnerFirstName', formValue.ownerFirstName);
-    formData.append('ResturantOwnerLastName', formValue.ownerLastName);
-    formData.append('ResturantOwnerPhone', formValue.ownerPhone);
+    formData.append('FirstName', formValue.FirstName);
+    formData.append('LastName', formValue.LastName);
+    formData.append('PhoneNumber', formValue.PhoneNumber);
     formData.append('Notes', formValue.notes || '');
     formData.append('Email', formValue.email);
     formData.append('Password', formValue.password);
     formData.append('ConfirmPassword', formValue.confirmPassword);
     formData.append('ResturantStatus', formValue.resturantStatus);
+
+    // إرسال الكاتجوريز كـ array of strings
+    this.selectedCategoryIds.forEach((id) =>
+      formData.append('CategoryIds', String(id))
+    );
 
     if (this.Logo) formData.append('Logo', this.Logo);
     if (this.Cover) formData.append('Cover', this.Cover);
@@ -247,16 +278,13 @@ export class AddRestaurantComponent implements OnInit {
     this.isLoading = true;
 
     this.apiService.addRestaurant(formData).subscribe({
-      next: (res) => {
-        this.successMessage = 'تم إضافة المطعم بنجاح';
+      next: () => {
+        this.toast.success('تم إضافة المطعم بنجاح');
         this.isLoading = false;
-        this.form.reset();
-        setTimeout(() => {
-          this.resetForm();
-        }, 3000);
+        this.resetForm();
       },
       error: (err) => {
-        this.errorMessage = err.error?.title || 'حدث خطأ';
+        this.toast.error(err.error?.title || 'حدث خطأ أثناء الإضافة');
         this.isLoading = false;
       },
     });
@@ -268,7 +296,7 @@ export class AddRestaurantComponent implements OnInit {
     this.Cover = null;
     this.LogoPreview = null;
     this.CoverPreview = null;
-    this.errorMessage = null;
-    this.successMessage = null;
+    this.selectedCategoryIds = [];
+    this.foodTypeError = false;
   }
 }

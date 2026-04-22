@@ -11,6 +11,14 @@
         <h6>حدد رسوم التوصيل والحوافز حسب المنطقة</h6>
       </div>
 
+      @if (Loading) {
+      <div class="text-center mb-4">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">جاري التحميل...</span>
+        </div>
+      </div>
+      }
+
       <div class="cardParentsetting mt-1">
         <div class="row border-bottoms-red">
           <div class="page-title">
@@ -19,60 +27,73 @@
             </h3>
           </div>
         </div>
-        <form action="" class="fees" #deliveryFeesForm="ngForm">
+        <form [formGroup]="form" (ngSubmit)="handleUpdateArea()">
           <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
               <div class="form-section mt-2">
                 <label for="validationCustom01" class="form-label">أدنى رسوم توصيل ($)</label>
                 <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="minDeliveryFee"
-                  [(ngModel)]="minDeliveryFee" required />
-                <div class="invalid-feedback">يرجى إدخال أدنى رسوم توصيل</div>
-                <div class="valid-feedback">يبدو جيدًا!</div>
-              </div>
-              <div class="form-section mt-2">
-                <label for="validationCustom01" class="form-label">أقصى مبلغ للطلب عند الاستلام ($) </label>
-                <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="maxCashOrder"
-                  [(ngModel)]="maxCashOrder" required />
-                <div class="invalid-feedback">يرجى إدخال أقصى طلب</div>
+                  formControlName="lowestDeliveryFees" required
+                  [ngClass]="{ 'is-invalid': form.get('lowestDeliveryFees')?.touched && form.get('lowestDeliveryFees')?.invalid}" />
+                <div class="invalid-feedback" *ngIf="form.get('lowestDeliveryFees')?.errors?.['required']">
+                  يرجي ادخال ادني رسوم توصيل</div>
                 <div class="valid-feedback">يبدو جيدًا!</div>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <div class="form-section mt-2">
                 <label for="validationCustom01" class="form-label">أقصى رسوم توصيل ($)</label>
                 <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="maxCashOrder"
-                  [(ngModel)]="maxDeliveryFee" required />
-                <div class="invalid-feedback">يرجى إدخال أقصى رسوم توصيل</div>
-                <div class="valid-feedback">يبدو جيدًا!</div>
-              </div>
-              <div class="form-section mt-2">
-                <label for="validationCustom01" class="form-label">زيادة رسوم توصيل (%)</label>
-                <input type="number" id="validationCustom01" class="form-control" placeholder="0"
-                  name="increaseFeePercent" [(ngModel)]="increaseFeePercent" required />
-                <div class="invalid-feedback">يرجى إدخال زيادة رسوم توصيل</div>
+                  formControlName="maximumDeliveryFees" required
+                  [ngClass]="{ 'is-invalid': form.get('maximumDeliveryFees')?.touched && form.get('maximumDeliveryFees')?.invalid}" />
+                <div class="invalid-feedback" *ngIf="form.get('maximumDeliveryFees')?.errors?.['required']">
+                  يردي ادخال اقصي رسوم توصيل </div>
                 <div class="valid-feedback">يبدو جيدًا!</div>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
+              <div class="form-section mt-2">
+                <label for="validationCustom01" class="form-label">زيادة رسوم توصيل (%)</label>
+                <input type="number" id="validationCustom01" class="form-control" placeholder="0"
+                  name="increaseFeePercent" formControlName="increasedDeliveryFees" required
+                  [ngClass]="{ 'is-invalid': form.get('increasedDeliveryFees')?.touched && form.get('increasedDeliveryFees')?.invalid}" />
+                <div class="invalid-feedback" *ngIf="form.get('increasedDeliveryFees')?.errors?.['required']">
+                  يرجي ادخال زيادة سوم التوصيل </div>
+                <div class="valid-feedback">يبدو جيدًا!</div>
+              </div>
+            </div>
+            <div class="col-md-4">
               <div class="form-section mt-2">
                 <label for="validationCustom01" class="form-label"> رسوم توصيل لكل كيلومتر ($)</label>
                 <input type="number" id="validationCustom01" class="form-control" placeholder="0" name="feePerKm"
-                  [(ngModel)]="feePerKm" required />
-                <div class="invalid-feedback">يرجى إدخال أقصى رسوم توصيل</div>
+                  formControlName="deliveryFeePerKilometre" required
+                  [ngClass]="{ 'is-invalid': form.get('deliveryFeePerKilometre')?.touched && form.get('deliveryFeePerKilometre')?.invalid}" />
+                <div class="invalid-feedback" *ngIf="form.get('deliveryFeePerKilometre')?.errors?.['required']">
+                  يرجي ادخال رسوم التوصيل لكل كيلومتر </div>
                 <div class="valid-feedback">يبدو جيدًا!</div>
               </div>
+            </div>
+            <div class="col-md-4">
               <div class="form-section mt-2">
                 <label for="validationCustom01" class="form-label"> رسالة زيادة رسوم توصيل </label>
-                <input type="number" id="validationCustom01" class="form-control" placeholder="0"
-                  name="increaseFeeMessage" [(ngModel)]="increaseFeeMessage" required />
-                <div class="invalid-feedback">يرجى إدخال رسالة زيادة رسوم توصيل</div>
+                <input type="text" id="validationCustom01" class="form-control" name="increaseFeeMessage"
+                  formControlName="messageOfIncreasedDeliveryFees" required
+                  [ngClass]="{ 'is-invalid': form.get('messageOfIncreasedDeliveryFees')?.touched && form.get('messageOfIncreasedDeliveryFees')?.invalid}" />
+                <div class="invalid-feedback" *ngIf="form.get('messageOfIncreasedDeliveryFees')?.errors?.['required']">
+                  يرجي ادخال رسالة زيادة الطلب </div>
                 <div class="valid-feedback">يبدو جيدًا!</div>
               </div>
             </div>
             <div class="btns mt-2">
-              <div class="row justify-content-end">
-                <button class="btn btn-rest" (click)="resetDeliveryFeesForm()">إعادة تعيين</button>
-                <button class="btn btn-save">حفظ المعلومات</button>
+              <div class="row justify-content-center gap-2">
+                <div class="col-md-5">
+                  <button class="btn btn-rest w-100" (click)="resetForm()">إعادة تعيين</button>
+                </div>
+                <div class="col-md-5">
+                  <button type="submit" class="btn btn-save w-100" [disabled]="isLoading"> @if (isLoading) {
+                    <span class="spinner-border spinner-border-sm me-2"></span>
+                    }حفظ البيانات</button>
+                </div>
               </div>
             </div>
           </div>

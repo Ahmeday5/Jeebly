@@ -1,0 +1,123 @@
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInOverlay 0.2s ease;
+  backdrop-filter: blur(3px);
+}
+
+.confirm-dialog {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 32px 28px;
+  width: 400px;
+  max-width: 92vw;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  animation: slideInDialog 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  direction: rtl;
+}
+
+.confirm-icon-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.confirm-icon {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #fff0f1, #ffdde0);
+  border: 3px solid #ffc9cc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 28px;
+    color: #8c0f14;
+  }
+}
+
+.confirm-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 10px;
+}
+
+.confirm-message {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.7;
+  margin-bottom: 28px;
+}
+
+.confirm-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-confirm-cancel {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: 2px solid #e5e7eb;
+  background: #fff;
+  color: #4b5563;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #f3f4f6;
+    border-color: #d1d5db;
+  }
+}
+
+.btn-confirm-ok {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #8c0f14, #c0392b);
+  color: #fff;
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(140, 15, 20, 0.35);
+
+  &:hover {
+    background: linear-gradient(135deg, #7a0c11, #a93226);
+    box-shadow: 0 6px 18px rgba(140, 15, 20, 0.45);
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInDialog {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}

@@ -1,0 +1,15 @@
+<div class="confirm-overlay" (click)="onCancel()">
+  <div class="confirm-dialog" (click)="$event.stopPropagation()">
+    <div class="confirm-icon-wrapper">
+      <div class="confirm-icon">
+        <i class="fas fa-exclamation"></i>
+      </div>
+    </div>
+    <h3 class="confirm-title">{{ title }}</h3>
+    <p class="confirm-message">{{ message }}</p>
+    <div class="confirm-actions">
+      <button class="btn-confirm-cancel" (click)="onCancel()">إلغاء</button>
+      <button class="btn-confirm-ok" (click)="onConfirm()">تأكيد</button>
+    </div>
+  </div>
+</div>

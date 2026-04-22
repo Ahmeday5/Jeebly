@@ -1,3 +1,67 @@
+.page-title h3 {
+  color: var(--main-color);
+  font-size: 22px;
+  font-weight: bold;
+  .icon { font-size: 15px; margin-left: 5px; }
+  .number { font-size: 18px; margin-right: 2px; }
+}
+
+.btn-add {
+  background: var(--main-color);
+  color: var(--second-color);
+  border-radius: 8px;
+  font-weight: 600;
+  padding: 8px 20px;
+  border: none;
+  &:hover { opacity: 0.9; color: var(--second-color); }
+}
+
+.cardParent {
+  border: 3px solid var(--third-color);
+  border-radius: 12px;
+  .card-body { padding: 10px; }
+}
+
+.custom-table { overflow-x: auto; }
+
+.custom-table-design {
+  border-collapse: separate;
+  border-spacing: 0 1px;
+  thead th {
+    background: var(--third-color) !important;
+    color: var(--main-color);
+    font-weight: 700;
+    font-size: 17px;
+    padding: 10px !important;
+    border: 0;
+  }
+  tbody tr { background: var(--second-color); }
+  td {
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--main-color);
+    padding: 7px !important;
+    border: 0;
+  }
+}
+
+.alert-noFound {
+  border: none;
+  background: transparent;
+  color: var(--main-color);
+  .icons i { font-size: 2rem; margin: 0 4px; }
+}
+
+.form-switch {
+  display: flex;
+  justify-content: center;
+  .form-check-input { border: 1px solid var(--main-color); &:focus { box-shadow: none; } }
+}
+.form-check-input:checked {
+  background-color: var(--main-color);
+  border-color: var(--main-color);
+}
+
 .btn-filter {
   width: auto;
   border: none;

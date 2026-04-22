@@ -1,70 +1,84 @@
-<div class="add-restaurant mt-2 mb-3">
+<div class="add-food mt-2 mb-3">
   <div class="container-fluid p-0">
-    <form action="" class="mt-4">
-      <!-----------------name and logo----------------->
+    <form [formGroup]="form" (ngSubmit)="handleSubmit()" class="mt-4">
+
+      <!-- Header -->
       <div class="row p-0">
         <div class="page-title">
           <h3>
-            <span class="icon">
-              <i class="fa-solid fa-receipt"></i>
-            </span>
-            اضافة طعام
+            <span class="icon"><i class="fa-solid fa-receipt"></i></span>
+            إضافة منتج جديد
           </h3>
         </div>
+
+        <!-- Name + Image -->
         <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
           <div class="title d-flex justify-content-start">
-            <h6 [ngClass]="{'active': selectedLanguage === 'default'}" (click)="selectLanguage('default')">
-              افتراضي
-            </h6>
-            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
-              English
-              (EN)
-            </h6>
-            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
-              -
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic -
               العربية (AR)</h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">English (EN)
+            </h6>
           </div>
+
+          @if (selectedLanguage === 'arabic') {
           <div class="form-section mt-4">
-            <label for="validationCustom01" class="form-label"> الاسم ({{ selectedLanguageLabel }})</label>
-            <input type="text" id="validationCustom01" class="form-control"
-              placeholder="{{ selectedLanguageePlaceholder }}" name="nameFood" required />
-            <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
-            <div class="valid-feedback">يبدو جيدًا!</div>
+            <label class="form-label">اسم المنتج (عربي)<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="NameAr" [ngClass]="{'is-invalid': form.get('NameAr')?.invalid && form.get('NameAr')?.touched,
+                             'is-valid':   form.get('NameAr')?.valid   && form.get('NameAr')?.touched}">
+            <div class="invalid-feedback">يرجى إدخال اسم صالح (حرفين على الأقل)</div>
           </div>
           <div class="form-section">
-            <label for="validationCustom02" class="form-label"> وصف قصير ({{ selectedLanguageLabel
-              }})</label>
-            <textarea type="text" id="validationCustom02" class="form-control"
-              placeholder="{{ selectedLanguageePlaceholder }}" name="desc" required rows="2"></textarea>
-            <div class="invalid-feedback">يرجى إدخال عنوان صالح</div>
-            <div class="valid-feedback">يبدو جيدًا!</div>
+            <label class="form-label">الوصف (عربي)<span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" formControlName="DescriptionAr"
+              [ngClass]="{'is-invalid': form.get('DescriptionAr')?.invalid && form.get('DescriptionAr')?.touched,
+                             'is-valid':   form.get('DescriptionAr')?.valid   && form.get('DescriptionAr')?.touched}"></textarea>
+            <div class="invalid-feedback">يرجى إدخال وصف</div>
           </div>
+          }
+
+          @if (selectedLanguage === 'english') {
+          <div class="form-section mt-4">
+            <label class="form-label">Product Name (English)<span class="text-danger">*</span></label>
+            <input type="text" class="form-control" formControlName="NameEn" [ngClass]="{'is-invalid': form.get('NameEn')?.invalid && form.get('NameEn')?.touched,
+                             'is-valid':   form.get('NameEn')?.valid   && form.get('NameEn')?.touched}">
+            <div class="invalid-feedback">Please enter a valid name (min 2 characters)</div>
+          </div>
+          <div class="form-section">
+            <label class="form-label">Description (English)<span class="text-danger">*</span></label>
+            <textarea class="form-control" rows="3" formControlName="DescriptionEn"
+              [ngClass]="{'is-invalid': form.get('DescriptionEn')?.invalid && form.get('DescriptionEn')?.touched,
+                             'is-valid':   form.get('DescriptionEn')?.valid   && form.get('DescriptionEn')?.touched}"></textarea>
+            <div class="invalid-feedback">Please enter a description</div>
+          </div>
+          }
         </div>
+
+        <!-- Image Upload -->
         <div class="col-xl-6 col-lg-6 col-md-12 mt-2">
           <div class="logo">
-            <div class="row justify-content-center">
-              <div class="col-md-6">
-                <div class="row">
-                  <div class="col-md-12">
-                    <h5 class="text-center" style="font-weight: bold;">صورة الطعام</h5>
+            <div class="row">
+              <div class="col-md-8 mb-4">
+                <label class="form-label fw-bold">صورة المنتج<span class="text-danger">*</span></label>
+                <div class="border rounded p-3 text-center position-relative"
+                  style="min-height: 220px; background: #f8f9fa; cursor: pointer;">
+                  @if (ImagePreview) {
+                  <div class="position-relative d-inline-block">
+                    <img [src]="ImagePreview" alt="صورة المنتج" class="img-fluid rounded shadow"
+                      style="max-height: 180px; max-width: 100%; object-fit: contain;">
+                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle"
+                      (click)="removeImage()" title="حذف الصورة">
+                      <i class="fas fa-times"></i>
+                    </button>
                   </div>
-                  <div class="col-12">
-                    <div class="form-section">
-                      <label class="upload-label">
-                        <span><i class="fa-solid fa-arrow-up-from-bracket"></i></span>
-                        <input type="file" id="logoUpload" (change)="onFileChange($event, 'logo')"
-                          accept=".jpg,.png,.jpeg,.gif" />
-                      </label>
-                      <div class="upload-details">
-                        <p>صيغة الصورة</p>
-                        <p>jpg, png, jpeg, gif</p>
-                        <p>حجم الصورة</p>
-                        <p>الحد الأقصى: 2 ميجابايت</p>
-                        <p>نسبة الصورة - 1:1</p>
-                      </div>
-                      <div class="invalid-feedback" *ngIf="logoError">{{ logoError }}</div>
-                    </div>
-                  </div>
+                  } @else {
+                  <label for="imageUpload" class="d-block py-5" style="cursor: pointer;">
+                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                    <p class="text-muted mb-1">اضغط هنا لرفع صورة المنتج</p>
+                    <small class="text-muted">(jpg/png – حد أقصى 5 ميجا)</small>
+                  </label>
+                  <input type="file" id="imageUpload" accept="image/jpeg,image/png,image/jpg"
+                    (change)="onFileChange($event)" class="d-none" />
+                  }
                 </div>
               </div>
             </div>
@@ -72,343 +86,118 @@
         </div>
       </div>
 
-      <!----------------------information----------------------->
-
+      <!-- Information Section -->
       <div class="row p-0 mt-3">
         <div class="information">
           <div class="page-title">
             <h3>
-              <span class="icon">
-                <i class="fas fa-info-circle"></i>
-              </span>
-              معلومات المطاعم والفئات
+              <span class="icon"><i class="fas fa-info-circle"></i></span>
+              معلومات المطعم والفئة
             </h3>
           </div>
           <div class="inputs">
             <div class="row">
-              <div class="col-md-3">
+
+              <!-- Service -->
+              <div class="col-md-4 mt-2">
                 <div class="form-section">
-                  <label for="validationCustom03" class="form-label">المطعم</label>
-                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                  <div class="invalid-feedback">يرجى إدخال مطعم صالحة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
+                  <label class="form-label">نوع الخدمة<span class="text-danger">*</span></label>
+                  <select dir="rtl" class="form-select custom-select" formControlName="ServiceId"
+                    [ngClass]="{'is-invalid': form.get('ServiceId')?.invalid && form.get('ServiceId')?.touched}">
+                    <option value="" disabled>اختر الخدمة</option>
+                    @for (s of services; track s.id) {
+                    <option [value]="s.id">{{ s.name }}</option>
+                    }
+                  </select>
+                  <div class="invalid-feedback">يرجى اختيار الخدمة</div>
                 </div>
               </div>
-              <div class="col-md-3">
+
+              <!-- Restaurant -->
+              <div class="col-md-4 mt-2">
                 <div class="form-section">
-                  <label for="validationCustom03" class="form-label">فئة</label>
-                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                  <div class="invalid-feedback">يرجى إدخال فئة صالحة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
+                  <label class="form-label">المطعم<span class="text-danger">*</span></label>
+                  <select dir="rtl" class="form-select custom-select" formControlName="ResturantId" [ngClass]="{'is-invalid': form.get('ResturantId')?.invalid && form.get('ResturantId')?.touched,
+                                 'is-valid':   form.get('ResturantId')?.valid   && form.get('ResturantId')?.touched}">
+                    <option [value]="null" disabled>اختر المطعم</option>
+                    @if (isLoading) {
+                    <option disabled>جاري التحميل...</option>
+                    }
+                    @for (r of restaurants; track r.id) {
+                    <option [value]="r.id">{{ r.nameAr }} — {{ r.nameEn }}</option>
+                    }
+                  </select>
+                  <div class="invalid-feedback">يرجى اختيار المطعم</div>
                 </div>
               </div>
-              <div class="col-md-3">
+
+              <!-- Category -->
+              <div class="col-md-4 mt-2">
                 <div class="form-section">
-                  <label for="validationCustom03" class="form-label">فئة فرعية</label>
-                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                  <div class="invalid-feedback">يرجى إدخال فئة فرعية صالحة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
+                  <label class="form-label">الفئة<span class="text-danger">*</span></label>
+                  <select dir="rtl" class="form-select custom-select" formControlName="CategoryId" [ngClass]="{'is-invalid': form.get('CategoryId')?.invalid && form.get('CategoryId')?.touched,
+                                 'is-valid':   form.get('CategoryId')?.valid   && form.get('CategoryId')?.touched}">
+                    <option [value]="null" disabled>اختر الفئة</option>
+                    @for (c of categories; track c.id) {
+                    <option [value]="c.id">{{ c.name }}</option>
+                    }
+                  </select>
+                  <div class="invalid-feedback">يرجى اختيار الفئة</div>
                 </div>
               </div>
-              <div class="col-md-3">
+
+              <!-- Price -->
+              <div class="col-md-4 mt-2">
                 <div class="form-section">
-                  <label for="validationCustom03" class="form-label">نوع الطعام</label>
-                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                  <div class="invalid-feedback">يرجى إدخال نوع طعام صالحة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
+                  <label class="form-label">السعر<span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" formControlName="Price" min="0" step="0.01" [ngClass]="{'is-invalid': form.get('Price')?.invalid && form.get('Price')?.touched,
+                                 'is-valid':   form.get('Price')?.valid   && form.get('Price')?.touched}">
+                  <div class="invalid-feedback">يرجى إدخال سعر صالح</div>
                 </div>
               </div>
-              <div class="col-md-6">
+
+              <!-- Quantity -->
+              <div class="col-md-4 mt-2">
                 <div class="form-section">
-                  <label for="validationCustom03" class="form-label">Nutrition</label>
-                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                  <div class="invalid-feedback">يرجى إدخال Nutrition صالحة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
+                  <label class="form-label">الكمية<span class="text-danger">*</span></label>
+                  <input type="number" class="form-control" formControlName="Quantity" min="0" [ngClass]="{'is-invalid': form.get('Quantity')?.invalid && form.get('Quantity')?.touched,
+                                 'is-valid':   form.get('Quantity')?.valid   && form.get('Quantity')?.touched}">
+                  <div class="invalid-feedback">يرجى إدخال كمية صالحة</div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="form-section">
-                  <label for="validationCustom03" class="form-label">Allegren Ingredients</label>
-                  <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                  <div class="invalid-feedback">يرجى إدخال Allegren Ingredients صالحة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
+
+              <!-- IsActive -->
+              <div class="col-md-4 mt-2 d-flex align-items-center">
+                <div class="form-section w-100">
+                  <label class="form-label d-block">الحالة</label>
+                  <div class="form-check form-switch d-flex align-items-center gap-2 mt-1">
+                    <input class="form-check-input" type="checkbox" id="isActiveSwitch" formControlName="IsActive"
+                      style="width:44px; height:22px; cursor:pointer;">
+                    <label class="form-check-label fw-bold" for="isActiveSwitch" style="color: var(--main-color);">
+                      {{ form.get('IsActive')?.value ? 'نشط' : 'غير نشط' }}
+                    </label>
+                  </div>
                 </div>
               </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <input type="checkbox" class="form-check-input" id="validationFormCheck1" required>
-                  <label class="form-check-label" for="validationFormCheck1">Is It Halal</label>
-                  <div class="invalid-feedback">Is It Halal require</div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
       </div>
 
-      <!----------------------addAndOffer----------------------->
-
-      <div class="row p-0 mt-3">
-        <div class="col-md-6">
-          <div class="addAndOffer">
-            <div class="page-title">
-              <h3>
-                <span class="icon">
-                  <i class="fa-solid fa-receipt"></i>
-                </span>
-                إضافة
-              </h3>
-            </div>
-            <div class="inputs">
-              <div class="row">
-                <div class="col-md-12">
-                  <div class="form-section">
-                    <label for="validationCustom04" class="form-label">اختر الإضافات</label>
-                    <select dir="rtl" id="validationCustom04" class="form-select custom-select" name="foodType"
-                      required>
-                      <option value="" disabled selected>اختر</option>
-                      <!-- أضف خيارات تانية لو عايز -->
-                      <option value="italian">إيطالي</option>
-                      <option value="arabic">عربي</option>
-                      <option value="fast-food">وجبات سريعة</option>
-                    </select>
-                    <div class="invalid-feedback">يرجى اختيار نوع أكل صالح</div>
-                    <div class="valid-feedback">يبدو جيدًا!</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-6">
-          <div class="addAndOffer">
-            <div class="page-title">
-              <h3>
-                <span class="icon">
-                  <i class="fa-solid fa-receipt"></i>
-                </span>
-                توفير
-              </h3>
-            </div>
-            <div class="inputs">
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="form-section">
-                    <label for="validationCustom03" class="form-label">وقت التوفر يبدأ من</label>
-                    <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                    <div class="invalid-feedback">يرجى إدخال وقت التوفر صالحة</div>
-                    <div class="valid-feedback">يبدو جيدًا!</div>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-section">
-                    <label for="validationCustom03" class="form-label">وقت التوفر يبدأ من</label>
-                    <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                    <div class="invalid-feedback">يرجى إدخال وقت التوفر صالحة</div>
-                    <div class="valid-feedback">يبدو جيدًا!</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!----------------------priceInformation----------------------->
-      <div class="row p-0 mt-3">
-        <div class="priceInformation">
-          <div class="page-title">
-            <h3>
-              <span class="icon">
-                <i class="fas fa-info-circle"></i>
-              </span>
-              معلومات السعر
-            </h3>
-          </div>
-          <div class="inputs">
-            <div class="row">
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">سعر الوحدة</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="let" required />
-                  <div class="invalid-feedback">يرجى إدخال سعر الوحدة</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">نوع الخصم</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
-                  <div class="invalid-feedback">يرجى إدخال نوع الخصم</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">الخصم</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
-                  <div class="invalid-feedback">يرجى إدخال الخصم</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">الحد الأقصى لكمية الشراء</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
-                  <div class="invalid-feedback">يرجى إدخال الحد الأقصى لكمية الشراء</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">نوع المخزون</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="log" required />
-                  <div class="invalid-feedback">يرجى إدخال نوع المخزون</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!----------------------owner----------------------->
-      <div class="row p-0 mt-3">
-        <div class="owner">
-          <div class="page-title">
-            <div class="row">
-              <div class="col-6">
-                <h3>
-                  <span class="icon">
-                    <i class="fas fa-th-list"></i>
-                  </span>
-                  أنواع الطعام
-                </h3>
-              </div>
-              <div class="col-6 d-flex justify-content-end">
-                <h3>
-                  أضف نوع طعام جديد +
-                </h3>
-              </div>
-            </div>
-          </div>
-          <div class="inputs">
-            <div class="row">
-              <div class="col-12">
-                <div class="row">
-                  <div class="col-6">
-                    <div class="form-section">
-                      <input type="checkbox" class="form-check-input" id="validationFormCheck1">
-                      <label class="form-check-label" for="validationFormCheck1">مطلوب</label>
-                    </div>
-                  </div>
-                  <div class="col-6 d-flex justify-content-end">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">الاسم</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="firstName" required />
-                  <div class="invalid-feedback">يرجى إدخال اسم اول صالح</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">نوع اختيار الاختلاف</label>
-                  <div class="form-section">
-                    <input type="checkbox" class="form-check-input" id="validationFormCheck1">
-                    <label class="form-check-label" for="validationFormCheck1">Multiple Selection</label>
-                  </div>
-                  <div class="form-section">
-                    <input type="checkbox" class="form-check-input" id="validationFormCheck1">
-                    <label class="form-check-label" for="validationFormCheck1">Single Selection</label>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">الحد الأدنى</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
-                  <div class="invalid-feedback">يرجى إدخال حد ادني صالح</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="form-section">
-                  <label for="validationCustom04" class="form-label">الحد الاقصي</label>
-                  <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
-                  <div class="invalid-feedback">يرجى إدخال حد اقصي صالح</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-              <div class="addOption">
-                <div class="row">
-                  <div class="col-md-3 col-sm-4 col-6">
-                    <div class="form-section">
-                      <label for="validationCustom04" class="form-label">الحد الاقصي</label>
-                      <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
-                      <div class="invalid-feedback">يرجى إدخال حد اقصي صالح</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-3 col-sm-4 col-6">
-                    <div class="form-section">
-                      <label for="validationCustom04" class="form-label">الحد الاقصي</label>
-                      <input type="text" id="validationCustom04" class="form-control" name="phoneNumber" required />
-                      <div class="invalid-feedback">يرجى إدخال حد اقصي صالح</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-3 col-sm-4 col-6 d-flex align-items-center deleteaddOption ">
-                    <i class="fa-solid fa-trash-can"></i>
-                  </div>
-                  <div class="col-12 d-flex justify-content-end">
-                    <button class="btn btn-addnewOption">أضف خيار جديد</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!----------------------tage----------------------->
-      <div class="row p-0 mt-3">
-        <div class="tage">
-          <div class="page-title">
-            <h3>
-              <span class="icon">
-                <i class="fas fa-tags"></i>
-              </span>
-              العلامات
-            </h3>
-          </div>
-          <div class="inputs">
-            <div class="row">
-              <div class="col-md-12">
-                <div class="form-section">
-                  <input type="text" id="validationCustom04" class="form-control" name="firstName" required />
-                  <div class="invalid-feedback">يرجى إدخال اسم اول صالح</div>
-                  <div class="valid-feedback">يبدو جيدًا!</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!----------------------btns----------------------->
+      <!-- Buttons -->
       <div class="row p-0 mt-3">
         <div class="btns">
           <div class="row justify-content-end">
-            <button class="btn btn-rest">إعادة تعيين</button>
-            <button class="btn btn-save">ارسال</button>
+            <button type="button" class="btn btn-rest" (click)="goBack()">رجوع</button>
+            <button type="submit" class="btn btn-save" [disabled]="isSaving">
+              @if (isSaving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+              حفظ المنتج
+            </button>
           </div>
         </div>
       </div>
+
     </form>
   </div>
 </div>

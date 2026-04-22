@@ -8,37 +8,74 @@
               <span class="icon">
                 <i class="fas fa-store-alt fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
               </span>
-              demores
+              {{ (restaurant$ | async)?.nameAr }}
             </h3>
           </div>
         </div>
 
 
         <div class="row-cols-1 row-cols-md-10 row-cols-lg-11 mt-1">
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/overview">نظرة عامة</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'overview']">
+            نظرة عامة
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/orders">الطلبات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'orders']">
+            الطلبات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/foods">أكلات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'foods']">
+            أكلات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/ratings">التقييمات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'ratings']">
+            التقييمات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/discounts">الخصومات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'discounts']">
+            الخصومات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/Transactions">المعاملات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'transactions']">
+            المعاملات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/Settings">الإعدادات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'settings']">
+            الإعدادات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/Conversations">المحادثات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'conversations']">
+            المحادثات
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/Buisness">Buisness</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'business']">
+            Buisness
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/Meta">Meta</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'meta']">
+            Meta
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/QRcode">رمز QR</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'qrcode']">
+            رمز QR
+          </button>
+
           <button class="btn-filter mt-1" [routerLinkActive]="'active'" [routerLinkActiveOptions]="{ exact: true }"
-            routerLink="manageRestaurants/Payments">المدفوعات</button>
+            [routerLink]="['/manageRestaurants/details-restaurant', restaurantId, 'payments']">
+            المدفوعات
+          </button>
+
         </div>
 
 

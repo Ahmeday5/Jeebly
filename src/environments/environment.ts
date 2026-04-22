@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://jeebly.runasp.net',
+  apiBaseUrl: 'https://jebbly.runasp.net',
 };

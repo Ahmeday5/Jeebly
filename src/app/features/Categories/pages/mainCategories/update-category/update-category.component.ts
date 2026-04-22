@@ -1,101 +1,134 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { MainCategoriesService } from '../../../services/main-categories.service';
+import { ToastService } from '../../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-update-category',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './update-category.component.html',
-  styleUrl: './update-category.component.scss'
+  styleUrl: './update-category.component.scss',
 })
+export class UpdateCategoryComponent implements OnInit {
+  form!: FormGroup;
+  categoryId!: number;
+  selectedLanguage: string = 'arabic';
 
-export class UpdateCategoryComponent {
-  selectedLanguage: string = 'default'; //تتبع اللغة المختارة
-  selectedLanguageLabel: string = 'افتراضي';
-  selectedLanguageePlaceholder: string = 'يرجي ادخال لغة عربية';
-  logoError: string | null = null; // رسالة خطأ للشعار
-  coverError: string | null = null; // رسالة خطأ لغلاف المطعم
+  LogoPreview: SafeUrl | string | null = null;
+  Logo: File | null = null;
+  isLoading = false;
+  isSaving = false;
 
-  constructor(private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private route: ActivatedRoute,
+    private router: Router,
+    private sanitizer: DomSanitizer,
+    private apiService: MainCategoriesService,
+    private toast: ToastService,
+  ) {}
 
-  // دالة لتحديث اللغة المختارة
-  selectLanguage(language: string) {
-    this.selectedLanguage = language;
-    this.selectedLanguageLabel = this.getLanguageLabel(language);
-    this.selectedLanguageePlaceholder = this.getLanguagePlaceholder(language);
+  ngOnInit(): void {
+    this.categoryId = Number(this.route.snapshot.paramMap.get('id'));
+    this.initForm();
+    this.loadCategory();
   }
 
-  private getLanguageLabel(language: string): string {
-    switch (language) {
-      case 'default':
-        return 'افتراضي';
-      case 'english':
-        return 'English (EN)';
-      case 'arabic':
-        return 'Arabic - العربية (AR)';
-      default:
-        return 'افتراضي';
-    }
+  initForm() {
+    this.form = this.fb.group({
+      NameAr: ['', [Validators.required, Validators.minLength(2)]],
+      NameEn: ['', [Validators.required, Validators.minLength(2)]],
+    });
   }
 
-  private getLanguagePlaceholder(language: string): string {
-    switch (language) {
-      case 'default':
-        return 'يرجي ادخال لغة عربية';
-      case 'english':
-        return 'يرجي ادخال لغة انجليزية';
-      case 'arabic':
-        return 'يرجي ادخال لغة عربية';
-      default:
-        return 'افتراضي';
-    }
-  }
-
-  // التحقق من الملفات المرفوعة (شعار أو غلاف)
-  onFileChange(event: Event, type: 'logo' | 'cover'): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const maxSizeMB = 2 * 1024 * 1024; // 2 ميجابايت بالبايت
-      const validFormats = ['image/jpeg', 'image/png', 'image/gif'];
-
-      // التحقق من صيغة الملف
-      if (!validFormats.includes(file.type)) {
-        this.setError(type, 'يرجى رفع صورة بصيغة jpg, png, أو gif فقط');
-        return;
-      }
-
-      // التحقق من الحجم
-      if (file.size > maxSizeMB) {
-        this.setError(type, 'حجم الملف يجب ألا يتجاوز 2 ميجابايت');
-        return;
-      }
-
-      // التحقق من نسبة العرض إلى الارتفاع (2:1)
-      const img = new Image();
-      img.onload = () => {
-        const aspectRatio = img.width / img.height;
-        if (aspectRatio !== 2) {
-          this.setError(type, 'نسبة العرض إلى الارتفاع يجب أن تكون 2:1');
-          return;
+  loadCategory() {
+    this.isLoading = true;
+    this.apiService.getCategoryById(this.categoryId).subscribe({
+      next: (res) => {
+        const data = res.data;
+        this.form.patchValue({
+          NameAr: data.nameAr ?? data.name ?? '',
+          NameEn: data.nameEn ?? '',
+        });
+        if (data.image) {
+          this.LogoPreview = data.image;
         }
-        this.clearError(type); // مسح الخطأ إذا كان كل شيء صحيح
-      };
-      img.src = URL.createObjectURL(file);
+        this.isLoading = false;
+      },
+      error: () => {
+        this.toast.error('فشل تحميل بيانات الفئة');
+        this.isLoading = false;
+      },
+    });
+  }
+
+  selectLanguage(lang: string) {
+    this.selectedLanguage = lang;
+  }
+
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) return;
+
+    const file = input.files[0];
+    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+    if (!validTypes.includes(file.type)) {
+      this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png');
+      return;
     }
+    if (file.size > 5 * 1024 * 1024) {
+      this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.LogoPreview = this.sanitizer.bypassSecurityTrustUrl(e.target.result);
+    };
+    reader.readAsDataURL(file);
+    this.Logo = file;
   }
 
-  // تعيين رسالة الخطأ
-  private setError(type: 'logo' | 'cover', message: string): void {
-    if (type === 'logo') this.logoError = message;
-    else this.coverError = message;
+  removeImage(): void {
+    this.LogoPreview = null;
+    this.Logo = null;
+    const input = document.getElementById('logoUpload') as HTMLInputElement;
+    if (input) input.value = '';
   }
 
-  // مسح رسالة الخطأ
-  private clearError(type: 'logo' | 'cover'): void {
-    if (type === 'logo') this.logoError = null;
-    else this.coverError = null;
+  handleSubmit(): void {
+    this.form.markAllAsTouched();
+    if (this.form.invalid) {
+      this.toast.error('يرجى إدخال كل البيانات المطلوبة');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('Id', String(this.categoryId));
+    formData.append('NameAr', this.form.value.NameAr.trim());
+    formData.append('NameEn', this.form.value.NameEn.trim());
+    if (this.Logo) {
+      formData.append('Image', this.Logo);
+    }
+
+    this.isSaving = true;
+    this.apiService.updateCategory(formData).subscribe({
+      next: () => {
+        this.toast.success('تم تحديث الفئة بنجاح');
+        this.router.navigate(['Categories/add-list-category']);
+      },
+      error: () => {
+        this.toast.error('فشل تحديث الفئة');
+        this.isSaving = false;
+      },
+    });
+  }
+
+  goBack(): void {
+    this.router.navigate(['Categories/add-list-category']);
   }
 }

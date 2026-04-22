@@ -8,7 +8,7 @@ export const CATEGORIES_ROUTES: Routes = [
     title: 'قائمة الفئات',
   },
   {
-    path: 'update-category',
+    path: 'update-category/:id',
     loadComponent: () =>
       import('./pages/mainCategories/update-category/update-category.component').then(
         (m) => m.UpdateCategoryComponent,
