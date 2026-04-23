@@ -1,18 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Subject, takeUntil } from 'rxjs';
 import { ProductsService } from '../../services/list-food.service';
-import { RestaurantsService } from '../../../manageRestaurants/services/restaurants.service';
-import { FilteredRestaurant } from '../../../manageRestaurants/model/restaurant.type';
-import { RestaurantCategory } from '../../model/food.type';
+import { RestaurantCategory, serviceRestaurant } from '../../model/food.type';
 import { ToastService } from '../../../../core/services/toast.service';
+
+const SERVICES = [
+  { id: 1, name: 'مطاعم' },
+  { id: 2, name: 'تغذية' },
+  { id: 3, name: 'متاجر' },
+] as const;
+
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
+const MAX_IMAGE_SIZE_MB = 5 * 1024 * 1024;
 
 @Component({
   selector: 'app-add-food',
@@ -21,23 +24,17 @@ import { ToastService } from '../../../../core/services/toast.service';
   templateUrl: './add-food.component.html',
   styleUrl: './add-food.component.scss',
 })
-export class AddFoodComponent implements OnInit {
+export class AddFoodComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   selectedLanguage = 'arabic';
-
-  ImagePreview: SafeUrl | null = null;
-  ImageFile: File | null = null;
-
-  restaurants: FilteredRestaurant[] = [];
+  imagePreview: SafeUrl | null = null;
+  imageFile: File | null = null;
+  restaurants: serviceRestaurant[] = [];
   categories: RestaurantCategory[] = [];
-  isLoading = false;
   isSaving = false;
 
-  services = [
-    { id: 1, name: 'مطاعم' },
-    { id: 2, name: 'تغذية' },
-    { id: 3, name: 'متاجر' },
-  ];
+  readonly services = SERVICES;
+  private readonly destroy$ = new Subject<void>();
 
   constructor(
     private fb: FormBuilder,
@@ -45,64 +42,75 @@ export class AddFoodComponent implements OnInit {
     private router: Router,
     private sanitizer: DomSanitizer,
     private productsService: ProductsService,
-    private restaurantsService: RestaurantsService,
     private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.initForm();
-    this.loadRestaurants();
-
-    const restaurantId = this.route.snapshot.queryParamMap.get('restaurantId');
-    if (restaurantId) {
-      this.form.patchValue({ ResturantId: Number(restaurantId) });
-      this.loadCategoriesByRestaurant(Number(restaurantId));
-    }
-
-    this.form.get('ResturantId')!.valueChanges.subscribe((id) => {
-      if (id) this.loadCategoriesByRestaurant(id);
-      else this.categories = [];
-    });
+    this.setupCascadeListeners();
+    this.applyQueryParams();
   }
 
-  initForm(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  get hasService(): boolean { return !!this.form.get('ServiceId')?.value; }
+  get hasRestaurant(): boolean { return !!this.form.get('ResturantId')?.value; }
+
+  private initForm(): void {
     this.form = this.fb.group({
-      ServiceId:     [1, Validators.required],
+      ServiceId:     [null, Validators.required],
       ResturantId:   [null, Validators.required],
       CategoryId:    [null, Validators.required],
       NameAr:        ['', [Validators.required, Validators.minLength(2)]],
       NameEn:        ['', [Validators.required, Validators.minLength(2)]],
       DescriptionAr: ['', Validators.required],
       DescriptionEn: ['', Validators.required],
-      Price:         [null, [Validators.required, Validators.min(0)]],
-      Quantity:      [1,  [Validators.required, Validators.min(0)]],
+      Price:         [null, [Validators.required, Validators.min(1)]],
+      Quantity:      [null,   [Validators.required, Validators.min(1)]],
       IsActive:      [true],
       Lang:          ['1'],
     });
   }
 
-  loadRestaurants(): void {
-    this.isLoading = true;
-    const loadPage = (page: number, acc: FilteredRestaurant[] = []) => {
-      this.restaurantsService.getFilteredRestaurants('', '', page, 50).subscribe({
-        next: (res) => {
-          acc.push(...res.restaurants);
-          if (page < res.totalPages) {
-            loadPage(page + 1, acc);
-          } else {
-            this.restaurants = acc;
-            this.isLoading = false;
-          }
-        },
-        error: () => { this.isLoading = false; },
+  private setupCascadeListeners(): void {
+    this.form.get('ServiceId')!.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        this.restaurants = [];
+        this.categories = [];
+        this.form.patchValue({ ResturantId: null, CategoryId: null }, { emitEvent: false });
+        if (id) this.loadRestaurantsByService(id);
       });
-    };
-    loadPage(1);
+
+    this.form.get('ResturantId')!.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        this.categories = [];
+        this.form.patchValue({ CategoryId: null }, { emitEvent: false });
+        if (id) this.loadCategoriesByRestaurant(id);
+      });
   }
 
-  loadCategoriesByRestaurant(restaurantId: number): void {
-    this.categories = [];
-    this.form.patchValue({ CategoryId: null });
+  private applyQueryParams(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const serviceId = params.get('serviceId');
+    const restaurantId = params.get('restaurantId');
+
+    if (serviceId) this.form.patchValue({ ServiceId: Number(serviceId) });
+    if (restaurantId) this.form.patchValue({ ResturantId: Number(restaurantId) });
+  }
+
+  private loadRestaurantsByService(serviceId: number): void {
+    this.productsService.getRestaurantByService(serviceId).subscribe({
+      next: (restaurants) => (this.restaurants = restaurants),
+      error: () => this.toast.error('فشل تحميل المطاعم'),
+    });
+  }
+
+  private loadCategoriesByRestaurant(restaurantId: number): void {
     this.productsService.getCategoriesByRestaurant(restaurantId).subscribe({
       next: (cats) => (this.categories = cats),
       error: () => this.toast.error('فشل تحميل الفئات'),
@@ -114,43 +122,54 @@ export class AddFoodComponent implements OnInit {
   }
 
   onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-    const file = input.files[0];
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
 
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    if (!validTypes.includes(file.type)) {
+    if (!VALID_IMAGE_TYPES.includes(file.type)) {
       this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_IMAGE_SIZE_MB) {
       this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
       return;
     }
+
     const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.ImagePreview = this.sanitizer.bypassSecurityTrustUrl(e.target.result);
-    };
+    reader.onload = (e: any) =>
+      (this.imagePreview = this.sanitizer.bypassSecurityTrustUrl(e.target.result));
     reader.readAsDataURL(file);
-    this.ImageFile = file;
+    this.imageFile = file;
   }
 
   removeImage(): void {
-    this.ImagePreview = null;
-    this.ImageFile = null;
+    this.imagePreview = null;
+    this.imageFile = null;
     const input = document.getElementById('imageUpload') as HTMLInputElement;
     if (input) input.value = '';
   }
 
   handleSubmit(): void {
     this.form.markAllAsTouched();
-
-    if (this.form.invalid || !this.ImageFile) {
-      if (!this.ImageFile) this.toast.error('يرجى رفع صورة للمنتج');
-      else this.toast.error('يرجى تصحيح جميع الأخطاء');
+    if (this.form.invalid || !this.imageFile) {
+      this.toast.error(this.imageFile ? 'يرجى تصحيح جميع الأخطاء' : 'يرجى رفع صورة للمنتج');
       return;
     }
 
+    this.isSaving = true;
+    this.productsService.addProduct(this.buildFormData()).subscribe({
+      next: () => {
+        this.toast.success('تم إضافة المنتج بنجاح');
+        this.isSaving = false;
+        this.resetForm();
+      },
+      error: (err) => {
+        this.toast.error(err.message || 'فشل إضافة المنتج');
+        this.isSaving = false;
+      },
+    });
+  }
+
+  private buildFormData(): FormData {
     const v = this.form.value;
     const fd = new FormData();
     fd.append('ServiceId',     String(v.ServiceId));
@@ -164,35 +183,24 @@ export class AddFoodComponent implements OnInit {
     fd.append('Quantity',      String(v.Quantity));
     fd.append('IsActive',      v.IsActive ? 'true' : 'false');
     fd.append('Lang',          v.Lang ?? '1');
-    fd.append('ImageUrl',      this.ImageFile);
-
-    this.isSaving = true;
-    this.productsService.addProduct(fd).subscribe({
-      next: () => {
-        this.toast.success('تم إضافة المنتج بنجاح');
-        this.isSaving = false;
-        this.resetForm();
-      },
-      error: (err) => {
-        this.toast.error(err.message || 'فشل إضافة المنتج');
-        this.isSaving = false;
-      },
-    });
+    fd.append('ImageUrl',      this.imageFile!);
+    return fd;
   }
 
-  resetForm(): void {
-    this.form.reset({ ServiceId: 1, Quantity: 1, IsActive: true, Lang: '1' });
-    this.ImagePreview = null;
-    this.ImageFile = null;
+  private resetForm(): void {
+    this.form.reset({ Quantity: 1, IsActive: true, Lang: '1' });
+    this.imagePreview = null;
+    this.imageFile = null;
+    this.restaurants = [];
     this.categories = [];
   }
 
   goBack(): void {
     const restaurantId = this.route.snapshot.queryParamMap.get('restaurantId');
-    if (restaurantId) {
-      this.router.navigate([`/manageRestaurants/details-restaurant/${restaurantId}/foods`]);
-    } else {
-      this.router.navigate(['/Foods/list-food']);
-    }
+    this.router.navigate(
+      restaurantId
+        ? [`/manageRestaurants/details-restaurant/${restaurantId}/foods`]
+        : ['/Foods/list-food'],
+    );
   }
 }

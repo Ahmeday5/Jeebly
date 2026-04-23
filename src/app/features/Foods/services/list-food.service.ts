@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
-import { Product, ProductListResponse, RestaurantCategory, RestaurantProduct } from '../model/food.type';
+import { Product, ProductListResponse, RestaurantCategory, RestaurantProduct, serviceRestaurant } from '../model/food.type';
 
 @Injectable({ providedIn: 'root' })
 export class ProductsService {
@@ -28,6 +28,11 @@ export class ProductsService {
   getCategoriesByRestaurant(restaurantId: number): Observable<RestaurantCategory[]> {
     return this.api
       .get<any>(`/api/CategoriesClient/${restaurantId}/Categories`)
+      .pipe(map((res) => res.data ?? []));
+  }
+  getRestaurantByService(serviceId: number): Observable<serviceRestaurant[]> {
+    return this.api
+      .get<any>(`/api/Services/${serviceId}/restaurants`)
       .pipe(map((res) => res.data ?? []));
   }
 

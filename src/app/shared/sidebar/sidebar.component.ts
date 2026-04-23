@@ -492,6 +492,21 @@ export class SidebarComponent implements OnInit, AfterViewInit {
         ],
       },
       {
+        title: 'الإعدادات والمناطق',
+        items: [
+          {
+            label: 'المحافظات والمناطق',
+            path: 'locations',
+            icons: 'fa-solid fa-map-marker-alt',
+          },
+          {
+            label: 'مستخدمو التطبيق',
+            path: 'appUsers',
+            icons: 'fa-solid fa-user-shield',
+          },
+        ],
+      },
+      {
         title: 'إدارة الدليفري',
         items: [
           {

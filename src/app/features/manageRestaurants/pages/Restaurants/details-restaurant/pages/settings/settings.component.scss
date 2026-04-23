@@ -1,85 +1,125 @@
-.foodSetting,
-.Schedule {
-  border: 3px solid var(--third-color);
-  border-radius: 12px;
-  padding: 8px !important;
-  color: var(--main-color);
+// ─── Settings Card ──────────────────────────────────────────────────────────────
+.settings-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+}
+
+.settings-card-header {
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #f0f0f0;
   font-weight: 700;
+  font-size: 15px;
+  color: #2c3e50;
 }
 
-.foodSetting .content {
-  border-top: 3px solid var(--third-color);
+.settings-card-body {
+  padding: 24px;
 }
 
-.foodSetting .content .toogle {
-  border: 2px solid var(--third-color);
-  padding: 5px 0;
+// ─── Toggle Item ────────────────────────────────────────────────────────────────
+.toggle-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border: 1px solid #f0f0f0;
   border-radius: 12px;
-  color: var(--main-color);
+  background: #fafafa;
+  transition: background 0.2s, border-color 0.2s;
+
+  &:hover { background: #f5f5f5; border-color: #e0e0e0; }
 }
 
-.content .toogle h6 {
-  font-weight: bold;
+.toggle-info {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-/********************/
-
-.btns .btn {
-  width: 150px;
-  height: 40px;
+.toggle-icon {
+  width: 46px;
+  height: 46px;
   border-radius: 12px;
-  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+
+  &.delivery { background: rgba(102, 126, 234, 0.12); color: #667eea; }
+  &.dinein   { background: rgba(17, 153, 142, 0.12);  color: #11998e; }
 }
 
-.btns .btn-save {
-  background: var(--main-color);
-  color: var(--second-color);
+.toggle-title {
+  font-weight: 700;
+  font-size: 14px;
+  color: #2c3e50;
+  margin: 0 0 2px;
 }
 
-/*******************************Schedule***********************************/
-
-.Schedule .workingHours .days {
-  border-top: 3px solid var(--third-color);
-  padding: 10px 5px 0 5px;
+.toggle-desc {
+  font-size: 12px;
+  color: #9a9a9a;
+  margin: 0;
 }
 
-.workingHours .days h6 {
-  margin-left: 10px;
-  margin-top: 10px;
-}
-
-.workingHours .days p {
-  margin-left: 10px;
-  border: 2px solid var(--main-color);
-  border-radius: 12px;
-  padding: 5px 15px;
-}
-
-.workingHours .days i {
-  margin-top: 10px;
+.toggle-switch {
+  width: 48px !important;
+  height: 26px !important;
   cursor: pointer;
+
+  &:checked { background-color: var(--main-color) !important; border-color: var(--main-color) !important; }
+  &:focus { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15); }
 }
 
-/******************************model*******************************/
+// ─── VAT Input ──────────────────────────────────────────────────────────────────
+.vat-input-wrap {
+  position: relative;
 
-.modal {
-  padding-top: 95px;
-  color: var(--main-color);
+  .form-control {
+    padding-right: 38px;
+    border-radius: 10px;
+  }
+
+  .vat-symbol {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--main-color);
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  .invalid-feedback { display: none; }
+  .form-control.is-invalid ~ .invalid-feedback { display: block; }
 }
 
-.modal .modal-header h6 {
-  color: var(--main-color);
-  font-weight: bold;
+.vat-hint {
+  background: rgba(102, 126, 234, 0.07);
+  color: #667eea;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
-.btn-send {
-  padding: 2px 15px;
-  color: var(--second-color);
-  font-weight: 600;
+// ─── Save Button ────────────────────────────────────────────────────────────────
+.btn-save-settings {
   background: var(--main-color);
-  border-radius: 12px;
-}
-
-.btn-send:focus {
+  color: #fff;
   border: none;
+  border-radius: 12px;
+  padding: 10px 32px;
+  font-weight: 700;
+  font-size: 15px;
+  transition: opacity 0.2s;
+  min-width: 180px;
+
+  &:hover  { opacity: 0.88; color: #fff; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
 }

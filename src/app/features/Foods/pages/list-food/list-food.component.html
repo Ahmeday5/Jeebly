@@ -46,7 +46,6 @@
                       <th>الكمية</th>
                       <th>الحالة</th>
                       <th>الإجراءات</th>
-
                     </tr>
                   </thead>
                   <tbody>
@@ -64,7 +63,7 @@
                         <td>{{ product.nameAr }}</td>
                         <td>{{ product.categoryName ?? '—' }}</td>
                         <td>{{ product.price | number:'1.2-2' }}</td>
-                        <td>{{ product.subCategoryId ?? '—' }}</td>
+                        <td>{{ product.quantity ?? '—' }}</td>
                         <td class="text-center">
                           <span class="badge" [class.bg-success]="product.isActive" [class.bg-secondary]="!product.isActive">
                             {{ product.isActive ? 'نشط' : 'غير نشط' }}

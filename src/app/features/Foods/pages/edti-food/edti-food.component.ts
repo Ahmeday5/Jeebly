@@ -1,19 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  FormBuilder,
-  FormGroup,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Subject, takeUntil } from 'rxjs';
 import { ProductsService } from '../../services/list-food.service';
-import { RestaurantsService } from '../../../manageRestaurants/services/restaurants.service';
-import { FilteredRestaurant } from '../../../manageRestaurants/model/restaurant.type';
-import { RestaurantCategory } from '../../model/food.type';
+import { RestaurantCategory, serviceRestaurant } from '../../model/food.type';
 import { ToastService } from '../../../../core/services/toast.service';
 import { environment } from '../../../../../environments/environment';
+
+const SERVICES = [
+  { id: 1, name: 'مطاعم' },
+  { id: 2, name: 'تغذية' },
+  { id: 3, name: 'متاجر' },
+] as const;
+
+const VALID_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/jpg'];
+const MAX_IMAGE_SIZE_MB = 5 * 1024 * 1024;
 
 @Component({
   selector: 'app-edti-food',
@@ -22,25 +25,21 @@ import { environment } from '../../../../../environments/environment';
   templateUrl: './edti-food.component.html',
   styleUrl: './edti-food.component.scss',
 })
-export class EdtiFoodComponent implements OnInit {
+export class EdtiFoodComponent implements OnInit, OnDestroy {
   form!: FormGroup;
   productId!: number;
   selectedLanguage = 'arabic';
-  private readonly baseUrl = environment.apiBaseUrl;
-
-  ImagePreview: SafeUrl | string | null = null;
-  ImageFile: File | null = null;
-
-  restaurants: FilteredRestaurant[] = [];
+  imagePreview: SafeUrl | string | null = null;
+  imageFile: File | null = null;
+  restaurants: serviceRestaurant[] = [];
   categories: RestaurantCategory[] = [];
   isLoading = false;
   isSaving = false;
 
-  services = [
-    { id: 1, name: 'مطاعم' },
-    { id: 2, name: 'تغذية' },
-    { id: 3, name: 'متاجر' },
-  ];
+  readonly services = SERVICES;
+  private readonly baseUrl = environment.apiBaseUrl;
+  private readonly destroy$ = new Subject<void>();
+  private isInitializing = false;
 
   constructor(
     private fb: FormBuilder,
@@ -48,25 +47,27 @@ export class EdtiFoodComponent implements OnInit {
     private router: Router,
     private sanitizer: DomSanitizer,
     private productsService: ProductsService,
-    private restaurantsService: RestaurantsService,
     private toast: ToastService,
   ) {}
 
   ngOnInit(): void {
     this.productId = Number(this.route.snapshot.paramMap.get('id'));
     this.initForm();
-    this.loadRestaurants();
+    this.setupCascadeListeners();
     this.loadProduct();
-
-    this.form.get('ResturantId')!.valueChanges.subscribe((id) => {
-      if (id) this.loadCategoriesByRestaurant(id);
-      else this.categories = [];
-    });
   }
 
-  initForm(): void {
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  get hasService(): boolean { return !!this.form.get('ServiceId')?.value; }
+  get hasRestaurant(): boolean { return !!this.form.get('ResturantId')?.value; }
+
+  private initForm(): void {
     this.form = this.fb.group({
-      ServiceId:     [1, Validators.required],
+      ServiceId:     [null, Validators.required],
       ResturantId:   [null, Validators.required],
       CategoryId:    [null, Validators.required],
       NameAr:        ['', [Validators.required, Validators.minLength(2)]],
@@ -74,18 +75,44 @@ export class EdtiFoodComponent implements OnInit {
       DescriptionAr: ['', Validators.required],
       DescriptionEn: ['', Validators.required],
       Price:         [null, [Validators.required, Validators.min(0)]],
-      Quantity:      [1,  [Validators.required, Validators.min(0)]],
+      Quantity:      [1,   [Validators.required, Validators.min(0)]],
       IsActive:      [true],
       Lang:          ['1'],
     });
   }
 
-  loadProduct(): void {
+  private setupCascadeListeners(): void {
+    this.form.get('ServiceId')!.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        if (this.isInitializing) return;
+        this.restaurants = [];
+        this.categories = [];
+        this.form.patchValue({ ResturantId: null, CategoryId: null }, { emitEvent: false });
+        if (id) this.loadRestaurantsByService(id);
+      });
+
+    this.form.get('ResturantId')!.valueChanges
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((id) => {
+        if (this.isInitializing) return;
+        this.categories = [];
+        this.form.patchValue({ CategoryId: null }, { emitEvent: false });
+        if (id) this.loadCategoriesByRestaurant(id);
+      });
+  }
+
+  private loadProduct(): void {
     this.isLoading = true;
+    this.isInitializing = true;
+
     this.productsService.getProductById(this.productId).subscribe({
       next: (product) => {
-        const restaurantId = (product as any).restaurantId ?? (product as any).resturantId ?? null;
+        const serviceId = product.serviceId ?? 1;
+        const restaurantId = product.restaurantId ?? null;
+
         this.form.patchValue({
+          ServiceId:     serviceId,
           ResturantId:   restaurantId,
           CategoryId:    product.categoryId,
           NameAr:        product.nameAr,
@@ -93,43 +120,36 @@ export class EdtiFoodComponent implements OnInit {
           DescriptionAr: product.descriptionAr,
           DescriptionEn: product.descriptionEn,
           Price:         product.price,
+          Quantity:      product.quantity,
           IsActive:      product.isActive,
           Lang:          product.lang ?? '1',
         });
-        if (product.imageUrl) {
-          this.ImagePreview = `${this.baseUrl}${product.imageUrl}`;
-        }
-        if (restaurantId) {
-          this.loadCategoriesByRestaurant(restaurantId);
-        }
+
+        if (product.imageUrl) this.imagePreview = `${this.baseUrl}${product.imageUrl}`;
+        if (serviceId) this.loadRestaurantsByService(serviceId);
+        if (restaurantId) this.loadCategoriesByRestaurant(restaurantId);
+
         this.isLoading = false;
+        this.isInitializing = false;
       },
       error: () => {
         this.toast.error('فشل تحميل بيانات المنتج');
         this.isLoading = false;
+        this.isInitializing = false;
       },
     });
   }
 
-  loadRestaurants(): void {
-    const loadPage = (page: number, acc: FilteredRestaurant[] = []) => {
-      this.restaurantsService.getFilteredRestaurants('', '', page, 50).subscribe({
-        next: (res) => {
-          acc.push(...res.restaurants);
-          if (page < res.totalPages) loadPage(page + 1, acc);
-          else this.restaurants = acc;
-        },
-        error: () => {},
-      });
-    };
-    loadPage(1);
+  private loadRestaurantsByService(serviceId: number): void {
+    this.productsService.getRestaurantByService(serviceId).subscribe({
+      next: (restaurants) => (this.restaurants = restaurants),
+      error: () => this.toast.error('فشل تحميل المطاعم'),
+    });
   }
 
-  loadCategoriesByRestaurant(restaurantId: number): void {
+  private loadCategoriesByRestaurant(restaurantId: number): void {
     this.productsService.getCategoriesByRestaurant(restaurantId).subscribe({
-      next: (cats) => {
-        this.categories = cats;
-      },
+      next: (cats) => (this.categories = cats),
       error: () => this.toast.error('فشل تحميل الفئات'),
     });
   }
@@ -139,29 +159,28 @@ export class EdtiFoodComponent implements OnInit {
   }
 
   onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-    const file = input.files[0];
-    const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
-    if (!validTypes.includes(file.type)) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    if (!VALID_IMAGE_TYPES.includes(file.type)) {
       this.toast.warning('الصيغة غير مدعومة. استخدم jpg أو png');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
+    if (file.size > MAX_IMAGE_SIZE_MB) {
       this.toast.warning('حجم الصورة كبير جدًا (الحد الأقصى 5 ميجا)');
       return;
     }
+
     const reader = new FileReader();
-    reader.onload = (e: any) => {
-      this.ImagePreview = this.sanitizer.bypassSecurityTrustUrl(e.target.result);
-    };
+    reader.onload = (e: any) =>
+      (this.imagePreview = this.sanitizer.bypassSecurityTrustUrl(e.target.result));
     reader.readAsDataURL(file);
-    this.ImageFile = file;
+    this.imageFile = file;
   }
 
   removeImage(): void {
-    this.ImagePreview = null;
-    this.ImageFile = null;
+    this.imagePreview = null;
+    this.imageFile = null;
     const input = document.getElementById('imageUpload') as HTMLInputElement;
     if (input) input.value = '';
   }
@@ -173,6 +192,21 @@ export class EdtiFoodComponent implements OnInit {
       return;
     }
 
+    this.isSaving = true;
+    this.productsService.updateProduct(this.productId, this.buildFormData()).subscribe({
+      next: () => {
+        this.toast.success('تم تحديث المنتج بنجاح');
+        this.isSaving = false;
+        this.router.navigate(['/Foods/list-food']);
+      },
+      error: (err) => {
+        this.toast.error(err.message || 'فشل تحديث المنتج');
+        this.isSaving = false;
+      },
+    });
+  }
+
+  private buildFormData(): FormData {
     const v = this.form.value;
     const fd = new FormData();
     fd.append('ServiceId',     String(v.ServiceId));
@@ -186,20 +220,8 @@ export class EdtiFoodComponent implements OnInit {
     fd.append('Quantity',      String(v.Quantity));
     fd.append('IsActive',      v.IsActive ? 'true' : 'false');
     fd.append('Lang',          v.Lang ?? '1');
-    if (this.ImageFile) fd.append('ImageUrl', this.ImageFile);
-
-    this.isSaving = true;
-    this.productsService.updateProduct(this.productId, fd).subscribe({
-      next: () => {
-        this.toast.success('تم تحديث المنتج بنجاح');
-        this.isSaving = false;
-        this.router.navigate(['/Foods/list-food']);
-      },
-      error: (err) => {
-        this.toast.error(err.message || 'فشل تحديث المنتج');
-        this.isSaving = false;
-      },
-    });
+    if (this.imageFile) fd.append('ImageUrl', this.imageFile);
+    return fd;
   }
 
   goBack(): void {

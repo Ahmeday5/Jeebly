@@ -11,45 +11,49 @@
           </h3>
         </div>
 
-        <!-- Name + Image -->
+        <!-- Name + Language Toggle -->
         <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
           <div class="title d-flex justify-content-start">
-            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic -
-              العربية (AR)</h6>
-            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">English (EN)
+            <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">
+              Arabic - العربية (AR)
+            </h6>
+            <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+              English (EN)
             </h6>
           </div>
 
           @if (selectedLanguage === 'arabic') {
-          <div class="form-section mt-4">
-            <label class="form-label">اسم المنتج (عربي)<span class="text-danger">*</span></label>
-            <input type="text" class="form-control" formControlName="NameAr" [ngClass]="{'is-invalid': form.get('NameAr')?.invalid && form.get('NameAr')?.touched,
+            <div class="form-section mt-4">
+              <label class="form-label">اسم المنتج (عربي)<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="NameAr"
+                [ngClass]="{'is-invalid': form.get('NameAr')?.invalid && form.get('NameAr')?.touched,
                              'is-valid':   form.get('NameAr')?.valid   && form.get('NameAr')?.touched}">
-            <div class="invalid-feedback">يرجى إدخال اسم صالح (حرفين على الأقل)</div>
-          </div>
-          <div class="form-section">
-            <label class="form-label">الوصف (عربي)<span class="text-danger">*</span></label>
-            <textarea class="form-control" rows="3" formControlName="DescriptionAr"
-              [ngClass]="{'is-invalid': form.get('DescriptionAr')?.invalid && form.get('DescriptionAr')?.touched,
+              <div class="invalid-feedback">يرجى إدخال اسم صالح (حرفين على الأقل)</div>
+            </div>
+            <div class="form-section">
+              <label class="form-label">الوصف (عربي)<span class="text-danger">*</span></label>
+              <textarea class="form-control" rows="3" formControlName="DescriptionAr"
+                [ngClass]="{'is-invalid': form.get('DescriptionAr')?.invalid && form.get('DescriptionAr')?.touched,
                              'is-valid':   form.get('DescriptionAr')?.valid   && form.get('DescriptionAr')?.touched}"></textarea>
-            <div class="invalid-feedback">يرجى إدخال وصف</div>
-          </div>
+              <div class="invalid-feedback">يرجى إدخال وصف</div>
+            </div>
           }
 
           @if (selectedLanguage === 'english') {
-          <div class="form-section mt-4">
-            <label class="form-label">Product Name (English)<span class="text-danger">*</span></label>
-            <input type="text" class="form-control" formControlName="NameEn" [ngClass]="{'is-invalid': form.get('NameEn')?.invalid && form.get('NameEn')?.touched,
+            <div class="form-section mt-4">
+              <label class="form-label">Product Name (English)<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="NameEn"
+                [ngClass]="{'is-invalid': form.get('NameEn')?.invalid && form.get('NameEn')?.touched,
                              'is-valid':   form.get('NameEn')?.valid   && form.get('NameEn')?.touched}">
-            <div class="invalid-feedback">Please enter a valid name (min 2 characters)</div>
-          </div>
-          <div class="form-section">
-            <label class="form-label">Description (English)<span class="text-danger">*</span></label>
-            <textarea class="form-control" rows="3" formControlName="DescriptionEn"
-              [ngClass]="{'is-invalid': form.get('DescriptionEn')?.invalid && form.get('DescriptionEn')?.touched,
+              <div class="invalid-feedback">Please enter a valid name (min 2 characters)</div>
+            </div>
+            <div class="form-section">
+              <label class="form-label">Description (English)<span class="text-danger">*</span></label>
+              <textarea class="form-control" rows="3" formControlName="DescriptionEn"
+                [ngClass]="{'is-invalid': form.get('DescriptionEn')?.invalid && form.get('DescriptionEn')?.touched,
                              'is-valid':   form.get('DescriptionEn')?.valid   && form.get('DescriptionEn')?.touched}"></textarea>
-            <div class="invalid-feedback">Please enter a description</div>
-          </div>
+              <div class="invalid-feedback">Please enter a description</div>
+            </div>
           }
         </div>
 
@@ -61,23 +65,23 @@
                 <label class="form-label fw-bold">صورة المنتج<span class="text-danger">*</span></label>
                 <div class="border rounded p-3 text-center position-relative"
                   style="min-height: 220px; background: #f8f9fa; cursor: pointer;">
-                  @if (ImagePreview) {
-                  <div class="position-relative d-inline-block">
-                    <img [src]="ImagePreview" alt="صورة المنتج" class="img-fluid rounded shadow"
-                      style="max-height: 180px; max-width: 100%; object-fit: contain;">
-                    <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle"
-                      (click)="removeImage()" title="حذف الصورة">
-                      <i class="fas fa-times"></i>
-                    </button>
-                  </div>
+                  @if (imagePreview) {
+                    <div class="position-relative d-inline-block">
+                      <img [src]="imagePreview" alt="صورة المنتج" class="img-fluid rounded shadow"
+                        style="max-height: 180px; max-width: 100%; object-fit: contain;">
+                      <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 rounded-circle"
+                        (click)="removeImage()" title="حذف الصورة">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </div>
                   } @else {
-                  <label for="imageUpload" class="d-block py-5" style="cursor: pointer;">
-                    <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
-                    <p class="text-muted mb-1">اضغط هنا لرفع صورة المنتج</p>
-                    <small class="text-muted">(jpg/png – حد أقصى 5 ميجا)</small>
-                  </label>
-                  <input type="file" id="imageUpload" accept="image/jpeg,image/png,image/jpg"
-                    (change)="onFileChange($event)" class="d-none" />
+                    <label for="imageUpload" class="d-block py-5" style="cursor: pointer;">
+                      <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                      <p class="text-muted mb-1">اضغط هنا لرفع صورة المنتج</p>
+                      <small class="text-muted">(jpg/png – حد أقصى 5 ميجا)</small>
+                    </label>
+                    <input type="file" id="imageUpload" accept="image/jpeg,image/png,image/jpg"
+                      (change)="onFileChange($event)" class="d-none" />
                   }
                 </div>
               </div>
@@ -104,9 +108,9 @@
                   <label class="form-label">نوع الخدمة<span class="text-danger">*</span></label>
                   <select dir="rtl" class="form-select custom-select" formControlName="ServiceId"
                     [ngClass]="{'is-invalid': form.get('ServiceId')?.invalid && form.get('ServiceId')?.touched}">
-                    <option value="" disabled>اختر الخدمة</option>
+                    <option [value]="null" disabled>اختر الخدمة</option>
                     @for (s of services; track s.id) {
-                    <option [value]="s.id">{{ s.name }}</option>
+                      <option [value]="s.id">{{ s.name }}</option>
                     }
                   </select>
                   <div class="invalid-feedback">يرجى اختيار الخدمة</div>
@@ -117,14 +121,15 @@
               <div class="col-md-4 mt-2">
                 <div class="form-section">
                   <label class="form-label">المطعم<span class="text-danger">*</span></label>
-                  <select dir="rtl" class="form-select custom-select" formControlName="ResturantId" [ngClass]="{'is-invalid': form.get('ResturantId')?.invalid && form.get('ResturantId')?.touched,
+                  <select dir="rtl" class="form-select custom-select" formControlName="ResturantId"
+                    [attr.disabled]="!hasService ? '' : null"
+                    [ngClass]="{'is-invalid': form.get('ResturantId')?.invalid && form.get('ResturantId')?.touched,
                                  'is-valid':   form.get('ResturantId')?.valid   && form.get('ResturantId')?.touched}">
-                    <option [value]="null" disabled>اختر المطعم</option>
-                    @if (isLoading) {
-                    <option disabled>جاري التحميل...</option>
-                    }
+                    <option [value]="null" disabled>
+                      {{ hasService ? 'اختر المطعم' : 'يجب اختيار خدمة أولاً' }}
+                    </option>
                     @for (r of restaurants; track r.id) {
-                    <option [value]="r.id">{{ r.nameAr }} — {{ r.nameEn }}</option>
+                      <option [value]="r.id">{{ r.nameAr }} — {{ r.nameEn }}</option>
                     }
                   </select>
                   <div class="invalid-feedback">يرجى اختيار المطعم</div>
@@ -135,11 +140,15 @@
               <div class="col-md-4 mt-2">
                 <div class="form-section">
                   <label class="form-label">الفئة<span class="text-danger">*</span></label>
-                  <select dir="rtl" class="form-select custom-select" formControlName="CategoryId" [ngClass]="{'is-invalid': form.get('CategoryId')?.invalid && form.get('CategoryId')?.touched,
+                  <select dir="rtl" class="form-select custom-select" formControlName="CategoryId"
+                    [attr.disabled]="!hasRestaurant ? '' : null"
+                    [ngClass]="{'is-invalid': form.get('CategoryId')?.invalid && form.get('CategoryId')?.touched,
                                  'is-valid':   form.get('CategoryId')?.valid   && form.get('CategoryId')?.touched}">
-                    <option [value]="null" disabled>اختر الفئة</option>
+                    <option [value]="null" disabled>
+                      {{ hasRestaurant ? 'اختر الفئة' : 'يجب اختيار مطعم أولاً' }}
+                    </option>
                     @for (c of categories; track c.id) {
-                    <option [value]="c.id">{{ c.name }}</option>
+                      <option [value]="c.id">{{ c.name }}</option>
                     }
                   </select>
                   <div class="invalid-feedback">يرجى اختيار الفئة</div>
@@ -150,7 +159,8 @@
               <div class="col-md-4 mt-2">
                 <div class="form-section">
                   <label class="form-label">السعر<span class="text-danger">*</span></label>
-                  <input type="number" class="form-control" formControlName="Price" min="0" step="0.01" [ngClass]="{'is-invalid': form.get('Price')?.invalid && form.get('Price')?.touched,
+                  <input type="number" class="form-control" formControlName="Price" min="0" step="0.01"
+                    [ngClass]="{'is-invalid': form.get('Price')?.invalid && form.get('Price')?.touched,
                                  'is-valid':   form.get('Price')?.valid   && form.get('Price')?.touched}">
                   <div class="invalid-feedback">يرجى إدخال سعر صالح</div>
                 </div>
@@ -160,7 +170,8 @@
               <div class="col-md-4 mt-2">
                 <div class="form-section">
                   <label class="form-label">الكمية<span class="text-danger">*</span></label>
-                  <input type="number" class="form-control" formControlName="Quantity" min="0" [ngClass]="{'is-invalid': form.get('Quantity')?.invalid && form.get('Quantity')?.touched,
+                  <input type="number" class="form-control" formControlName="Quantity" min="0"
+                    [ngClass]="{'is-invalid': form.get('Quantity')?.invalid && form.get('Quantity')?.touched,
                                  'is-valid':   form.get('Quantity')?.valid   && form.get('Quantity')?.touched}">
                   <div class="invalid-feedback">يرجى إدخال كمية صالحة</div>
                 </div>

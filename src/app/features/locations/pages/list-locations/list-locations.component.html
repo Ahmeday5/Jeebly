@@ -1,0 +1,184 @@
+<div class="locations-page mt-2 mb-4">
+  <div class="container-fluid p-0">
+
+    <div class="page-title mb-3">
+      <h3><span class="icon"><i class="fas fa-map-marker-alt"></i></span> إدارة المحافظات والمناطق</h3>
+    </div>
+
+    <div class="row g-4">
+
+      <!-- ══════════════ GOVERNORATES ══════════════ -->
+      <div class="col-lg-5">
+        <div class="loc-card">
+          <div class="loc-card-header">
+            <div class="header-left">
+              <i class="fas fa-city me-2"></i>
+              <span>المحافظات</span>
+              <span class="count-badge">{{ governorates.length }}</span>
+            </div>
+            <button class="btn btn-loc-add" (click)="openGovModal()">
+              <i class="fas fa-plus me-1"></i> إضافة
+            </button>
+          </div>
+
+          <div class="loc-card-body">
+            @if (isLoadingGov) {
+              <div class="state-center">
+                <div class="spinner-border spinner-sm" style="color: var(--main-color);"></div>
+              </div>
+            } @else if (!governorates.length) {
+              <div class="state-center text-muted">
+                <i class="fas fa-map fa-2x mb-2" style="color: #dee2e6;"></i>
+                <p class="mb-0">لا توجد محافظات بعد</p>
+              </div>
+            } @else {
+              <ul class="gov-list">
+                @for (gov of governorates; track gov.governorateId) {
+                  <li class="gov-item" [class.active]="selectedGovId === gov.governorateId"
+                      (click)="selectGovernorate(gov)">
+                    <div class="gov-dot"></div>
+                    <div class="gov-names">
+                      <span class="gov-name-ar">{{ gov.nameAr }}</span>
+                      <span class="gov-name-en">{{ gov.nameEn }}</span>
+                    </div>
+                    <i class="fas fa-chevron-left gov-arrow"></i>
+                  </li>
+                }
+              </ul>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════ DISTRICTS ══════════════ -->
+      <div class="col-lg-7">
+        <div class="loc-card">
+          <div class="loc-card-header">
+            <div class="header-left">
+              <i class="fas fa-map-pin me-2"></i>
+              <span>المناطق</span>
+              @if (selectedGovName) {
+                <span class="gov-badge">{{ selectedGovName }}</span>
+              }
+              @if (districts.length) {
+                <span class="count-badge">{{ districts.length }}</span>
+              }
+            </div>
+            <button class="btn btn-loc-add" [disabled]="!selectedGovId" (click)="openDistModal()"
+              [title]="!selectedGovId ? 'اختر محافظة أولاً' : 'إضافة منطقة'">
+              <i class="fas fa-plus me-1"></i> إضافة
+            </button>
+          </div>
+
+          <div class="loc-card-body">
+            @if (!selectedGovId) {
+              <div class="state-center text-muted">
+                <i class="fas fa-hand-point-right fa-2x mb-2" style="color: #dee2e6;"></i>
+                <p class="mb-0">اختر محافظة من اليسار لعرض مناطقها</p>
+              </div>
+            } @else if (isLoadingDist) {
+              <div class="state-center">
+                <div class="spinner-border spinner-sm" style="color: var(--main-color);"></div>
+              </div>
+            } @else if (!districts.length) {
+              <div class="state-center text-muted">
+                <i class="fas fa-map-signs fa-2x mb-2" style="color: #dee2e6;"></i>
+                <p class="mb-0">لا توجد مناطق في هذه المحافظة</p>
+              </div>
+            } @else {
+              <div class="districts-grid">
+                @for (d of districts; track d.districtId) {
+                  <div class="district-chip">
+                    <i class="fas fa-map-pin me-2"></i>
+                    <div>
+                      <p class="dist-name-ar">{{ d.nameAr }}</p>
+                      <p class="dist-name-en">{{ d.nameEn }}</p>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Add Governorate Modal -->
+<div class="modal fade" #govModalEl tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content loc-modal">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-city me-2" style="color:var(--main-color)"></i>إضافة محافظة جديدة</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="govForm">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">الاسم بالعربية<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="nameAr" placeholder="مثال: القاهرة"
+                [ngClass]="{'is-invalid': fieldInvalid(govForm,'nameAr'), 'is-valid': govForm.get('nameAr')?.valid && govForm.get('nameAr')?.touched}">
+              <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">الاسم بالإنجليزية<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="nameEn" placeholder="Example: Cairo"
+                [ngClass]="{'is-invalid': fieldInvalid(govForm,'nameEn'), 'is-valid': govForm.get('nameEn')?.valid && govForm.get('nameEn')?.touched}">
+              <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-loc-cancel" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-loc-save" [disabled]="isSavingGov" (click)="submitGov()">
+          @if (isSavingGov) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          إضافة المحافظة
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add District Modal -->
+<div class="modal fade" #distModalEl tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content loc-modal">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="fas fa-map-pin me-2" style="color:var(--main-color)"></i>إضافة منطقة جديدة</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="gov-context-label mb-3">
+          <i class="fas fa-city me-2"></i> المحافظة: <strong>{{ selectedGovName }}</strong>
+        </div>
+        <form [formGroup]="distForm">
+          <div class="row g-3">
+            <div class="col-12">
+              <label class="form-label fw-semibold">الاسم بالعربية<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="nameAr" placeholder="مثال: مدينة نصر"
+                [ngClass]="{'is-invalid': fieldInvalid(distForm,'nameAr'), 'is-valid': distForm.get('nameAr')?.valid && distForm.get('nameAr')?.touched}">
+              <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+            </div>
+            <div class="col-12">
+              <label class="form-label fw-semibold">الاسم بالإنجليزية<span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="nameEn" placeholder="Example: Nasr City"
+                [ngClass]="{'is-invalid': fieldInvalid(distForm,'nameEn'), 'is-valid': distForm.get('nameEn')?.valid && distForm.get('nameEn')?.touched}">
+              <div class="invalid-feedback">يرجى إدخال اسم صالح</div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-loc-cancel" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-loc-save" [disabled]="isSavingDist" (click)="submitDist()">
+          @if (isSavingDist) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          إضافة المنطقة
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,255 @@
+// ─── Page Title ─────────────────────────────────────────────────────────────
+.page-title h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #2c3e50;
+
+  .icon { margin-left: 8px; color: var(--main-color); }
+}
+
+// ─── Location Card ───────────────────────────────────────────────────────────
+.loc-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.loc-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #f0f0f0;
+  font-weight: 700;
+  font-size: 15px;
+  color: #2c3e50;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.count-badge {
+  background: var(--main-color);
+  color: #fff;
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gov-badge {
+  background: rgba(102, 126, 234, 0.12);
+  color: var(--main-color);
+  border-radius: 20px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.loc-card-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+  min-height: 340px;
+  max-height: 520px;
+}
+
+// ─── State Center ────────────────────────────────────────────────────────────
+.state-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  text-align: center;
+  color: #b0b0b0;
+  padding: 24px;
+
+  p { font-size: 14px; }
+}
+
+// ─── Add Button ──────────────────────────────────────────────────────────────
+.btn-loc-add {
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 7px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+
+  &:hover  { opacity: 0.85; color: #fff; }
+  &:disabled { opacity: 0.45; cursor: not-allowed; }
+}
+
+// ─── Governorates List ───────────────────────────────────────────────────────
+.gov-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gov-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.18s, border-color 0.18s;
+  border: 1.5px solid transparent;
+
+  &:hover { background: #f4f6ff; border-color: rgba(102, 126, 234, 0.18); }
+
+  &.active {
+    background: rgba(102, 126, 234, 0.1);
+    border-color: rgba(102, 126, 234, 0.35);
+
+    .gov-dot { background: var(--main-color); transform: scale(1.2); }
+    .gov-name-ar { color: var(--main-color); }
+    .gov-arrow { opacity: 1; color: var(--main-color); }
+  }
+}
+
+.gov-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ced4da;
+  flex-shrink: 0;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.gov-names {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.gov-name-ar {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  transition: color 0.18s;
+}
+
+.gov-name-en {
+  font-size: 12px;
+  color: #9a9a9a;
+}
+
+.gov-arrow {
+  font-size: 11px;
+  color: #ced4da;
+  opacity: 0.5;
+  transition: opacity 0.18s, color 0.18s;
+}
+
+// ─── Districts Grid ───────────────────────────────────────────────────────────
+.districts-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px;
+}
+
+.district-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f4f6ff;
+  border: 1px solid rgba(102, 126, 234, 0.2);
+  border-radius: 10px;
+  padding: 10px 14px;
+  min-width: 150px;
+  transition: box-shadow 0.18s;
+
+  &:hover { box-shadow: 0 2px 10px rgba(102, 126, 234, 0.15); }
+
+  i { color: var(--main-color); font-size: 14px; flex-shrink: 0; }
+
+  p { margin: 0; line-height: 1.3; }
+}
+
+.dist-name-ar {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.dist-name-en {
+  font-size: 11px;
+  color: #9a9a9a;
+}
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+.loc-modal {
+  border-radius: 16px;
+  overflow: hidden;
+
+  .modal-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 24px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; }
+}
+
+.gov-context-label {
+  background: rgba(102, 126, 234, 0.07);
+  color: #667eea;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.btn-loc-cancel {
+  border: 1.5px solid #dee2e6;
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-weight: 600;
+  color: #6c757d;
+  transition: background 0.18s;
+
+  &:hover { background: #f8f9fa; }
+}
+
+.btn-loc-save {
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 24px;
+  font-weight: 700;
+  transition: opacity 0.2s;
+
+  &:hover    { opacity: 0.88; color: #fff; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ─── Spinner ─────────────────────────────────────────────────────────────────
+.spinner-sm { width: 24px; height: 24px; }

@@ -32,7 +32,7 @@ export class ApiService {
         }
       });
     }
-
+    
     return this.http
       .get<T>(`${this.baseUrl}${endpoint}`, { params: httpParams })
       .pipe(catchError(this.handleError));

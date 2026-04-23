@@ -13,12 +13,19 @@ export interface Product {
   subCategoryId: number | null;
   subCategoryName: string | null;
   restaurantId: number | null;
+  serviceId: number | null;
+  quantity: number | null;
 }
 
 export interface RestaurantCategory {
   id: number;
   name: string;
   image: string;
+}
+export interface serviceRestaurant {
+  id: number;
+  nameAr: string;
+  nameEn: string;
 }
 
 export interface ProductListResponse {

@@ -1,0 +1,292 @@
+// ─── Page Header ─────────────────────────────────────────────────────────────
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+
+    .icon { margin-left: 8px; color: var(--main-color); }
+  }
+}
+
+.users-count {
+  background: rgba(102, 126, 234, 0.1);
+  color: var(--main-color);
+  border-radius: 20px;
+  padding: 3px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+// ─── Search ───────────────────────────────────────────────────────────────────
+.search-wrap {
+  position: relative;
+
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+    color: #aaa;
+    font-size: 13px;
+    pointer-events: none;
+  }
+
+  .search-input {
+    border-radius: 10px;
+    padding-right: 34px;
+    min-width: 260px;
+    font-size: 14px;
+
+    &:focus { box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15); border-color: var(--main-color); }
+  }
+}
+
+// ─── Add Button ───────────────────────────────────────────────────────────────
+.btn-add-user {
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 9px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: opacity 0.2s;
+
+  &:hover { opacity: 0.85; color: #fff; }
+}
+
+// ─── Table Card ───────────────────────────────────────────────────────────────
+.table-card {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  overflow: hidden;
+  min-height: 300px;
+}
+
+// ─── State Center ─────────────────────────────────────────────────────────────
+.state-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: #b0b0b0;
+  p { font-size: 14px; }
+}
+
+// ─── Table ────────────────────────────────────────────────────────────────────
+.users-table {
+  thead tr {
+    background: #f8f9fa;
+
+    th {
+      font-size: 13px;
+      font-weight: 700;
+      color: #6c757d;
+      border-bottom: 2px solid #f0f0f0;
+      padding: 14px 16px;
+      white-space: nowrap;
+    }
+  }
+
+  tbody tr {
+    border-bottom: 1px solid #f8f9fa;
+    transition: background 0.15s;
+
+    &:hover { background: #fafbff; }
+    &:last-child { border-bottom: none; }
+
+    td {
+      padding: 14px 16px;
+      vertical-align: middle;
+      font-size: 14px;
+      color: #2c3e50;
+    }
+  }
+}
+
+.row-num {
+  color: #9a9a9a;
+  font-size: 13px !important;
+  font-weight: 600;
+}
+
+// ─── User Info Cell ───────────────────────────────────────────────────────────
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--main-color), #a78bfa);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0 0 2px;
+}
+
+.user-address {
+  font-size: 12px;
+  color: #9a9a9a;
+  margin: 0;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email { color: #667eea; font-size: 13px !important; }
+.user-phone { font-weight: 600; font-size: 13px !important; }
+
+// ─── Role Badge ───────────────────────────────────────────────────────────────
+.role-badge {
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &.role-admin  { background: rgba(239, 68, 68, 0.1);   color: #ef4444; }
+  &.role-user   { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+  &.role-driver { background: rgba(17, 153, 142, 0.1);  color: #11998e; }
+}
+
+// ─── Action Buttons ───────────────────────────────────────────────────────────
+.action-btns {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+
+  &.edit   { background: rgba(102, 126, 234, 0.1); color: #667eea; }
+  &.delete { background: rgba(239, 68, 68, 0.1);   color: #ef4444; }
+  &:hover  { opacity: 0.75; }
+}
+
+// ─── Modal ────────────────────────────────────────────────────────────────────
+.user-modal {
+  border-radius: 16px;
+  overflow: hidden;
+
+  .modal-header {
+    background: #f8f9fa;
+    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 24px;
+  }
+
+  .modal-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+
+  .modal-body  { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid #f0f0f0; }
+}
+
+.optional-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9a9a9a;
+  margin-right: 6px;
+}
+
+.btn-cancel {
+  border: 1.5px solid #dee2e6;
+  background: transparent;
+  border-radius: 10px;
+  padding: 8px 20px;
+  font-weight: 600;
+  color: #6c757d;
+  transition: background 0.18s;
+
+  &:hover { background: #f8f9fa; }
+}
+
+.btn-save {
+  background: var(--main-color);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 28px;
+  font-weight: 700;
+  transition: opacity 0.2s;
+  min-width: 160px;
+
+  &:hover    { opacity: 0.88; color: #fff; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}
+
+// ─── Delete Modal ─────────────────────────────────────────────────────────────
+.delete-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  font-size: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-danger-confirm {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 24px;
+  font-weight: 700;
+  transition: opacity 0.2s;
+
+  &:hover    { opacity: 0.85; color: #fff; }
+  &:disabled { opacity: 0.6; cursor: not-allowed; }
+}

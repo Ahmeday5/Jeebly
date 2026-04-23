@@ -1,464 +1,244 @@
-<div class="discount mt-2 mb-3">
+<div class="discounts-page mt-2 mb-3">
   <div class="container-fluid p-0">
-    <div class="row p-0">
-      <!-----table-------->
-      <div class="col-md-12">
-        <div class="cardParent mt-3">
-          <div class="row border-bottoms">
-            <div class="col-6">
-              <h3 class="pt-2">
-                معلومات الخصم
-              </h3>
-            </div>
-            <div class="col-6 d-flex justify-content-end">
-              <div class="mt-2 d-flex justify-content-end">
-                <button class="btn btn-addDiscount" type="button" data-bs-toggle="modal"
-                  data-bs-target="#addDiscountModal">Add Discount</button>
+
+    <!-- Stats Cards -->
+    <div class="row g-3 mb-4 justify-content-center">
+      <div class="col-md-4">
+        <div class="stat-card stat-total">
+          <div class="stat-icon"><i class="fas fa-tags"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ discounts.length }}</span>
+            <span class="stat-label">إجمالي الخصومات</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="stat-card stat-max">
+          <div class="stat-icon"><i class="fas fa-percent"></i></div>
+          <div class="stat-info">
+            <span class="stat-value">{{ maxDiscount }}%</span>
+            <span class="stat-label">أعلى نسبة خصم</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Card -->
+    <div class="cardParent">
+      <div class="card-header-row">
+        <div class="header-title">
+          <i class="fas fa-receipt me-2" style="color: var(--main-color);"></i>
+          <h3>معلومات الخصومات</h3>
+        </div>
+        <button class="btn btn-add" type="button" (click)="openAddModal()">
+          <i class="fas fa-plus me-1"></i> إضافة خصم
+        </button>
+      </div>
+
+      <div class="card-body p-0">
+
+        <!-- Loading -->
+        @if (isLoading) {
+          <div class="state-box">
+            <div class="spinner-border" role="status" style="color: var(--main-color);"></div>
+            <p class="mt-2 text-muted">جاري تحميل الخصومات...</p>
+          </div>
+        }
+
+        <!-- Empty -->
+        @else if (!discounts.length) {
+          <div class="state-box">
+            <i class="fas fa-tag fa-3x mb-3" style="color: #dee2e6;"></i>
+            <p class="text-muted mb-0">لا توجد خصومات مضافة حتى الآن</p>
+            <button class="btn btn-add mt-3" (click)="openAddModal()">
+              <i class="fas fa-plus me-1"></i> إضافة أول خصم
+            </button>
+          </div>
+        }
+
+        <!-- Table -->
+        @else {
+          <div class="table-responsive">
+            <table class="table discount-table text-center mb-0">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>الخصم (%)</th>
+                  <th>أدنى شراء</th>
+                  <th>أقصى خصم</th>
+                  <th>تاريخ البدء</th>
+                  <th>تاريخ الانتهاء</th>
+                  <th>وقت البدء</th>
+                  <th>وقت النهاية</th>
+                  <th>الإجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (discount of discounts; track discount.id; let i = $index) {
+                  <tr>
+                    <td class="fw-bold text-muted">{{ i + 1 }}</td>
+                    <td>
+                      <span class="badge-discount">{{ discount.discountAmount }}%</span>
+                    </td>
+                    <td>{{ discount.minimumPurchase }}</td>
+                    <td>{{ discount.maximumDiscount }}</td>
+                    <td>{{ discount.startDate | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ discount.endDate | date:'dd/MM/yyyy' }}</td>
+                    <td>{{ discount.startTime | slice:0:5 }}</td>
+                    <td>{{ discount.endTime | slice:0:5 }}</td>
+                    <td>
+                      <div class="action-btns">
+                        <button class="action-btn edit-btn" title="تعديل" (click)="openEditModal(discount)">
+                          <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="action-btn delete-btn" title="حذف" (click)="openDeleteModal(discount.id)">
+                          <i class="fas fa-trash-alt"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Add / Edit Modal -->
+<div class="modal fade" #discountModalEl tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-tag me-2" style="color: var(--main-color);"></i>
+          {{ editingId ? 'تعديل الخصم' : 'إضافة خصم جديد' }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form [formGroup]="form" (ngSubmit)="handleSubmit()">
+          <div class="row g-3">
+
+            <!-- Discount Amount -->
+            <div class="col-md-4">
+              <div class="form-section">
+                <label class="form-label">نسبة الخصم<span class="text-danger">*</span></label>
+                <div class="percent-input-wrap">
+                  <input type="number" class="form-control" formControlName="discountAmount"
+                    placeholder="مثال: 20" min="1" max="100"
+                    [ngClass]="{'is-invalid': fieldInvalid('discountAmount'), 'is-valid': !fieldInvalid('discountAmount') && form.get('discountAmount')?.touched}">
+                  <span class="percent-symbol">%</span>
+                  <div class="invalid-feedback">يرجى إدخال نسبة بين 1 و 100</div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="card-body">
-            <div class="alert alert-secondary text-center" role="alert">
-              No Discount
+
+            <!-- Minimum Purchase -->
+            <div class="col-md-4">
+              <div class="form-section">
+                <label class="form-label">أدنى شراء<span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="minimumPurchase"
+                  placeholder="مثال: 100" min="0"
+                  [ngClass]="{'is-invalid': fieldInvalid('minimumPurchase'), 'is-valid': !fieldInvalid('minimumPurchase') && form.get('minimumPurchase')?.touched}">
+                <div class="invalid-feedback">يرجى إدخال قيمة صالحة</div>
+              </div>
             </div>
-            <div class="table-responsive custom-table">
-              <table class="table custom-table-design text-center"> <!-- أضف animation للـ table -->
-                <thead>
-                  <tr>
-                    <th>م</th>
-                    <th>طعام</th>
-                    <th>معلومات المرجع</th>
-                    <th>تقييم</th>
-                    <th>التاريخ</th>
-                    <th>رد المطعم</th>
-                    <th>الاجراءات</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>1</td>
-                    <td>كباب</td>
-                    <td>احمد علي - القاهرة</td>
-                    <td>4.5</td>
-                    <td>25/11/2025</td>
-                    <td>موافق</td>
-                    <td class="text-center">
-                      <i class="fa-regular fa-eye fa-lg" style="color: var(--main-color); cursor: pointer;"></i>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+
+            <!-- Maximum Discount -->
+            <div class="col-md-4">
+              <div class="form-section">
+                <label class="form-label">أقصى خصم<span class="text-danger">*</span></label>
+                <input type="number" class="form-control" formControlName="maximumDiscount"
+                  placeholder="مثال: 50" min="0"
+                  [ngClass]="{'is-invalid': fieldInvalid('maximumDiscount'), 'is-valid': !fieldInvalid('maximumDiscount') && form.get('maximumDiscount')?.touched}">
+                <div class="invalid-feedback">يرجى إدخال قيمة صالحة</div>
+              </div>
             </div>
+
+            <!-- Start Date -->
+            <div class="col-md-6">
+              <div class="form-section">
+                <label class="form-label">تاريخ البدء<span class="text-danger">*</span></label>
+                <input type="date" class="form-control" formControlName="startDate"
+                  [ngClass]="{'is-invalid': fieldInvalid('startDate'), 'is-valid': !fieldInvalid('startDate') && form.get('startDate')?.touched}">
+                <div class="invalid-feedback">يرجى اختيار تاريخ البدء</div>
+              </div>
+            </div>
+
+            <!-- End Date -->
+            <div class="col-md-6">
+              <div class="form-section">
+                <label class="form-label">تاريخ الانتهاء<span class="text-danger">*</span></label>
+                <input type="date" class="form-control" formControlName="endDate"
+                  [ngClass]="{'is-invalid': fieldInvalid('endDate'), 'is-valid': !fieldInvalid('endDate') && form.get('endDate')?.touched}">
+                <div class="invalid-feedback">يرجى اختيار تاريخ الانتهاء</div>
+              </div>
+            </div>
+
+            <!-- Start Time -->
+            <div class="col-md-6">
+              <div class="form-section">
+                <label class="form-label">وقت البدء<span class="text-danger">*</span></label>
+                <input type="time" class="form-control" formControlName="startTime"
+                  [ngClass]="{'is-invalid': fieldInvalid('startTime'), 'is-valid': !fieldInvalid('startTime') && form.get('startTime')?.touched}">
+                <div class="invalid-feedback">يرجى اختيار وقت البدء</div>
+              </div>
+            </div>
+
+            <!-- End Time -->
+            <div class="col-md-6">
+              <div class="form-section">
+                <label class="form-label">وقت الانتهاء<span class="text-danger">*</span></label>
+                <input type="time" class="form-control" formControlName="endTime"
+                  [ngClass]="{'is-invalid': fieldInvalid('endTime'), 'is-valid': !fieldInvalid('endTime') && form.get('endTime')?.touched}">
+                <div class="invalid-feedback">يرجى اختيار وقت الانتهاء</div>
+              </div>
+            </div>
+
           </div>
-        </div>
+        </form>
       </div>
-      <!-- ModalAddDiscount -->
-      <div class="modal fade" id="addDiscountModal" tabindex="-1" aria-labelledby="addDiscountModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              <form action="">
-                <div class="row">
-                  <div class="col-md-4">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">مبلغ الخصم (%)</label>
-                      <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال مبلغ الخصم صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">أدنى شراء ($)</label>
-                      <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال أدنى شراء صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">أقصى خصم ($)</label>
-                      <input type="text" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال أقصى خصم صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">تاريخ البدء</label>
-                      <input type="date" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال تاريخ البدء صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">تاريخ الانتهاء</label>
-                      <input type="date" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال تاريخ الانتهاء صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">وقت البدء</label>
-                      <input type="time" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال وقت البدء صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="form-section">
-                      <label for="validationCustom03" class="form-label">وقت النهاية</label>
-                      <input type="time" id="validationCustom03" class="form-control" name="tax" required />
-                      <div class="invalid-feedback">يرجى إدخال وقت النهاية صالحة</div>
-                      <div class="valid-feedback">يبدو جيدًا!</div>
-                    </div>
-                  </div>
-                </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-addDiscount">Add Discount</button>
-            </div>
-          </div>
-        </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-save" [disabled]="isSaving" (click)="handleSubmit()">
+          @if (isSaving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ editingId ? 'حفظ التعديلات' : 'إضافة الخصم' }}
+        </button>
       </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" #deleteModalEl tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+
+      <div class="modal-body text-center py-4">
+        <div class="delete-icon-wrap mb-3">
+          <i class="fas fa-trash-alt fa-2x"></i>
+        </div>
+        <h5 class="mb-1">حذف الخصم</h5>
+        <p class="text-muted mb-0">هل أنت متأكد من حذف هذا الخصم؟<br>لا يمكن التراجع عن هذا الإجراء.</p>
+      </div>
+
+      <div class="modal-footer justify-content-center border-0 pb-4">
+        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-danger-confirm" [disabled]="isDeleting" (click)="confirmDelete()">
+          @if (isDeleting) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          نعم، احذف
+        </button>
+      </div>
+
     </div>
   </div>
 </div>

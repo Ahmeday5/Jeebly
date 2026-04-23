@@ -1,0 +1,233 @@
+<div class="users-page mt-2 mb-4">
+  <div class="container-fluid p-0">
+
+    <!-- Page Header -->
+    <div class="page-header mb-3">
+      <div class="header-left">
+        <h3><span class="icon"><i class="fas fa-users"></i></span> إدارة المستخدمين</h3>
+        <span class="users-count">{{ users.length }} مستخدم</span>
+      </div>
+      <div class="header-actions">
+        <div class="search-wrap">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" class="form-control search-input" placeholder="بحث بالاسم أو الإيميل أو الهاتف..."
+            (input)="onSearch($any($event.target).value)">
+        </div>
+        <button class="btn btn-add-user" (click)="openAddModal()">
+          <i class="fas fa-user-plus me-1"></i> إضافة مستخدم
+        </button>
+      </div>
+    </div>
+    
+    <!-- Table Card -->
+    <div class="table-card">
+      @if (isLoading) {
+        <div class="state-center">
+          <div class="spinner-border" style="color: var(--main-color);"></div>
+        </div>
+      } @else if (!filteredUsers.length) {
+        <div class="state-center text-muted">
+          <i class="fas fa-users fa-3x mb-3" style="color: #dee2e6;"></i>
+          <p class="mb-0">{{ searchQuery ? 'لا توجد نتائج للبحث' : 'لا يوجد مستخدمون بعد' }}</p>
+        </div>
+      } @else {
+        <div class="table-responsive">
+          <table class="table users-table mb-0">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المستخدم</th>
+                <th>البريد الإلكتروني</th>
+                <th>الهاتف</th>
+                <th>الدور</th>
+                <th>الإجراءات</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (user of filteredUsers; track $index; let i = $index) {
+                <tr>
+                  <td class="row-num">{{ i + 1 }}</td>
+                  <td>
+                    <div class="user-info">
+                      <div class="user-avatar">{{ user.fullName?.charAt(0) | uppercase }}</div>
+                      <div>
+                        <p class="user-name">{{ user.fullName }}</p>
+                        <p class="user-address">{{ user.address }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="user-email">{{ user.email }}</td>
+                  <td class="user-phone">{{ user.phoneNumber }}</td>
+                  <td>
+                    <span class="role-badge" [class]="'role-' + user.role?.toLowerCase()">
+                      {{ getRoleLabel(user.role) }}
+                    </span>
+                  </td>
+                  <td>
+                    <div class="action-btns">
+                      <button class="action-btn edit" (click)="openEditModal(user)" title="تعديل">
+                        <i class="fas fa-pen"></i>
+                      </button>
+                      <button class="action-btn delete" (click)="confirmDelete(user)" title="حذف">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </div>
+
+  </div>
+</div>
+
+<!-- ════════════ Add / Edit User Modal ════════════ -->
+<div class="modal fade" #userModalEl tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content user-modal">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-user-{{ editingId ? 'edit' : 'plus' }} me-2" style="color: var(--main-color)"></i>
+          {{ editingId ? 'تعديل بيانات المستخدم' : 'إضافة مستخدم جديد' }}
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="userForm">
+          <div class="row g-3">
+
+            <!-- Full Name -->
+            <div class="col-md-6">
+              <label class="form-label">الاسم الكامل <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" formControlName="fullName" placeholder="أحمد محمد"
+                [ngClass]="{'is-invalid': fieldInvalid('fullName')}">
+              <div class="invalid-feedback">يرجى إدخال اسم صالح (حرفان على الأقل)</div>
+            </div>
+
+            <!-- Email -->
+            <div class="col-md-6">
+              <label class="form-label">البريد الإلكتروني <span class="text-danger">*</span></label>
+              <input type="email" class="form-control" formControlName="email" placeholder="example@mail.com"
+                [ngClass]="{'is-invalid': fieldInvalid('email')}">
+              <div class="invalid-feedback">يرجى إدخال بريد إلكتروني صالح</div>
+            </div>
+
+            <!-- Phone -->
+            <div class="col-md-6">
+              <label class="form-label">رقم الهاتف <span class="text-danger">*</span></label>
+              <input type="tel" class="form-control" formControlName="phoneNumber" placeholder="05xxxxxxxx"
+                [ngClass]="{'is-invalid': fieldInvalid('phoneNumber')}">
+              <div class="invalid-feedback">يرجى إدخال رقم هاتف صالح</div>
+            </div>
+
+            <!-- Role -->
+            <div class="col-md-6">
+              <label class="form-label">الدور <span class="text-danger">*</span></label>
+              <select class="form-select" formControlName="role"
+                [ngClass]="{'is-invalid': fieldInvalid('role')}">
+                <option value="" disabled>اختر الدور</option>
+                @for (r of roles; track r.value) {
+                  <option [value]="r.value">{{ r.label }}</option>
+                }
+              </select>
+              <div class="invalid-feedback">يرجى اختيار الدور</div>
+            </div>
+
+            <!-- Add-only fields -->
+            @if (!editingId) {
+              <!-- Birth Date -->
+              <div class="col-md-6">
+                <label class="form-label">تاريخ الميلاد <span class="text-danger">*</span></label>
+                <input type="date" class="form-control" formControlName="birthDate"
+                  [ngClass]="{'is-invalid': fieldInvalid('birthDate')}">
+                <div class="invalid-feedback">يرجى إدخال تاريخ الميلاد</div>
+              </div>
+
+              <!-- Password -->
+              <div class="col-md-6">
+                <label class="form-label">كلمة المرور <span class="text-danger">*</span></label>
+                <input type="password" class="form-control" formControlName="password" placeholder="••••••••"
+                  [ngClass]="{'is-invalid': fieldInvalid('password')}">
+                <div class="invalid-feedback">كلمة المرور يجب أن تكون 6 أحرف على الأقل</div>
+              </div>
+
+              <!-- Address -->
+              <div class="col-12">
+                <label class="form-label">العنوان <span class="text-danger">*</span></label>
+                <input type="text" class="form-control" formControlName="address" placeholder="شارع، حي، مدينة"
+                  [ngClass]="{'is-invalid': fieldInvalid('address')}">
+                <div class="invalid-feedback">يرجى إدخال العنوان</div>
+              </div>
+
+              <!-- Governorate -->
+              <div class="col-md-6">
+                <label class="form-label">المحافظة <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="governorateId"
+                  [ngClass]="{'is-invalid': fieldInvalid('governorateId')}">
+                  <option [ngValue]="null" disabled>اختر المحافظة</option>
+                  @for (gov of governorates; track gov.governorateId) {
+                    <option [ngValue]="gov.governorateId">{{ gov.nameAr }}</option>
+                  }
+                </select>
+                <div class="invalid-feedback">يرجى اختيار المحافظة</div>
+              </div>
+
+              <!-- District -->
+              <div class="col-md-6">
+                <label class="form-label">المنطقة <span class="text-danger">*</span></label>
+                <select class="form-select" formControlName="districtid"
+                  [attr.disabled]="!hasGovernorate ? '' : null"
+                  [ngClass]="{'is-invalid': fieldInvalid('districtid')}">
+                  <option [ngValue]="null" disabled>
+                    {{ hasGovernorate ? 'اختر المنطقة' : 'يجب اختيار المحافظة أولاً' }}
+                  </option>
+                  @if (isLoadingDist) {
+                    <option disabled>جاري التحميل...</option>
+                  } @else {
+                    @for (d of districts; track d.districtId) {
+                      <option [ngValue]="d.districtId">{{ d.nameAr }}</option>
+                    }
+                  }
+                </select>
+                <div class="invalid-feedback">يرجى اختيار المنطقة</div>
+              </div>
+            }
+
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-save" [disabled]="isSaving" (click)="submitUser()">
+          @if (isSaving) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          {{ editingId ? 'حفظ التعديلات' : 'إضافة المستخدم' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ Delete Confirmation Modal ════════════ -->
+<div class="modal fade" #deleteModalEl tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content user-modal">
+      <div class="modal-body text-center p-4">
+        <div class="delete-icon-wrap mx-auto mb-3">
+          <i class="fas fa-user-times"></i>
+        </div>
+        <h5 class="fw-bold mb-1">حذف المستخدم</h5>
+        <p class="text-muted mb-0">هل أنت متأكد من حذف <strong>{{ deletingName }}</strong>؟ لا يمكن التراجع عن هذا.</p>
+      </div>
+      <div class="modal-footer justify-content-center border-0 pt-0">
+        <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">إلغاء</button>
+        <button type="button" class="btn btn-danger-confirm" [disabled]="isDeleting" (click)="executeDelete()">
+          @if (isDeleting) { <span class="spinner-border spinner-border-sm me-1"></span> }
+          نعم، احذف
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

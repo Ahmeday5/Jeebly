@@ -84,6 +84,20 @@ export const routes: Routes = [
             (m) => m.MANAGE_DELIVERY_ROUTES,
           ),
       },
+      {
+        path: 'locations',
+        loadChildren: () =>
+          import('./features/locations/locations.routes').then(
+            (m) => m.locationsRoutes
+          ),
+      },
+      {
+        path: 'appUsers',
+        loadChildren: () =>
+          import('./features/appUsers/appUsers.routes').then(
+            (m) => m.appUsersRoutes
+          ),
+      },
       { path: '**', redirectTo: 'dashboard', pathMatch: 'full' },
     ],
   },
