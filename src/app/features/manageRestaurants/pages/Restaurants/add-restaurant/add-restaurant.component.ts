@@ -6,7 +6,10 @@ import { RestaurantsService } from '../../../services/restaurants.service';
 import { SettingAreasService } from '../../../services/setting-areas.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { MainCategoriesService } from '../../../../Categories/services/main-categories.service';
-import { MultiSelectComponent, SelectItem } from '../../../../../shared/multi-select/multi-select.component';
+import {
+  MultiSelectComponent,
+  SelectItem,
+} from '../../../../../shared/multi-select/multi-select.component';
 import {
   ReactiveFormsModule,
   FormBuilder,
@@ -14,11 +17,20 @@ import {
   Validators,
 } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import {
+  LocationPickerComponent,
+  LocationChangePayload,
+} from '../../../../../shared/components/location-picker/location-picker.component';
 
 @Component({
   selector: 'app-add-restaurant',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, MultiSelectComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    MultiSelectComponent,
+    LocationPickerComponent,
+  ],
   templateUrl: './add-restaurant.component.html',
   styleUrls: ['./add-restaurant.component.scss'],
 })
@@ -33,7 +45,7 @@ export class AddRestaurantComponent implements OnInit, OnDestroy {
   logoRequiredError: string | null = null;
   coverRequiredError: string | null = null;
   foodTypeError = false;
-  
+
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
 
@@ -66,9 +78,11 @@ export class AddRestaurantComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.initForm();
     this.loadAreas();
-    this.serviceIdSub = this.form.get('serviceId')!.valueChanges.subscribe((id) => {
-      if (id) this.loadCategories(id);
-    });
+    this.serviceIdSub = this.form
+      .get('serviceId')!
+      .valueChanges.subscribe((id) => {
+        if (id) this.loadCategories(id);
+      });
   }
 
   ngOnDestroy(): void {
@@ -126,7 +140,10 @@ export class AddRestaurantComponent implements OnInit, OnDestroy {
   loadCategories(serviceId: number): void {
     this.categoriesService.getAllCategories(serviceId).subscribe({
       next: (res) => {
-        this.categories = res.Categories.map((c) => ({ id: c.id, name: c.name }));
+        this.categories = res.Categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+        }));
         this.selectedCategoryIds = [];
       },
       error: () => this.toast.error('فشل تحميل أنواع الأكل'),
@@ -269,7 +286,7 @@ export class AddRestaurantComponent implements OnInit, OnDestroy {
 
     // إرسال الكاتجوريز كـ array of strings
     this.selectedCategoryIds.forEach((id) =>
-      formData.append('CategoryIds', String(id))
+      formData.append('CategoryIds', String(id)),
     );
 
     if (this.Logo) formData.append('Logo', this.Logo);
@@ -298,5 +315,14 @@ export class AddRestaurantComponent implements OnInit, OnDestroy {
     this.CoverPreview = null;
     this.selectedCategoryIds = [];
     this.foodTypeError = false;
+  }
+
+  onLocationChange(data: LocationChangePayload) {
+    this.form.patchValue({
+      latitude: data.lat,
+      longitude: data.lng,
+      addressAr: data.addressAr,
+      addressEn: data.addressEn,
+    });
   }
 }

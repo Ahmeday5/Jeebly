@@ -11,7 +11,7 @@ export class SubCategoriesService {
   private readonly http = inject(HttpClient);
   private readonly baseUrl = environment.apiBaseUrl;
   constructor() {}
-  
+
   getSubCategoriesByCategoryId(
     categoryId: number,
   ): Observable<SubCategoriesResponse> {

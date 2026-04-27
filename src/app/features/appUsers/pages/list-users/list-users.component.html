@@ -18,7 +18,7 @@
         </button>
       </div>
     </div>
-    
+
     <!-- Table Card -->
     <div class="table-card">
       @if (isLoading) {
@@ -49,17 +49,19 @@
                   <td class="row-num">{{ i + 1 }}</td>
                   <td>
                     <div class="user-info">
-                      <div class="user-avatar">{{ user.fullName?.charAt(0) | uppercase }}</div>
+                      <div class="user-avatar">{{ (user.fullName || '?').charAt(0) | uppercase }}</div>
                       <div>
-                        <p class="user-name">{{ user.fullName }}</p>
-                        <p class="user-address">{{ user.address }}</p>
+                        <p class="user-name">{{ user.fullName || '—' }}</p>
+                        @if (user.address) {
+                          <p class="user-address">{{ user.address }}</p>
+                        }
                       </div>
                     </div>
                   </td>
-                  <td class="user-email">{{ user.email }}</td>
-                  <td class="user-phone">{{ user.phoneNumber }}</td>
+                  <td class="user-email">{{ user.email || '—' }}</td>
+                  <td class="user-phone">{{ user.phoneNumber || '—' }}</td>
                   <td>
-                    <span class="role-badge" [class]="'role-' + user.role?.toLowerCase()">
+                    <span class="role-badge" [class]="'role-' + (user.role || '').toLowerCase()">
                       {{ getRoleLabel(user.role) }}
                     </span>
                   </td>

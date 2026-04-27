@@ -24,7 +24,7 @@ declare const bootstrap: any;
 
 const ROLES = [
   { value: 'Customer', label: 'مستخدم' },
-  { value: 'Admin', label: 'مشرف' },
+  { value: 'Admin', label: 'مدير' },
   { value: 'DeliveryMan', label: 'سائق' },
   { value: 'RestaurantOwner', label: 'مالك مطعم' },
 ];
@@ -36,6 +36,7 @@ const ROLES = [
   templateUrl: './list-users.component.html',
   styleUrl: './list-users.component.scss',
 })
+
 export class ListUsersComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('userModalEl') userModalEl!: ElementRef;
   @ViewChild('deleteModalEl') deleteModalEl!: ElementRef;

@@ -1,9 +1,4 @@
 import { inject, Injectable } from '@angular/core';
-import {
-  HttpClient,
-  HttpErrorResponse,
-  HttpHeaders,
-} from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { MainCategoriesResponse, MainCategory } from '../model/categories.type';
 import { ApiService } from '../../../core/services/api.service';
@@ -45,6 +40,6 @@ export class MainCategoriesService {
 
   // ====================== DELETE CATEGORY ======================
   deleteCategory(id: number) {
-    return this.api.delete(`/api/Categories/Delete Category?id=${id}`);
+    return this.api.delete(`/api/Categories/DeleteCategory?id=${id}`);
   }
 }

@@ -24,6 +24,6 @@ export class SettingAreasService {
 
   // get all Area
   getAllArea(): Observable<allArea[]> {
-    return this.api.get<allArea[]>('/api/Areas/Get List Of Areas');
+    return this.api.get<allArea[]>('/api/Areas/GetListOfAreas');
   }
 }

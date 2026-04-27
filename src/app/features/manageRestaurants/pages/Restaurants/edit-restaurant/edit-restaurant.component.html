@@ -229,18 +229,24 @@
               <div class="form-section">
                 <label class="form-label">خط العرض<span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="latitude" [ngClass]="{'is-invalid': form.get('latitude')?.invalid && form.get('latitude')?.touched,
-                        'is-valid': form.get('latitude')?.valid && form.get('latitude')?.touched}">
+                        'is-valid': form.get('latitude')?.valid && form.get('latitude')?.touched}" readonly>
                 <div class="invalid-feedback">يرجى إدخال خط عرض صالح</div>
               </div>
               <div class="form-section">
                 <label class="form-label">خط الطول<span class="text-danger">*</span></label>
                 <input type="number" class="form-control" formControlName="longitude" [ngClass]="{'is-invalid': form.get('longitude')?.invalid && form.get('longitude')?.touched,
-                        'is-valid': form.get('longitude')?.valid && form.get('longitude')?.touched}">
+                        'is-valid': form.get('longitude')?.valid && form.get('longitude')?.touched}" readonly>
                 <div class="invalid-feedback">يرجى إدخال قيمة صالحة</div>
               </div>
             </div>
             <div class="col-md-6">
-              <img src="/assets/img/New folder/خريطة.png" class="img-fluid" alt="خريطة">
+              <app-location-picker
+                *ngIf="!Loading"
+                [initialLat]="form.get('latitude')?.value"
+                [initialLng]="form.get('longitude')?.value"
+                [autoLocate]="false"
+                (locationChange)="onLocationChange($event)">
+              </app-location-picker>
             </div>
           </div>
         </div>

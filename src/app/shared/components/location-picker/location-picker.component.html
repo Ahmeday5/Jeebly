@@ -1,0 +1,253 @@
+<div class="location-picker" [attr.data-status]="status">
+
+  <!-- HEADER -->
+  <div class="lp-header">
+    <div class="lp-title">
+      <span class="lp-title-icon">
+        <i class="fa fa-map-marker-alt"></i>
+      </span>
+      <div class="lp-title-text">
+        <strong>تحديد الموقع</strong>
+        <span class="lp-status-pill" [attr.data-state]="status">
+          <span class="lp-status-dot"></span>
+          {{ statusLabel }}
+        </span>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="lp-locate-btn"
+      (click)="setCurrentLocation()"
+      [disabled]="isLocating"
+      [attr.aria-busy]="isLocating">
+      <span class="lp-locate-content">
+        <i class="fa" [ngClass]="isLocating ? 'fa-spinner fa-spin' : 'fa-crosshairs'"></i>
+        <span>{{ isLocating ? 'جاري التحديد...' : 'موقعي الحالي' }}</span>
+      </span>
+    </button>
+  </div>
+
+  <!-- WARNING -->
+  <div class="lp-warning" *ngIf="showWarning" role="alert">
+    <i class="fa fa-exclamation-triangle"></i>
+    <span>
+      تحديد الموقع التلقائي قد يكون غير دقيق على الكمبيوتر، يفضل استخدام الهاتف أو تحريك المؤشر يدويًا
+    </span>
+    <button type="button" class="lp-warning-close" (click)="dismissWarning()" aria-label="إغلاق التنبيه">
+      <i class="fa fa-times"></i>
+    </button>
+  </div>
+
+  <!-- MAP WRAPPER -->
+  <div class="lp-map-shell" [style.height.px]="height">
+
+    <!-- SEARCH -->
+    <div class="lp-search" #searchBox>
+      <div
+        class="lp-search-field"
+        [class.has-results]="suggestions.length || (showRecent && recentSearches.length)"
+        role="combobox"
+        aria-haspopup="listbox"
+        [attr.aria-expanded]="(suggestions.length || (showRecent && recentSearches.length)) ? 'true' : 'false'">
+
+        <i class="fa fa-search lp-search-icon" aria-hidden="true"></i>
+
+        <input
+          #searchInput
+          class="lp-search-input"
+          type="text"
+          placeholder="ابحث عن العنوان أو المعلم..."
+          autocomplete="off"
+          spellcheck="false"
+          aria-label="ابحث عن العنوان"
+          [attr.aria-activedescendant]="highlightedIndex >= 0 ? 'lp-suggestion-' + highlightedIndex : null"
+          [(ngModel)]="searchQuery"
+          (input)="onSearch()"
+          (focus)="onSearchFocus()"
+          (keydown)="onKeydown($event)" />
+
+        <div class="lp-search-spinner" *ngIf="isSearching" aria-hidden="true">
+          <span class="lp-spinner"></span>
+        </div>
+
+        <button
+          type="button"
+          *ngIf="searchQuery && !isSearching"
+          class="lp-search-clear"
+          (click)="clearSearch()"
+          aria-label="مسح البحث">
+          <i class="fa fa-times"></i>
+        </button>
+      </div>
+
+      <!-- SUGGESTIONS -->
+      <ul class="lp-suggestions" *ngIf="suggestions.length" role="listbox">
+        <li
+          *ngFor="let item of suggestions; let i = index; trackBy: trackBySuggestion"
+          [id]="'lp-suggestion-' + i"
+          role="option"
+          [attr.aria-selected]="i === highlightedIndex"
+          [class.is-highlighted]="i === highlightedIndex"
+          (click)="selectPlace(item)">
+          <i class="fa fa-map-pin lp-suggestion-icon" aria-hidden="true"></i>
+          <span class="lp-suggestion-text">{{ item.display_name }}</span>
+        </li>
+      </ul>
+
+      <!-- RECENT -->
+      <ul
+        class="lp-suggestions lp-recent"
+        *ngIf="showRecent && !suggestions.length && recentSearches.length"
+        role="listbox"
+        aria-label="عمليات البحث الأخيرة">
+        <li class="lp-recent-head">
+          <i class="fa fa-history" aria-hidden="true"></i>
+          <span>عمليات البحث الأخيرة</span>
+        </li>
+        <li
+          *ngFor="let item of recentSearches; trackBy: trackByRecent"
+          role="option"
+          (click)="selectRecent(item)">
+          <i class="fa fa-clock-rotate-left lp-suggestion-icon" aria-hidden="true"></i>
+          <span class="lp-suggestion-text">{{ item.label }}</span>
+          <button
+            type="button"
+            class="lp-recent-remove"
+            (click)="removeRecent(item.id, $event)"
+            aria-label="إزالة من السجل">
+            <i class="fa fa-times"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!-- MAP CANVAS -->
+    <div class="lp-map" #mapEl role="application" aria-label="الخريطة"></div>
+
+    <!-- FLOATING ACTIONS -->
+    <div class="lp-fab-stack">
+      <div class="lp-fab-group" role="group" aria-label="نوع الخريطة">
+        <button
+          type="button"
+          class="lp-fab"
+          [class.is-active]="mapType === 'streets'"
+          (click)="setMapType('streets')"
+          aria-label="عرض الشوارع"
+          title="شوارع">
+          <i class="fa fa-road"></i>
+        </button>
+        <button
+          type="button"
+          class="lp-fab"
+          [class.is-active]="mapType === 'satellite'"
+          (click)="setMapType('satellite')"
+          aria-label="صور الأقمار الصناعية"
+          title="قمر صناعي">
+          <i class="fa fa-satellite"></i>
+        </button>
+        <button
+          type="button"
+          class="lp-fab"
+          [class.is-active]="mapType === 'hybrid'"
+          (click)="setMapType('hybrid')"
+          aria-label="عرض هجين"
+          title="هجين">
+          <i class="fa fa-layer-group"></i>
+        </button>
+      </div>
+
+      <button
+        type="button"
+        class="lp-fab lp-fab-solo"
+        (click)="recenter()"
+        [disabled]="selectedLat == null"
+        aria-label="إعادة التمركز"
+        title="إعادة التمركز">
+        <i class="fa fa-location-arrow"></i>
+      </button>
+    </div>
+
+    <!-- HINT -->
+    <div class="lp-hint">
+      <i class="fa fa-info-circle"></i>
+      اضغط على الخريطة أو اسحب العلامة لتحديد الموقع بدقة
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="lp-summary" *ngIf="selectedAddress || isResolvingAddress">
+    <div class="lp-summary-row">
+      <div class="lp-summary-label">
+        <i class="fa fa-location-arrow"></i>
+        العنوان
+      </div>
+
+      <div class="lp-summary-value" [class.is-loading]="isResolvingAddress" aria-live="polite">
+        <ng-container *ngIf="!isResolvingAddress; else loadingTpl">
+          <div class="lp-address-ar" dir="rtl">{{ selectedAddress }}</div>
+          <div class="lp-address-en" dir="ltr" *ngIf="selectedAddressEn && selectedAddressEn !== selectedAddress">
+            {{ selectedAddressEn }}
+          </div>
+        </ng-container>
+        <ng-template #loadingTpl>
+          <span class="lp-skeleton lp-skeleton-line"></span>
+          <span class="lp-skeleton lp-skeleton-line short"></span>
+        </ng-template>
+      </div>
+
+      <button
+        type="button"
+        class="lp-icon-btn"
+        *ngIf="selectedAddress && !isResolvingAddress"
+        (click)="copy('both')"
+        [class.is-copied]="copiedField === 'both'"
+        aria-label="نسخ الإحداثيات">
+        <i class="fa" [ngClass]="copiedField === 'both' ? 'fa-check' : 'fa-copy'"></i>
+      </button>
+    </div>
+
+    <div class="lp-summary-coords" *ngIf="selectedLat !== null && selectedLng !== null">
+      <button
+        type="button"
+        class="lp-coord"
+        [class.is-copied]="copiedField === 'lat'"
+        (click)="copy('lat')"
+        title="نسخ خط العرض">
+        <small>
+          <i class="fa fa-arrows-alt-v"></i>
+          خط العرض
+        </small>
+        <strong>{{ selectedLat | number: '1.0-6' }}</strong>
+        <i class="fa lp-coord-copy" [ngClass]="copiedField === 'lat' ? 'fa-check' : 'fa-copy'"></i>
+      </button>
+
+      <button
+        type="button"
+        class="lp-coord"
+        [class.is-copied]="copiedField === 'lng'"
+        (click)="copy('lng')"
+        title="نسخ خط الطول">
+        <small>
+          <i class="fa fa-arrows-alt-h"></i>
+          خط الطول
+        </small>
+        <strong>{{ selectedLng | number: '1.0-6' }}</strong>
+        <i class="fa lp-coord-copy" [ngClass]="copiedField === 'lng' ? 'fa-check' : 'fa-copy'"></i>
+      </button>
+
+      <div class="lp-coord lp-coord-meta" *ngIf="accuracyLabel">
+        <small>
+          <i class="fa fa-bullseye"></i>
+          الدقة
+        </small>
+        <strong>{{ accuracyLabel }}</strong>
+      </div>
+    </div>
+
+    <div class="lp-summary-error" *ngIf="errorMessage" role="alert">
+      <i class="fa fa-triangle-exclamation"></i>
+      {{ errorMessage }}
+    </div>
+  </div>
+</div>

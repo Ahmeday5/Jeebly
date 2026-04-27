@@ -50,3 +50,20 @@
   font-size: 25px;
   margin-top: 10px;
 }
+
+.info-hint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(140, 15, 20, 0.06);
+  border: 1px solid rgba(140, 15, 20, 0.18);
+  color: var(--main-color, #8c0f14);
+  font-size: 13px;
+  font-weight: 600;
+
+  i {
+    font-size: 13px;
+  }
+}

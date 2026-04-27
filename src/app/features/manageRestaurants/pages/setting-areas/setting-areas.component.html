@@ -12,88 +12,81 @@
 
       <div class="col-md-12">
         <div class="add-zone">
-          <div class="row">
-            <div class="col-md-6 information">
-              <h3>التعليمات</h3>
-              <p>إنشاء وربط النقاط في منطقة محددة على الخريطة لإضافة منطقة تجارية جديدة.</p>
-              <div class="icon-title d-flex">
-                <i class="fas fa-hand-pointer"></i>
-                <h6>استخدم أداة اليد للعثور على المنطقة المستهدفة.</h6>
-              </div>
-              <div class="icon-title d-flex">
-                <i class="fas fa-draw-polygon"></i>
-                <h6>استخدم أداة الشكل للإشارة إلى المناطق وربط النقاط.
-                  يتطلب الأمر 3 نقاط/نقاط على الأقل.</h6>
-              </div>
-              <div class="img">
-                <img src="/assets/img/New folder/خريطة2.png" class="img-fluid" alt="">
-              </div>
-            </div>
+          <form [formGroup]="form" (ngSubmit)="handleSubmit()">
+            <div class="row">
+              <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
+                <div class="title d-flex justify-content-start">
+                  <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
+                    English (EN)
+                  </h6>
+                  <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">
+                    Arabic - العربية (AR)
+                  </h6>
+                </div>
 
-            <div class="col-xl-6 col-lg-6 col-md-12 mt-2 name">
-              <div class="title d-flex justify-content-start">
-                <h6 [ngClass]="{'active': selectedLanguage === 'english'}" (click)="selectLanguage('english')">
-                  English
-                  (EN)
-                </h6>
-                <h6 [ngClass]="{'active': selectedLanguage === 'arabic'}" (click)="selectLanguage('arabic')">Arabic
-                  -
-                  العربية (AR)</h6>
-              </div>
-
-              <form [formGroup]="form" (ngSubmit)="handleSubmit()" class="mt-2">
-                <div class="row">
-                  <div class="col-md-12"> <!-- غيرناه إلى 12 بدلاً من 6 ليشغل المساحة -->
-                    <div class="form-section mt-4" *ngIf="selectedLanguage === 'arabic'">
-                      <label for="nameArInput" class="form-label">اسم المنطقة التجارية (العربية)<span
-                          class="text-danger">*</span></label>
-                      <input type="text" class="form-control" formControlName="nameAr"
-                        placeholder="يرجى إدخال الاسم بالعربية" [ngClass]="{
-                        'is-invalid': form.get('nameAr')?.touched && form.get('nameAr')?.invalid}" />
-                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['required']">
-                        الاسم العربي مطلوب
-                      </div>
-                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['minlength']">
-                        حرفين على الأقل
-                      </div>
-                      <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['pattern']">
-                        مسموح فقط بحروف عربية
-                      </div>
-                    </div>
-
-                    <div class="form-section mt-4" *ngIf="selectedLanguage === 'english'">
-                      <label for="nameEnInput" class="form-label"><span class="text-danger">*</span>Commercial Area Name
-                        (English)</label>
-                      <input type="text" class="form-control" formControlName="nameEn"
-                        placeholder="Please enter the name in English"
-                        [ngClass]="{'is-invalid': form.get('nameEn')?.touched && form.get('nameEn')?.invalid}" />
-                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['required']">
-                        English name is required
-                      </div>
-                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['minlength']">
-                        Minimum 2 characters required
-                      </div>
-                      <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['pattern']">
-                        Only English letters allowed
-                      </div>
-                    </div>
+                <div class="form-section mt-4" *ngIf="selectedLanguage === 'arabic'">
+                  <label for="nameArInput" class="form-label">
+                    اسم المنطقة التجارية (العربية)<span class="text-danger">*</span>
+                  </label>
+                  <input type="text" id="nameArInput" class="form-control" formControlName="nameAr"
+                    placeholder="حدد الموقع من الخريطة أو اكتب الاسم يدويًا"
+                    [ngClass]="{ 'is-invalid': form.get('nameAr')?.touched && form.get('nameAr')?.invalid }" />
+                  <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['required']">
+                    الاسم العربي مطلوب
                   </div>
-                  <div class="col-12 mt-2">
-                    <img src="/assets/img/New folder/خريطة3.png" class="img-fluid" alt="">
+                  <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['minlength']">
+                    حرفين على الأقل
                   </div>
-                  <div class="btns mt-2">
-                    <div class="row justify-content-end">
-                      <button class="btn btn-rest" type="button" (click)="resetForm()">إعادة تعيين</button>
-                      <button type="submit" class="btn btn-save mt-2" [disabled]="isLoading">
-                        @if (isLoading) {
-                        <span class="spinner-border spinner-border-sm me-2"></span>
-                        }حفظ البيانات</button>
-                    </div>
+                  <div class="invalid-feedback" *ngIf="form.get('nameAr')?.errors?.['pattern']">
+                    مسموح فقط بحروف عربية
                   </div>
                 </div>
-              </form>
+
+                <div class="form-section mt-4" *ngIf="selectedLanguage === 'english'">
+                  <label for="nameEnInput" class="form-label">
+                    <span class="text-danger">*</span>Commercial Area Name (English)
+                  </label>
+                  <input type="text" id="nameEnInput" class="form-control" formControlName="nameEn"
+                    placeholder="Pick from the map or type the name manually"
+                    [ngClass]="{'is-invalid': form.get('nameEn')?.touched && form.get('nameEn')?.invalid}" />
+                  <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['required']">
+                    English name is required
+                  </div>
+                  <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['minlength']">
+                    Minimum 2 characters required
+                  </div>
+                  <div class="invalid-feedback" *ngIf="form.get('nameEn')?.errors?.['pattern']">
+                    Only English letters allowed
+                  </div>
+                </div>
+
+                <div class="info-hint mt-3">
+                  <i class="fas fa-info-circle me-2"></i>
+                  حدد المحافظة أو المنطقة من الخريطة، يمكنك تعديل الاسم بعد التحديد.
+                </div>
+
+                <div class="btns mt-3">
+                  <div class="row justify-content-end">
+                    <button class="btn btn-rest" type="button" (click)="resetForm()">إعادة تعيين</button>
+                    <button type="submit" class="btn btn-save mt-2" [disabled]="isLoading">
+                      @if (isLoading) {
+                        <span class="spinner-border spinner-border-sm me-2"></span>
+                      }
+                      حفظ البيانات
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-xl-6 col-lg-6 col-md-12 mt-2">
+                <app-location-picker
+                  [granularity]="'admin'"
+                  [autoLocate]="false"
+                  (locationChange)="onLocationChange($event)">
+                </app-location-picker>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </div>

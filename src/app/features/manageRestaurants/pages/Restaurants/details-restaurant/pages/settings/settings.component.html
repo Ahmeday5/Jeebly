@@ -96,8 +96,99 @@
           {{ hasExistingSettings ? 'تحديث الإعدادات' : 'حفظ الإعدادات' }}
         </button>
       </div>
-
     </form>
+
+    <!-- Working Hours -->
+    <div class="settings-card mt-4" [formGroup]="hoursForm">
+      <div class="settings-card-header d-flex justify-content-between align-items-center">
+        <span><i class="fas fa-clock me-2"></i> ساعات عمل المطعم</span>
+        @if (isLoadingHours) {
+          <span class="hours-loading">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            جاري التحميل...
+          </span>
+        }
+      </div>
+
+      <div class="settings-card-body">
+        <p class="hours-hint">
+          <i class="fas fa-info-circle me-2"></i>
+          حدد ساعات العمل لكل يوم. إذا كان المطعم مغلقًا في يوم ما فعّل خيار "مغلق".
+        </p>
+
+        <div class="day-list" formArrayName="days">
+          @for (group of days.controls; track $index; let i = $index) {
+            <div class="day-row" [formGroupName]="i" [class.is-closed]="group.get('isClosed')?.value">
+
+              <div class="day-name">
+                <div class="day-icon">
+                  <i class="fas fa-calendar-day"></i>
+                </div>
+                <div class="day-text">
+                  <strong>{{ dayMeta(i).nameAr }}</strong>
+                  <small>{{ dayMeta(i).nameEn }}</small>
+                </div>
+              </div>
+
+              <div class="day-status">
+                <label class="closed-toggle">
+                  <input type="checkbox" formControlName="isClosed">
+                  <span class="closed-track">
+                    <span class="closed-thumb"></span>
+                  </span>
+                  <span class="closed-label">{{ group.get('isClosed')?.value ? 'مغلق' : 'مفتوح' }}</span>
+                </label>
+              </div>
+
+              <div class="day-times" *ngIf="!group.get('isClosed')?.value">
+                <div class="time-field">
+                  <label>من</label>
+                  <input type="time" class="form-control" formControlName="openTime">
+                </div>
+                <div class="time-sep">→</div>
+                <div class="time-field">
+                  <label>إلى</label>
+                  <input type="time" class="form-control" formControlName="closeTime">
+                </div>
+              </div>
+
+              <div class="day-times closed-placeholder" *ngIf="group.get('isClosed')?.value">
+                <i class="fas fa-bed"></i>
+                <span>المطعم في راحة</span>
+              </div>
+
+              <div class="day-actions">
+                <button
+                  type="button"
+                  class="btn-day-save"
+                  (click)="saveDay(i)"
+                  [disabled]="rowFor(i).saving || rowFor(i).deleting">
+                  @if (rowFor(i).saving) {
+                    <span class="spinner-border spinner-border-sm"></span>
+                  } @else {
+                    <i class="fas" [class.fa-save]="!rowFor(i).recordId" [class.fa-pen]="rowFor(i).recordId"></i>
+                  }
+                  <span>{{ rowFor(i).recordId ? 'تحديث' : 'حفظ' }}</span>
+                </button>
+
+                <button
+                  type="button"
+                  class="btn-day-delete"
+                  (click)="deleteDay(i)"
+                  [disabled]="rowFor(i).deleting || rowFor(i).saving || !rowFor(i).recordId"
+                  title="حذف ساعات اليوم">
+                  @if (rowFor(i).deleting) {
+                    <span class="spinner-border spinner-border-sm"></span>
+                  } @else {
+                    <i class="fas fa-trash"></i>
+                  }
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
     }
 
   </div>

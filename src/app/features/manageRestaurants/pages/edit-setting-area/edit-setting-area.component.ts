@@ -13,11 +13,21 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { FormBuilder } from '@angular/forms';
 import { EditSettingAreaService } from '../../services/edit-setting-area.service';
 import { ToastService } from '../../../../core/services/toast.service';
+import {
+  LocationPickerComponent,
+  LocationChangePayload,
+} from '../../../../shared/components/location-picker/location-picker.component';
 
 @Component({
   selector: 'app-edit-setting-area',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, ReactiveFormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    ReactiveFormsModule,
+    LocationPickerComponent,
+  ],
   templateUrl: './edit-setting-area.component.html',
   styleUrl: './edit-setting-area.component.scss',
 })
@@ -156,5 +166,14 @@ export class EditSettingAreaComponent implements OnInit {
 
   resetForm() {
     this.form.reset();
+  }
+
+  onLocationChange(data: LocationChangePayload): void {
+    this.form.patchValue({
+      latitude: data.lat,
+      longitude: data.lng,
+      nameAr: data.addressAr,
+      nameEn: data.addressEn,
+    });
   }
 }

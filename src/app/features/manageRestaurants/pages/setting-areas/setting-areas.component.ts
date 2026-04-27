@@ -8,6 +8,10 @@ import { SettingAreasService } from '../../services/setting-areas.service';
 import { Validators } from '@angular/forms';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 import { ToastService } from '../../../../core/services/toast.service';
+import {
+  LocationPickerComponent,
+  LocationChangePayload,
+} from '../../../../shared/components/location-picker/location-picker.component';
 
 function bothLanguagesRequired(
   control: AbstractControl,
@@ -24,7 +28,7 @@ function bothLanguagesRequired(
 @Component({
   selector: 'app-setting-areas',
   standalone: true,
-  imports: [CommonModule, RouterModule, ReactiveFormsModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule, LocationPickerComponent],
   templateUrl: './setting-areas.component.html',
   styleUrl: './setting-areas.component.scss',
 })
@@ -134,6 +138,15 @@ export class SettingAreasComponent implements OnInit {
 
   resetForm() {
     this.form.reset();
+  }
+
+  onLocationChange(data: LocationChangePayload): void {
+    this.form.patchValue({
+      latitude: data.lat,
+      longitude: data.lng,
+      nameAr: data.addressAr,
+      nameEn: data.addressEn,
+    });
   }
 
   editArea(areaId: number) {

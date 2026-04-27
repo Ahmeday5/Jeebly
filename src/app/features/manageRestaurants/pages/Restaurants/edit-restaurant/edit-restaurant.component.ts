@@ -10,7 +10,6 @@ import {
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { forkJoin, Subscription } from 'rxjs';
-import { Restaurant } from '../../../model/restaurant.type';
 import { allArea } from '../../../model/area.type';
 import { environment } from '../../../../../../environments/environment';
 import { RestaurantsService } from '../../../services/restaurants.service';
@@ -18,11 +17,21 @@ import { SettingAreasService } from '../../../services/setting-areas.service';
 import { ToastService } from '../../../../../core/services/toast.service';
 import { MainCategoriesService } from '../../../../Categories/services/main-categories.service';
 import { MultiSelectComponent, SelectItem } from '../../../../../shared/multi-select/multi-select.component';
+import {
+  LocationPickerComponent,
+  LocationChangePayload,
+} from '../../../../../shared/components/location-picker/location-picker.component';
 
 @Component({
   selector: 'app-edit-restaurant',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MultiSelectComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MultiSelectComponent,
+    LocationPickerComponent,
+  ],
   templateUrl: './edit-restaurant.component.html',
   styleUrls: ['./edit-restaurant.component.scss'],
 })
@@ -381,5 +390,14 @@ export class EditRestaurantComponent implements OnInit, OnDestroy {
 
   resetForm() {
     this.form.reset();
+  }
+
+  onLocationChange(data: LocationChangePayload) {
+    this.form.patchValue({
+      latitude: data.lat,
+      longitude: data.lng,
+      addressAr: data.addressAr,
+      addressEn: data.addressEn,
+    });
   }
 }
