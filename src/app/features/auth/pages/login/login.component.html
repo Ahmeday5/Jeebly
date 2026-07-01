@@ -1,53 +1,129 @@
-<div class="container-fluid img-bg">
-  <div class="row justify-content-end">
-    <div class="col-md-5 login-header">
-      <div class="row p-3 align-content-center align-items-center justify-content-center" style="min-height: 100vh;">
-        <div class="col-md-12 header">
-          <h1 class="text-center">أهلا بك ف جيبلي</h1>
-          <h1 class="text-center mt-1">إدارة تطبيقك وموقعك الإلكتروني بسهولة</h1>
-        </div>
-        <div class="col-md-12 img-logo text-center mt-4">
-          <img src="/assets/img/logo.png" class="img-fluid" style="width: 400px;" alt="">
+<div class="login-page">
+  <div class="login-wrapper">
+    <!-- Left column: Login form -->
+    <div class="login-form-panel">
+      <div class="login-form-inner">
+        <div class="brand fade-in-up">
+          <img src="/assets/img/logo.png" class="brand-logo" alt="Jeebly Logo">
         </div>
 
-        <div class="col-md-12">
-          <div class="header-form">
-            <h3 class="text-center">تسجيل الدخول الي لوحتك</h3>
-          </div>
-          <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
-            <div class="form-group mt-4">
-              <label for="email" class="form-label">البريد الإلكتروني</label>
+        <div class="form-heading fade-in-up delay-1">
+          <h1>أهلا بك في جيبلي</h1>
+          <p>سجّل الدخول لإدارة تطبيقك وموقعك الإلكتروني بسهولة</p>
+        </div>
+
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)" class="fade-in-up delay-2">
+          <div class="form-group mb-3">
+            <label for="email" class="form-label">البريد الإلكتروني</label>
+            <div class="input-with-icon">
+              <i class="fa-regular fa-envelope input-icon"></i>
               <input type="email" placeholder="البريد الالكتروني" class="form-control" id="email" name="email"
                 [(ngModel)]="email" required>
             </div>
-            <div class="form-group mt-3">
-              <label for="password" class="form-label">كلمة السر</label>
+          </div>
+
+          <div class="form-group mb-2">
+            <label for="password" class="form-label">كلمة السر</label>
+            <div class="input-with-icon">
+              <i class="fa-solid fa-lock input-icon"></i>
               <input [type]="showPassword ? 'text' : 'password'" placeholder="كلمة المرور" class="form-control"
                 id="password" name="password" [(ngModel)]="password" required>
               <span class="password-toggle" (click)="togglePassword()">
-                <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}" style="color: #8C0F14;"></i>
+                <i class="fa-regular {{ showPassword ? 'fa-eye-slash' : 'fa-eye' }}"></i>
               </span>
             </div>
-            <div class="remember-content row mt-2 justify-content-between">
-              <div class="col-3">
-                <div class="remember form-check">
-                  <label class="form-check-label" for="checkDefault">
-                    تذكرني
-                  </label>
-                  <input class="form-check-input" type="checkbox" id="checkDefault" name="rememberMe">
-                </div>
-              </div>
-              <div class="col-5 forgetpass">
-                <div class="d-flex forgetpassdiv">
-                  <a href="#" class="btn" role="button" data-bs-toggle="button">نسيت كلمة المرور؟</a>
-                </div>
-              </div>
+          </div>
+
+          <div class="remember-content d-flex align-items-center justify-content-between flex-wrap mt-3 mb-4">
+            <div class="remember form-check">
+              <input class="form-check-input" type="checkbox" id="checkDefault" name="rememberMe">
+              <label class="form-check-label" for="checkDefault">
+                تذكرني
+              </label>
             </div>
-            <div class="submit text-center mt-3">
-              <button type="submit" class="btn btn-login"><span *ngIf="isLoading"
-                  class="spinner-border spinner-border-sm"></span>تسجيل الدخول</button>
+            <div class="forgetpass">
+              <a href="#" class="forget-link" role="button" data-bs-toggle="button">نسيت كلمة المرور؟</a>
             </div>
-          </form>
+          </div>
+
+          <div class="submit">
+            <button type="submit" class="btn btn-login" [disabled]="isLoading">
+              <span *ngIf="isLoading" class="spinner-border spinner-border-sm"></span>
+              <span>تسجيل الدخول</span>
+              <i class="fa-solid fa-arrow-left-long login-btn-icon" *ngIf="!isLoading"></i>
+            </button>
+          </div>
+        </form>
+
+        <div class="login-footer fade-in-up delay-3">
+          <span>Developed by <strong>TheOneSystem</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: Info panel -->
+    <div class="login-info-panel">
+      <div class="info-overlay"></div>
+      <div class="info-content">
+        <div class="info-brand fade-in-up">
+          <i class="fa-solid fa-utensils"></i>
+          <span>Jeebly Dashboard</span>
+        </div>
+
+        <h2 class="fade-in-up delay-1">لوحة تحكم متكاملة لإدارة أعمالك</h2>
+        <p class="info-desc fade-in-up delay-2">
+          منصة إدارية شاملة تتيح لك التحكم الكامل في مطعمك أو متجرك الإلكتروني، من إدارة الطلبات
+          والمنتجات إلى متابعة العملاء والتوصيل، كل ذلك من مكان واحد بسهولة واحترافية.
+        </p>
+
+        <div class="features-list">
+          <div class="feature-item fade-in-up delay-2">
+            <div class="feature-icon"><i class="fa-solid fa-bag-shopping"></i></div>
+            <div class="feature-text">
+              <h4>إدارة الطلبات</h4>
+              <p>متابعة وإدارة كافة الطلبات الواردة لحظة بلحظة</p>
+            </div>
+          </div>
+
+          <div class="feature-item fade-in-up delay-3">
+            <div class="feature-icon"><i class="fa-solid fa-store"></i></div>
+            <div class="feature-text">
+              <h4>إدارة المطاعم والمواقع</h4>
+              <p>تنظيم بيانات المطاعم والمناطق والمواقع الجغرافية</p>
+            </div>
+          </div>
+
+          <div class="feature-item fade-in-up delay-4">
+            <div class="feature-icon"><i class="fa-solid fa-tags"></i></div>
+            <div class="feature-text">
+              <h4>الفئات والمنتجات</h4>
+              <p>إدارة قوائم الأصناف والمنتجات وتصنيفاتها بسهولة</p>
+            </div>
+          </div>
+
+          <div class="feature-item fade-in-up delay-4">
+            <div class="feature-icon"><i class="fa-solid fa-percent"></i></div>
+            <div class="feature-text">
+              <h4>العروض والحملات</h4>
+              <p>إنشاء العروض والخصومات وحملات التسويق</p>
+            </div>
+          </div>
+
+          <div class="feature-item fade-in-up delay-5">
+            <div class="feature-icon"><i class="fa-solid fa-truck"></i></div>
+            <div class="feature-text">
+              <h4>إدارة التوصيل</h4>
+              <p>متابعة عمليات التوصيل ومندوبي التوصيل</p>
+            </div>
+          </div>
+
+          <div class="feature-item fade-in-up delay-5">
+            <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="feature-text">
+              <h4>إدارة العملاء والمستخدمين</h4>
+              <p>متابعة بيانات العملاء ومستخدمي التطبيق</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
